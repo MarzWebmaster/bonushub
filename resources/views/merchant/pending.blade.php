@@ -1,0 +1,8 @@
+@extends('layouts.app')@section('title','Pending Approvals - Merchant')@section('content')
+<div class="page-container"><div class="page-header"><div><h1 class="page-title">Pending Approvals</h1><p class="page-subtitle">Review staff point entries</p></div></div>
+<div class="card overflow-hidden"><table class="data-table"><thead><tr><th>Customer</th><th>Points</th><th>Staff</th><th>Notes</th><th>Date</th><th class="text-center">Actions</th></tr></thead>
+<tbody id="pending-table"><tr><td colspan="6" class="text-center text-surface-400 py-8">Loading...</td></tr></tbody></table></div></div>
+<script>
+fetch('/merchant/api/points/pending').then(r=>r.json()).then(d=>{if(d.transactions){let h='';d.transactions.forEach(t=>{h+='<tr><td class=\"font-medium\">'+t.customer_name+'</td><td class=\"font-bold text-amber-600\">'+t.points+'</td><td>'+t.staff_name+'</td><td class=\"text-surface-500 text-sm\">'+(t.notes||'-')+'</td><td class=\"text-surface-400 text-xs\">'+t.created_at+'</td><td><div class=\"flex gap-1 justify-center\"><button onclick="fetch('/merchant/points/approve/'+t.id+'',{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(()=>location.reload())" class=\"btn-sm btn-success\">Approve</button><button onclick="fetch('/merchant/points/reject/'+t.id+'',{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(()=>location.reload())" class=\"btn-sm btn-danger\">Reject</button></div></td></tr>';});document.getElementById('pending-table').innerHTML=h;}});
+</script>
+@endsection

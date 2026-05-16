@@ -1,0 +1,399 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e4]:
+      - link "BonusHub" [ref=e5] [cursor=pointer]:
+        - /url: http://localhost:8000
+        - img [ref=e7]
+        - generic [ref=e9]: BonusHub
+      - generic [ref=e10]:
+        - link "Laman Utama" [ref=e11] [cursor=pointer]:
+          - /url: http://localhost:8000
+        - link "Ciri-Ciri" [ref=e12] [cursor=pointer]:
+          - /url: "#ciri"
+        - link "Cara Kerja" [ref=e13] [cursor=pointer]:
+          - /url: "#cara-kerja"
+        - link "FAQ" [ref=e14] [cursor=pointer]:
+          - /url: "#faq"
+        - link "Log Masuk" [ref=e15] [cursor=pointer]:
+          - /url: http://localhost:8000/login
+        - link "Daftar Percuma" [ref=e16] [cursor=pointer]:
+          - /url: http://localhost:8000/login
+  - main [ref=e17]:
+    - generic [ref=e21]:
+      - generic [ref=e22]: Kini Dilancarkan — Daftar PERCUMA
+      - 'heading "Platform Loyalty, Giveaway & Viral Loop #1 Malaysia" [level=1] [ref=e23]':
+        - text: Platform Loyalty, Giveaway &
+        - text: "Viral Loop #1 Malaysia"
+      - paragraph [ref=e24]:
+        - text: Satu platform untuk
+        - strong [ref=e25]: Merchant
+        - text: dan
+        - strong [ref=e26]: Pengguna
+        - text: .
+      - paragraph [ref=e27]:
+        - text: Daftar
+        - strong [ref=e28]: 100% PERCUMA
+        - text: — dapatkan akses kepada
+        - strong [ref=e29]: Sistem Loyalty Points
+        - text: ","
+        - strong [ref=e30]: Cabutan Giveaway
+        - text: ", dan"
+        - strong [ref=e31]: Viral Loop Marketing
+        - text: yang berfungsi secara automatik untuk anda.
+      - generic [ref=e32]:
+        - link "Daftar Percuma Sebagai Merchant" [ref=e33] [cursor=pointer]:
+          - /url: http://localhost:8000/login
+          - img [ref=e34]
+          - text: Daftar Percuma Sebagai Merchant
+          - img [ref=e36]
+        - link "Sertai Sebagai Pengguna — Mula Menang!" [ref=e38] [cursor=pointer]:
+          - /url: http://localhost:8000/login
+          - img [ref=e39]
+          - text: Sertai Sebagai Pengguna — Mula Menang!
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - img [ref=e43]
+          - text: Percuma Seumur Hidup
+        - generic [ref=e45]:
+          - img [ref=e46]
+          - text: Tiada Kadar Tersembunyi
+        - generic [ref=e48]:
+          - img [ref=e49]
+          - text: Ganjaran & Hadiah Menarik
+    - generic [ref=e52]:
+      - generic [ref=e53]:
+        - text: Tiga Teras Utama
+        - heading "Semua Yang Anda Perlukan Dalam Satu Platform" [level=2] [ref=e54]
+        - paragraph [ref=e55]: Gabungan sistem loyalty, cabutan bertuah, dan viral loop yang direka untuk memaksimumkan pertumbuhan perniagaan dan ganjaran pengguna.
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - img [ref=e59]
+          - heading "Sistem Loyalty Points" [level=3] [ref=e61]
+          - paragraph [ref=e62]: Pengguna mengumpul mata setiap kali membuat pembelian di kedai-kedai yang berdaftar. Mata ini boleh ditebus untuk pelbagai ganjaran menarik — semuanya diurus secara automatik oleh platform.
+        - generic [ref=e63]:
+          - img [ref=e65]
+          - heading "Cabutan Giveaway" [level=3] [ref=e67]
+          - paragraph [ref=e68]: Setiap pembelian atau perkongsian layak menyertai cabutan bertuah! Merchant boleh mencipta kempen giveaway untuk menarik pelanggan baru, manakala pengguna berpeluang memenangi hadiah-hadiah hebat.
+        - generic [ref=e69]:
+          - img [ref=e71]
+          - heading "Viral Loop System" [level=3] [ref=e73]
+          - paragraph [ref=e74]: Sistem rujukan berantai paling pintar. Apabila pelanggan merujuk rakan, kedua-duanya mendapat mata bonus. Rakan yang dirujuk pula akan merujuk rakan yang lain — mencipta kesan viral yang meledakkan pertumbuhan perniagaan anda secara automatik.
+    - generic [ref=e77]:
+      - generic [ref=e78]:
+        - text: Untuk Pengguna
+        - heading "Dapatkan Ganjaran Setiap Kali Anda Membeli!" [level=2] [ref=e79]
+        - paragraph [ref=e80]: Sebagai pengguna, anda boleh menikmati pelbagai manfaat tanpa perlu mengeluarkan sebarang kos.
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - img [ref=e84]
+            - generic [ref=e86]:
+              - heading "Pendaftaran 100% PERCUMA Seumur Hidup" [level=3] [ref=e87]
+              - paragraph [ref=e88]: Tiada yuran pendaftaran, tiada caj bulanan. Daftar sekali, nikmati selamanya.
+          - generic [ref=e89]:
+            - img [ref=e91]
+            - generic [ref=e93]:
+              - heading "Bebas Memilih Mana-Mana Kedai" [level=3] [ref=e94]
+              - paragraph [ref=e95]: Anda bebas menyertai dan mengumpul mata di semua Merchant yang berdaftar dalam sistem BonusHub.
+          - generic [ref=e96]:
+            - img [ref=e98]
+            - generic [ref=e100]:
+              - heading "Peluang Menang Hadiah Besar" [level=3] [ref=e101]
+              - paragraph [ref=e102]: Setiap pembelian atau perkongsian memberi anda tiket ke cabutan giveaway. Lebih banyak anda berinteraksi, lebih tinggi peluang anda menang!
+          - generic [ref=e103]:
+            - img [ref=e105]
+            - generic [ref=e107]:
+              - heading "Ganjaran Mudah Ditebus" [level=3] [ref=e108]
+              - paragraph [ref=e109]: Tukarkan mata ganjaran anda dengan mudah melalui platform. Proses tebusan cepat, telus, dan tanpa kerumitan.
+        - link "Mula Dapatkan Ganjaran" [ref=e110] [cursor=pointer]:
+          - /url: http://localhost:8000/login
+          - text: Mula Dapatkan Ganjaran
+          - img [ref=e111]
+      - generic [ref=e116]:
+        - generic [ref=e117]: Pelbagai Ganjaran Menanti
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - img [ref=e121]
+            - paragraph [ref=e123]: Mata Points
+            - paragraph [ref=e124]: Kumpul & tebus
+          - generic [ref=e125]:
+            - img [ref=e127]
+            - paragraph [ref=e129]: Giveaway
+            - paragraph [ref=e130]: Cabutan hadiah
+          - generic [ref=e131]:
+            - img [ref=e133]
+            - paragraph [ref=e135]: Bonus Rujukan
+            - paragraph [ref=e136]: Bawa rakan & menang
+          - generic [ref=e137]:
+            - img [ref=e139]
+            - paragraph [ref=e141]: Reward
+            - paragraph [ref=e142]: Tebus sekarang
+    - generic [ref=e145]:
+      - generic [ref=e149]:
+        - generic [ref=e150]: Tool Lengkap Untuk Merchant
+        - generic [ref=e151]:
+          - generic [ref=e152]:
+            - img [ref=e154]
+            - paragraph [ref=e156]: Analitik
+            - paragraph [ref=e157]: Dashboard real-time
+          - generic [ref=e158]:
+            - img [ref=e160]
+            - paragraph [ref=e162]: Unlimited
+            - paragraph [ref=e163]: Pelanggan
+          - generic [ref=e164]:
+            - img [ref=e166]
+            - paragraph [ref=e168]: Viral Loop
+            - paragraph [ref=e169]: Auto referral
+          - generic [ref=e170]:
+            - img [ref=e172]
+            - paragraph [ref=e174]: Giveaway
+            - paragraph [ref=e175]: Kempen jualan
+      - generic [ref=e176]:
+        - text: Untuk Merchant
+        - heading "Kembangkan Perniagaan Anda Secara Viral & Automatik!" [level=2] [ref=e177]
+        - paragraph [ref=e178]: Tool lengkap untuk membina kesetiaan pelanggan dan meledakkan jualan tanpa perlu keluar modal besar.
+        - generic [ref=e179]:
+          - generic [ref=e180]:
+            - img [ref=e182]
+            - generic [ref=e184]:
+              - heading "Pendaftaran PERCUMA Selamanya" [level=3] [ref=e185]
+              - paragraph [ref=e186]: Akaun asas percuma tanpa had masa. Nikmati semua ciri teras tanpa dikenakan sebarang yuran.
+          - generic [ref=e187]:
+            - img [ref=e189]
+            - generic [ref=e191]:
+              - heading "Tiada Had Pelanggan (Unlimited)" [level=3] [ref=e192]
+              - paragraph [ref=e193]: Daftarkan seramai mungkin pelanggan tanpa had. Semakin ramai, semakin kuat ekosistem loyalty anda.
+          - generic [ref=e194]:
+            - img [ref=e196]
+            - generic [ref=e198]:
+              - heading "Viral Loop System Automatik" [level=3] [ref=e199]
+              - paragraph [ref=e200]: Pelanggan sedia ada menjadi ejen pemasaran anda. Sistem referral pintar memberi insentif kepada mereka untuk membawa pelanggan baru secara berantai.
+          - generic [ref=e201]:
+            - img [ref=e203]
+            - generic [ref=e205]:
+              - heading "Dashboard Analitik Lengkap" [level=3] [ref=e206]
+              - paragraph [ref=e207]: Pantau data pelanggan, retention rate, jumlah mata diedar, dan pulangan pelaburan (ROI) program loyalty anda dalam masa nyata.
+          - generic [ref=e208]:
+            - img [ref=e210]
+            - generic [ref=e212]:
+              - heading "Kempen Giveaway Mudah" [level=3] [ref=e213]
+              - paragraph [ref=e214]: Cipta dan lancarkan kempen cabutan bertuah dalam beberapa klik. Giveaway adalah cara paling berkesan untuk melonjakkan jualan dan menarik pelanggan baru.
+        - link "Daftar Kedai Anda Sekarang" [ref=e215] [cursor=pointer]:
+          - /url: http://localhost:8000/login
+          - text: Daftar Kedai Anda Sekarang
+          - img [ref=e216]
+    - generic [ref=e219]:
+      - generic [ref=e220]:
+        - text: Cara Ia Berfungsi
+        - heading "Mulakan Hanya Dalam 3 Langkah Mudah" [level=2] [ref=e221]
+        - paragraph [ref=e222]: Proses yang ringkas dan pantas untuk kedua-dua Merchant dan Pengguna.
+      - generic [ref=e223]:
+        - generic [ref=e224]:
+          - generic [ref=e225]:
+            - img [ref=e227]
+            - heading "Untuk Merchant" [level=3] [ref=e229]
+          - generic [ref=e230]:
+            - generic [ref=e231]:
+              - generic [ref=e233]: "1"
+              - generic [ref=e234]:
+                - heading "Daftar Akaun Merchant" [level=4] [ref=e235]
+                - paragraph [ref=e236]: Isi borang pendaftaran percuma. Tiada yuran tersembunyi. Sahkan emel anda dan mula sedia dalam masa 5 minit.
+            - generic [ref=e237]:
+              - generic [ref=e239]: "2"
+              - generic [ref=e240]:
+                - heading "Setkan Kadar Loyalty & Giveaway" [level=4] [ref=e241]
+                - paragraph [ref=e242]: Tentukan berapa mata untuk setiap RM pembelian, dan cipta kempen giveaway pertama anda. Sistem akan berfungsi secara automatik.
+            - generic [ref=e243]:
+              - generic [ref=e245]: "3"
+              - generic [ref=e246]:
+                - heading "Pantau & Kembangkan" [level=4] [ref=e247]
+                - paragraph [ref=e248]: Gunakan dashboard analitik untuk melihat prestasi, dan biarkan Viral Loop System membawa lebih ramai pelanggan kepada anda secara automatik.
+        - generic [ref=e249]:
+          - generic [ref=e250]:
+            - img [ref=e252]
+            - heading "Untuk Pengguna" [level=3] [ref=e254]
+          - generic [ref=e255]:
+            - generic [ref=e256]:
+              - generic [ref=e258]: "1"
+              - generic [ref=e259]:
+                - heading "Daftar Akaun Pengguna" [level=4] [ref=e260]
+                - paragraph [ref=e261]: Daftar secara PERCUMA menggunakan emel atau nombor telefon. Lengkapkan profil dan mula terokai kedai-kedai menarik dalam platform.
+            - generic [ref=e262]:
+              - generic [ref=e264]: "2"
+              - generic [ref=e265]:
+                - heading "Beli & Kumpul Mata" [level=4] [ref=e266]
+                - paragraph [ref=e267]: Buat pembelian di mana-mana kedai berdaftar. Mata loyalty akan dikredit secara automatik. Kongsikan dengan rakan untuk bonus rujukan tambahan.
+            - generic [ref=e268]:
+              - generic [ref=e270]: "3"
+              - generic [ref=e271]:
+                - heading "Tebus Ganjaran & Menang Giveaway" [level=4] [ref=e272]
+                - paragraph [ref=e273]: Tukarkan mata dengan pelbagai hadiah menarik, dan dapatkan tiket cabutan giveaway untuk peluang memenangi hadiah besar secara percuma!
+    - generic [ref=e275]:
+      - generic [ref=e276]:
+        - text: Apa Kata Mereka
+        - heading "Dipercayai Oleh Usahawan & Pengguna" [level=2] [ref=e277]
+        - paragraph [ref=e278]: Ribuan Merchant dan Pengguna telah menyertai BonusHub. Inilah pengalaman mereka.
+      - generic [ref=e279]:
+        - generic [ref=e280]:
+          - generic [ref=e281]:
+            - img [ref=e282]
+            - img [ref=e284]
+            - img [ref=e286]
+            - img [ref=e288]
+            - img [ref=e290]
+          - paragraph [ref=e292]: "\"Sejak guna BonusHub, pelanggan saya semakin ramai. Viral Loop System betul-betul berkesan — pelanggan lama bawa pelanggan baru tanpa saya perlu buat apa-apa!\""
+          - generic [ref=e293]:
+            - generic [ref=e294]: AN
+            - generic [ref=e295]:
+              - paragraph [ref=e296]: Ahmad N.
+              - paragraph [ref=e297]: Pengusaha Kafe, Kuala Lumpur
+        - generic [ref=e298]:
+          - generic [ref=e299]:
+            - img [ref=e300]
+            - img [ref=e302]
+            - img [ref=e304]
+            - img [ref=e306]
+            - img [ref=e308]
+          - paragraph [ref=e310]: "\"Saya suka sebab boleh kumpul mata di banyak kedai berbeza. Giveaway dia pun best, saya dah menang hadiah twice! Memang recommended untuk semua pengguna.\""
+          - generic [ref=e311]:
+            - generic [ref=e312]: SN
+            - generic [ref=e313]:
+              - paragraph [ref=e314]: Siti N.
+              - paragraph [ref=e315]: Pengguna Setia, Shah Alam
+        - generic [ref=e316]:
+          - generic [ref=e317]:
+            - img [ref=e318]
+            - img [ref=e320]
+            - img [ref=e322]
+            - img [ref=e324]
+            - img [ref=e326]
+          - paragraph [ref=e328]: "\"Dashboard analitik sangat membantu. Saya boleh track customer retention dan lihat program giveaway mana yang paling berkesan. ROI meningkat 40% dalam 2 bulan pertama!\""
+          - generic [ref=e329]:
+            - generic [ref=e330]: MR
+            - generic [ref=e331]:
+              - paragraph [ref=e332]: Mohan R.
+              - paragraph [ref=e333]: Pemilik Rantaian Kedai, Pulau Pinang
+      - generic [ref=e334]:
+        - generic [ref=e335]:
+          - text: Soalan Lazim
+          - heading "Ada Soalan? Kami Ada Jawapan" [level=2] [ref=e336]
+        - generic [ref=e337]:
+          - generic [ref=e338]:
+            - button "Apakah itu Sistem Loyalty dan bagaimana ia berfungsi?" [ref=e339] [cursor=pointer]:
+              - heading "Apakah itu Sistem Loyalty dan bagaimana ia berfungsi?" [level=3] [ref=e340]
+              - img [ref=e341]
+            - paragraph [ref=e344]: Sistem Loyalty adalah program ganjaran yang membolehkan pengguna mengumpul mata setiap kali membuat pembelian di kedai-kedai berdaftar. Mata ini boleh ditebus untuk pelbagai ganjaran. Merchant boleh menetapkan kadar mata mereka sendiri — contohnya 1 mata untuk setiap RM1 pembelian. Sistem berfungsi sepenuhnya secara automatik, dari pengiraan mata sehinggalah kepada proses penebusan.
+          - generic [ref=e345]:
+            - button "Adakah benar-benar PERCUMA untuk mendaftar?" [ref=e346] [cursor=pointer]:
+              - heading "Adakah benar-benar PERCUMA untuk mendaftar?" [level=3] [ref=e347]
+              - img [ref=e348]
+            - paragraph [ref=e351]: Ya! Pendaftaran adalah 100% PERCUMA untuk kedua-dua Merchant dan Pengguna. Tiada yuran pendaftaran, tiada caj bulanan, dan tiada yuran tersembunyi. Akaun asas Merchant kekal percuma selamanya. Kami percaya setiap perniagaan berhak mendapat sistem loyalty tanpa perlu risau tentang kos.
+          - generic [ref=e352]:
+            - button "Bagaimana Viral Loop System membantu perniagaan saya?" [ref=e353] [cursor=pointer]:
+              - heading "Bagaimana Viral Loop System membantu perniagaan saya?" [level=3] [ref=e354]
+              - img [ref=e355]
+            - paragraph [ref=e358]: Viral Loop System adalah teknologi pemasaran rujukan berantai paling pintar. Apabila pelanggan anda merujuk rakan mereka, kedua-duanya mendapat mata bonus. Rakan yang dirujuk kemudiannya akan merujuk lebih ramai rakan — mewujudkan kesan viral yang melipatgandakan pertumbuhan pelanggan anda secara organik, tanpa perlu anda belanja besar untuk iklan.
+          - generic [ref=e359]:
+            - button "Apakah itu Giveaway dan bagaimana ia berfungsi?" [ref=e360] [cursor=pointer]:
+              - heading "Apakah itu Giveaway dan bagaimana ia berfungsi?" [level=3] [ref=e361]
+              - img [ref=e362]
+            - paragraph [ref=e365]: Giveaway adalah cabutan bertuah di mana pengguna berpeluang memenangi hadiah-hadiah menarik. Merchant boleh mencipta kempen giveaway dengan mudah — tetapkan hadiah, tempoh masa, dan syarat penyertaan. Setiap pembelian atau perkongsian memberikan pengguna tiket untuk cabutan. Ini adalah strategi viral marketing paling berkesan untuk menarik pelanggan baru dan meningkatkan jualan.
+          - generic [ref=e366]:
+            - button "Apa yang membezakan BonusHub daripada aplikasi kad setia yang lain?" [ref=e367] [cursor=pointer]:
+              - heading "Apa yang membezakan BonusHub daripada aplikasi kad setia yang lain?" [level=3] [ref=e368]
+              - img [ref=e369]
+            - paragraph [ref=e372]: "BonusHub adalah platform komprehensif yang menggabungkan 3 fungsi utama dalam satu sistem: Sistem Loyalty Points, Cabutan Giveaway, dan Viral Loop System. Kebanyakan aplikasi kad setia hanya menawarkan fungsi asas loyalty sahaja. BonusHub juga menyediakan dashboard analitik lengkap untuk Merchant dan membolehkan pengguna mengumpul mata di pelbagai kedai berbeza — bukan terikat kepada satu perniagaan sahaja."
+          - generic [ref=e373]:
+            - button "Bagaimana cara untuk memulakan sebagai Merchant?" [ref=e374] [cursor=pointer]:
+              - heading "Bagaimana cara untuk memulakan sebagai Merchant?" [level=3] [ref=e375]
+              - img [ref=e376]
+            - paragraph [ref=e379]: Sangat mudah! Hanya daftar akaun secara percuma, lengkapkan profil kedai anda, dan tetapkan kadar mata loyalty yang ingin diberikan. Anda boleh mula mendaftarkan pelanggan serta-merta dan mencipta kempen giveaway pertama anda dalam masa beberapa minit. Tiada pengalaman teknikal diperlukan.
+    - generic [ref=e383]:
+      - heading "Jangan Tunggu Lagi — Sertai BonusHub Sekarang!" [level=2] [ref=e384]
+      - paragraph [ref=e385]: Ribuan Merchant dan Pengguna sudah mula meraih manfaat. Daftar PERCUMA hari ini dan jadilah sebahagian daripada revolusi loyalty & viral marketing di Malaysia.
+      - generic [ref=e386]:
+        - link "Daftar Percuma Sebagai Merchant" [ref=e387] [cursor=pointer]:
+          - /url: http://localhost:8000/login
+          - img [ref=e388]
+          - text: Daftar Percuma Sebagai Merchant
+        - link "Sertai Sebagai Pengguna" [ref=e390] [cursor=pointer]:
+          - /url: http://localhost:8000/login
+          - img [ref=e391]
+          - text: Sertai Sebagai Pengguna
+      - paragraph [ref=e393]: Percuma seumur hidup • Tiada kad tersembunyi • Batal bila-bila masa
+  - contentinfo [ref=e394]:
+    - generic [ref=e395]:
+      - generic [ref=e396]:
+        - generic [ref=e397]:
+          - link "BonusHub" [ref=e398] [cursor=pointer]:
+            - /url: http://localhost:8000
+            - img [ref=e400]
+            - generic [ref=e402]: BonusHub
+          - paragraph [ref=e403]: Platform loyalty, giveaway, dan viral loop marketing No.1 di Malaysia. Kami membantu perniagaan berkembang dan memberi ganjaran kepada pelanggan setia.
+          - generic [ref=e404]:
+            - link "Facebook" [ref=e405] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e406]
+            - link "Instagram" [ref=e408] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e409]
+            - link "TikTok" [ref=e411] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e412]
+        - generic [ref=e414]:
+          - heading "Navigasi" [level=4] [ref=e415]
+          - list [ref=e416]:
+            - listitem [ref=e417]:
+              - link "Laman Utama" [ref=e418] [cursor=pointer]:
+                - /url: http://localhost:8000
+            - listitem [ref=e419]:
+              - link "Ciri-Ciri" [ref=e420] [cursor=pointer]:
+                - /url: "#ciri"
+            - listitem [ref=e421]:
+              - link "Cara Kerja" [ref=e422] [cursor=pointer]:
+                - /url: "#cara-kerja"
+            - listitem [ref=e423]:
+              - link "FAQ" [ref=e424] [cursor=pointer]:
+                - /url: "#faq"
+            - listitem [ref=e425]:
+              - link "Log Masuk" [ref=e426] [cursor=pointer]:
+                - /url: http://localhost:8000/login
+        - generic [ref=e427]:
+          - heading "Untuk Merchant" [level=4] [ref=e428]
+          - list [ref=e429]:
+            - listitem [ref=e430]:
+              - link "Daftar Kedai" [ref=e431] [cursor=pointer]:
+                - /url: http://localhost:8000/login
+            - listitem [ref=e432]:
+              - link "Sistem Loyalty" [ref=e433] [cursor=pointer]:
+                - /url: "#ciri"
+            - listitem [ref=e434]:
+              - link "Viral Loop" [ref=e435] [cursor=pointer]:
+                - /url: "#ciri"
+            - listitem [ref=e436]:
+              - link "Kempen Giveaway" [ref=e437] [cursor=pointer]:
+                - /url: "#ciri"
+            - listitem [ref=e438]:
+              - link "Dashboard Analitik" [ref=e439] [cursor=pointer]:
+                - /url: "#ciri"
+        - generic [ref=e440]:
+          - heading "Untuk Pengguna" [level=4] [ref=e441]
+          - list [ref=e442]:
+            - listitem [ref=e443]:
+              - link "Daftar Percuma" [ref=e444] [cursor=pointer]:
+                - /url: http://localhost:8000/login
+            - listitem [ref=e445]:
+              - link "Kumpul Mata" [ref=e446] [cursor=pointer]:
+                - /url: "#ciri"
+            - listitem [ref=e447]:
+              - link "Cabutan Giveaway" [ref=e448] [cursor=pointer]:
+                - /url: "#ciri"
+            - listitem [ref=e449]:
+              - link "Tebus Ganjaran" [ref=e450] [cursor=pointer]:
+                - /url: "#ciri"
+      - generic [ref=e451]:
+        - paragraph [ref=e452]:
+          - text: © 2026
+          - link "Marz Technology" [ref=e453] [cursor=pointer]:
+            - /url: https://marztechnology.com.my/
+          - text: . Hak cipta terpelihara.
+        - paragraph [ref=e454]: BonusHub — Sistem Loyalty, Giveaway & Viral Marketing Terbaik di Malaysia

@@ -1,0 +1,7 @@
+@extends('layouts.app')@section('title','Liability Report - Merchant')@section('content')
+<div class="page-container"><div class="page-header"><div><h1 class="page-title">Points Liability Report</h1><p class="page-subtitle">Track your points issued vs redeemed</p></div></div>
+<div class="card p-6" id="liability-report">Loading...</div></div>
+<script>
+fetch('/merchant/api/reports/liability').then(r=>r.json()).then(d=>{let h='';if(d.success){h='<div class=\"grid grid-cols-2 gap-4\"><div class=\"stat-card border-l-bonus-500\"><p class=\"text-sm text-surface-500\">Total Points Issued</p><p class=\"text-2xl font-bold\">'+d.report.total_issued.toLocaleString()+'</p></div><div class=\"stat-card border-l-red-500\"><p class=\"text-sm text-surface-500\">Total Points Redeemed</p><p class=\"text-2xl font-bold\">'+d.report.total_redeemed.toLocaleString()+'</p></div><div class=\"stat-card border-l-amber-500\"><p class=\"text-sm text-surface-500\">Outstanding Liability</p><p class=\"text-2xl font-bold text-amber-600\">'+d.report.outstanding.toLocaleString()+'</p></div><div class=\"stat-card border-l-emerald-500\"><p class=\"text-sm text-surface-500\">Redemption Rate</p><p class=\"text-2xl font-bold text-emerald-600\">'+d.report.redemption_rate+'%</p></div></div>';}document.getElementById('liability-report').innerHTML=h;});
+</script>
+@endsection

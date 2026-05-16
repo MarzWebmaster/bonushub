@@ -1,0 +1,236 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Merchant;
+use App\Models\MerchantReward;
+use App\Models\Customer;
+use App\Models\PointsTransaction;
+use App\Models\CustomerMerchant;
+use App\Models\LoyaltyRate;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
+
+class MerchantAdminController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware(['auth', 'role:merchant']);
+    }
+
+    private function getMerchant()
+    {
+        $user = Auth::user();
+        if ($user->hasRole('superadmin')) {
+            $merchantId = request()->query('merchant_id');
+            if ($merchantId) return Merchant::findOrFail($merchantId);
+        }
+        $merchant = Merchant::find($user->merchant_id);
+        if (!$merchant) abort(403, 'No merchant associated.');
+        return $merchant;
+    }
+
+    // ========================
+    // BLADE VIEWS
+    // ========================
+
+    public function dashboard(): View
+    {
+        $merchant = $this->getMerchant();
+        return view('merchant.dashboard', [
+            'customers_count' => CustomerMerchant::where('merchant_id', $merchant->id)->count(),
+            'staff_count' => $merchant->staff()->count(),
+            'pending_approvals' => PointsTransaction::where('merchant_id', $merchant->id)->where('status', 'pending_approval')->count(),
+            'rewards_count' => MerchantReward::where('merchant_id', $merchant->id)->count(),
+        ]);
+    }
+
+    public function pendingApprovalsPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $pending = PointsTransaction::with(['customer', 'staff'])
+            ->where('merchant_id', $merchant->id)
+            ->where('status', 'pending_approval')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        return view('merchant.pending', compact('pending'));
+    }
+
+    public function rewardProductsPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $rewards = MerchantReward::where('merchant_id', $merchant->id)
+            ->orderBy('points_required')
+            ->paginate(20);
+        return view('merchant.rewards', compact('rewards'));
+    }
+
+    public function customerListPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $customers = CustomerMerchant::with('customer')
+            ->where('merchant_id', $merchant->id)
+            ->orderBy('points', 'desc')
+            ->paginate(20);
+        return view('merchant.customers', compact('customers'));
+    }
+
+    public function leaderboardPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $leaderboard = CustomerMerchant::with('customer')
+            ->where('merchant_id', $merchant->id)
+            ->orderBy('points', 'desc')
+            ->limit(50)
+            ->get();
+        return view('merchant.leaderboard', compact('leaderboard'));
+    }
+
+    public function liabilityReportPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $total_earned = PointsTransaction::where('merchant_id', $merchant->id)->where('type', 'earn')->where('status', 'approved')->sum('points');
+        $total_redeemed = PointsTransaction::where('merchant_id', $merchant->id)->where('type', 'redeem')->where('status', 'approved')->sum('points');
+        $liability = $total_earned - $total_redeemed;
+        $customers = CustomerMerchant::with('customer')
+            ->where('merchant_id', $merchant->id)
+            ->orderBy('points', 'desc')
+            ->paginate(20);
+        return view('merchant.liability', compact('total_earned', 'total_redeemed', 'liability', 'customers'));
+    }
+
+    public function loyaltyRatesPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $rate = LoyaltyRate::where('merchant_id', $merchant->id)->first();
+        return view('merchant.rates', compact('rate'));
+    }
+
+    // ========================
+    // JSON API ENDPOINTS
+    // ========================
+
+    public function pendingApprovals(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        $transactions = PointsTransaction::with(['customer', 'staff'])
+            ->where('merchant_id', $merchant->id)
+            ->where('status', 'pending_approval')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        return response()->json(['success' => true, 'pending_count' => $transactions->total(), 'transactions' => $transactions]);
+    }
+
+    public function approvePoints($id)
+    {
+        $merchant = $this->getMerchant();
+        $tx = PointsTransaction::where('merchant_id', $merchant->id)->where('id', $id)->where('status', 'pending_approval')->firstOrFail();
+        $tx->update(['status' => 'approved']);
+        CustomerMerchant::where('customer_id', $tx->customer_id)->where('merchant_id', $merchant->id)
+            ->increment('points', $tx->points);
+        Log::info("Points approved: tx {$tx->id} by admin " . Auth::id());
+        return redirect()->back()->with('success', 'Points approved!');
+    }
+
+    public function rejectPoints(Request $request, $id)
+    {
+        $merchant = $this->getMerchant();
+        $tx = PointsTransaction::where('merchant_id', $merchant->id)->where('id', $id)->where('status', 'pending_approval')->firstOrFail();
+        $tx->update(['status' => 'rejected', 'notes' => $request->reason ?? 'Rejected by admin']);
+        return redirect()->back()->with('success', 'Points rejected.');
+    }
+
+    public function rewardProducts(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        return response()->json(['success' => true, 'products' => MerchantReward::where('merchant_id', $merchant->id)->orderBy('points_required')->paginate(20)]);
+    }
+
+    public function storeRewardProduct(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'points_required' => 'required|integer|min:1',
+            'stock_quantity' => 'nullable|integer|min:0',
+            'claim_type' => 'required|in:self_collect,delivery,download,access_code',
+            'cash_price' => 'nullable|numeric|min:0',
+            'delivery_cost' => 'nullable|in:merchant,customer',
+        ]);
+        $data['merchant_id'] = $merchant->id;
+        $data['stock_left'] = $data['stock_quantity'] ?? 0;
+        MerchantReward::create($data);
+        return redirect()->back()->with('success', 'Reward product created!');
+    }
+
+    public function updateRewardProduct(Request $request, $id)
+    {
+        $merchant = $this->getMerchant();
+        $product = MerchantReward::where('merchant_id', $merchant->id)->findOrFail($id);
+        $product->update($request->validate([
+            'name' => 'required|string|max:255',
+            'points_required' => 'required|integer|min:1',
+            'stock_quantity' => 'nullable|integer|min:0',
+        ]));
+        return response()->json(['success' => true, 'message' => 'Updated.']);
+    }
+
+    public function destroyRewardProduct($id)
+    {
+        $merchant = $this->getMerchant();
+        MerchantReward::where('merchant_id', $merchant->id)->findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Reward product deleted.');
+    }
+
+    public function customerListByTier(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        $customers = CustomerMerchant::with('customer')->where('merchant_id', $merchant->id);
+        if ($request->tier) $customers->where('tier_per_merchant', $request->tier);
+        return response()->json(['success' => true, 'customers' => $customers->orderBy('points', 'desc')->paginate(20)]);
+    }
+
+    public function leaderboard(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        $limit = min((int)$request->query('limit', 20), 100);
+        $data = CustomerMerchant::with('customer')->where('merchant_id', $merchant->id)
+            ->orderBy('points', 'desc')->limit($limit)->get();
+        return response()->json(['success' => true, 'merchant' => $merchant->name, 'leaderboard' => $data]);
+    }
+
+    public function liabilityReport(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        $total = CustomerMerchant::where('merchant_id', $merchant->id)->sum('points');
+        $count = CustomerMerchant::where('merchant_id', $merchant->id)->where('points', '>', 0)->count();
+        return response()->json(['success' => true, 'report' => [
+            'total_points_outstanding' => (int)$total,
+            'active_customers' => $count,
+            'generated_at' => now()->toDateTimeString(),
+        ]]);
+    }
+
+    public function getLoyaltyRates(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        return response()->json(['success' => true, 'rate' => LoyaltyRate::where('merchant_id', $merchant->id)->first()]);
+    }
+
+    public function updateLoyaltyRates(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        $data = $request->validate([
+            'earn_rate' => 'required|numeric|min:0.01',
+            'redeem_rate' => 'required|numeric|min:1',
+            'min_redeem' => 'nullable|integer|min:0',
+            'max_redeem' => 'nullable|integer|min:0',
+        ]);
+        LoyaltyRate::updateOrCreate(['merchant_id' => $merchant->id], $data);
+        return redirect()->back()->with('success', 'Loyalty rates updated!');
+    }
+}
