@@ -8,7 +8,7 @@ class RedeemRewardRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('Customer');
+        return $this->user()->hasRole('customer');
     }
 
     public function rules(): array

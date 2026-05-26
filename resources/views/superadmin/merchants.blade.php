@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Merchants - BonusHub')
 @section('content')
-<div class="page-container">
+<div class="page-container" style="padding-top:0">
     <div class="page-header">
         <div>
             <h1 class="page-title">Merchant Management</h1>
@@ -29,7 +29,7 @@
             <tbody>
                 @forelse($merchants as $m)
                 <tr>
-                    <td class="font-medium">{{ $m->name }}</td>
+                    <td class="font-medium">{{ $m->company_name }}</td>
                     <td class="text-surface-500">{{ $m->phone ?? '—' }}</td>
                     <td>
                         @if($m->is_active)

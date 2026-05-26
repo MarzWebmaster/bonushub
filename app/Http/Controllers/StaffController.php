@@ -22,7 +22,15 @@ class StaffController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth', 'role:Staff|Shop Admin|Superadmin']);
+        $this->middleware(['auth', 'role:staff|merchant|superadmin']);
+    }
+
+    /**
+     * Show the staff dashboard.
+     */
+    public function dashboard(): \Illuminate\Contracts\View\View
+    {
+        return view('staff.dashboard');
     }
 
     /**

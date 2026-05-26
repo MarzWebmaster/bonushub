@@ -10,39 +10,13 @@ class User extends Authenticatable
 {
     use HasRoles, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-        'merchant_id',
-        'branch_id',
-        'phone',
-        'status',
-        'last_login_at',
-        'profile_picture',
+        'name', 'email', 'password', 'role', 'merchant_id',
+        'branch_id', 'phone', 'status', 'last_login_at', 'profile_picture',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -52,51 +26,30 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the merchant that the user belongs to.
-     */
-    public function merchant()
-    {
-        return $this->belongsTo(Merchant::class);
-    }
+    public function merchant() { return $this->belongsTo(Merchant::class); }
+    public function branch() { return $this->belongsTo(Branch::class); }
+    public function processedPointsTransactions() { return $this->hasMany(PointsTransaction::class, 'staff_id'); }
+    public function processedRedemptions() { return $this->hasMany(Redemption::class, 'staff_id'); }
+    public function approvedPointsTransactions() { return $this->hasMany(PointsTransaction::class, 'approved_by'); }
+    public function activityLogs() { return $this->hasMany(ActivityLog::class); }
 
     /**
-     * Get the branch that the user belongs to.
+     * Customer-related relationships for customer role users.
      */
-    public function branch()
+    public function customer()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->hasOne(Customer::class, 'email', 'email');
     }
 
-    /**
-     * Get the points transactions processed by this user as staff.
-     */
-    public function processedPointsTransactions()
+    public function pointsBalances()
     {
-        return $this->hasMany(PointsTransaction::class, 'staff_id');
-    }
-
-    /**
-     * Get the redemptions processed by this user as staff.
-     */
-    public function processedRedemptions()
-    {
-        return $this->hasMany(Redemption::class, 'staff_id');
-    }
-
-    /**
-     * Get the points transactions approved by this user.
-     */
-    public function approvedPointsTransactions()
-    {
-        return $this->hasMany(PointsTransaction::class, 'approved_by');
-    }
-
-    /**
-     * Get the activity logs for this user.
-     */
-    public function activityLogs()
-    {
-        return $this->hasMany(ActivityLog::class);
+        return $this->hasManyThrough(
+            CustomerMerchant::class,
+            Customer::class,
+            'email',       // Foreign on customers
+            'customer_id', // Foreign on customer_merchant
+            'email',       // Local on users
+            'id'           // Local on customers
+        );
     }
 }

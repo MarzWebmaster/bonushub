@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Dashboard - Customer')
 @section('content')
-<div class="page-container">
+<div class="page-container" style="padding-top:0">
     <div class="page-header">
         <div>
             <h1 class="page-title">My Dashboard</h1>

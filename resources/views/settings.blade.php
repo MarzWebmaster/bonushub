@@ -4,7 +4,7 @@
 @section('page-title', 'Settings')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-6" style="padding-top:0">
     {{-- Profile Settings --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Profile Settings</h2>

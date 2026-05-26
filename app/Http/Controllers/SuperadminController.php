@@ -34,7 +34,7 @@ class SuperadminController extends Controller
 
     public function merchantsPage(): View
     {
-        $merchants = Merchant::withCount(['customers', 'transactions', 'staff'])
+        $merchants = Merchant::withCount(['customers', 'pointsTransactions', 'users'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         $packages = Package::orderBy('price')->get();
@@ -55,7 +55,7 @@ class SuperadminController extends Controller
     {
         $stats = [
             'total_merchants' => Merchant::count(),
-            'active_merchants' => Merchant::where('is_active', true)->count(),
+            'active_merchants' => Merchant::where('status', 'active')->count(),
             'total_customers' => User::role('customer')->count(),
             'total_staff' => User::role('staff')->count(),
             'pending_approvals' => PointsTransaction::where('status', 'pending_approval')->count(),
@@ -68,7 +68,7 @@ class SuperadminController extends Controller
 
     public function merchants(): JsonResponse
     {
-        $merchants = Merchant::withCount(['customers', 'transactions', 'staff'])
+        $merchants = Merchant::withCount(['customers', 'pointsTransactions', 'users'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -81,7 +81,7 @@ class SuperadminController extends Controller
             'admins:id,name,email',
             'staff:id,name,email',
             'loyaltyRate',
-        ])->withCount(['customers', 'transactions', 'rewardProducts'])
+        ])->withCount(['customers', 'pointsTransactions rewardProducts'])
             ->findOrFail($id);
 
         return response()->json(['success' => true, 'merchant' => $merchant]);
@@ -108,7 +108,7 @@ class SuperadminController extends Controller
                 'name' => $request->merchant_name,
                 'phone' => $request->phone,
                 'address' => $request->address,
-                'is_active' => $request->is_active ?? true,
+                'status' => $request->status ?? 'active',
                 'package_id' => $package_id,
                 'branch_limit' => $package->branch_limit ?? 1,
                 'staff_limit' => $package->staff_limit ?? 2,
@@ -156,13 +156,13 @@ class SuperadminController extends Controller
     public function toggleMerchantStatus(int $id): JsonResponse
     {
         $merchant = Merchant::findOrFail($id);
-        $merchant->update(['is_active' => !$merchant->is_active]);
-        $status = $merchant->is_active ? 'activated' : 'deactivated';
+        $merchant->update(['status' => $merchant->status === 'active' ? 'inactive' : 'active']);
+        $status = $merchant->status === 'active' ? 'activated' : 'deactivated';
 
         return response()->json([
             'success' => true,
             'message' => "Merchant {$status} successfully.",
-            'is_active' => $merchant->is_active,
+            'status' => $merchant->fresh()->status,
         ]);
     }
 

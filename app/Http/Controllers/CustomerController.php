@@ -4,22 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Customer\ProfileUpdateRequest;
 use App\Http\Requests\Customer\RedeemRewardRequest;
-use App\Models\RewardProduct;
-use App\Models\Transaction;
+use App\Models\MerchantReward;
+use App\Models\PointsTransaction;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
+    public function dashboard(): View
+    {
+        $customer = auth()->user();
+        $totalPoints = \DB::table('customer_merchant')
+            ->where('customer_id', $customer->id)
+            ->sum('customer_merchant.points') ?? 0;
+        $merchantCount = \DB::table('customer_merchant')
+            ->where('customer_id', $customer->id)
+            ->distinct('merchant_id')
+            ->count('merchant_id');
+        $tier = $customer->tier_global ?? 'Basic';
+        $availableRewards = \App\Models\MerchantReward::where('status', 'active')->count();
+
+        return view('customer.dashboard', compact('totalPoints', 'merchantCount', 'tier', 'availableRewards'));
+    }
+
     /**
      * Create a new controller instance.
      */
     public function __construct()
     {
-        $this->middleware(['auth', 'role:Customer|Staff|Shop Admin|Superadmin']);
+        $this->middleware(['auth', 'role:customer|staff|merchant|superadmin']);
     }
 
     /**
@@ -29,7 +46,7 @@ class CustomerController extends Controller
     {
         $customer = $request->user()->load([
             'pointsBalances' => function ($query) {
-                $query->with('merchant:id,name');
+                $query->with('merchant:id,company_name');
             },
         ]);
 
@@ -42,7 +59,7 @@ class CustomerController extends Controller
                 'phone' => $customer->phone,
                 'tier' => $customer->tier ?? 'Bronze',
                 'avatar' => $customer->avatar_url ?? null,
-                'points_balances' => $customer->pointsBalances,
+                'customer_merchant' => $customer->pointsBalances,
                 'member_since' => $customer->created_at->format('Y-m-d'),
             ],
         ]);
@@ -73,22 +90,22 @@ class CustomerController extends Controller
     }
 
     /**
-     * Get points balance per merchant.
+     * Get points customer_merchant.points per merchant.
      */
     public function pointsBalance(Request $request): JsonResponse
     {
         $customer = $request->user();
 
-        $balances = $customer->pointsBalances()
-            ->with('merchant:id,name')
+        $customerMerchantPoints = $customer->pointsBalances()
+            ->with('merchant:id,company_name')
             ->get();
 
-        $totalPoints = $balances->sum('balance');
+        $totalPoints = $customerMerchantPoints->sum('points');
 
         return response()->json([
             'success' => true,
             'total_points' => $totalPoints,
-            'balances' => $balances,
+            'points' => $customerMerchantPoints,
         ]);
     }
 
@@ -101,7 +118,7 @@ class CustomerController extends Controller
 
         $merchantId = $request->query('merchant_id');
 
-        $transactions = Transaction::with(['merchant:id,name', 'staff:id,name'])
+        $transactions = PointsTransaction::with(['merchant:id,company_name', 'staff:id,name'])
             ->where('customer_id', $customer->id)
             ->when($merchantId, function ($query, $merchantId) {
                 return $query->where('merchant_id', $merchantId);
@@ -122,15 +139,15 @@ class CustomerController extends Controller
     {
         $merchantId = $request->query('merchant_id');
 
-        $products = RewardProduct::where('is_active', true)
+        $products = MerchantReward::where('status', 'active')
             ->where(function ($query) {
-                $query->whereNull('stock')
+                $query->whereNull("customers.deleted_at")('stock')
                     ->orWhere('stock', '>', 0);
             })
             ->when($merchantId, function ($query, $merchantId) {
                 return $query->where('merchant_id', $merchantId);
             })
-            ->with('merchant:id,name')
+            ->with('merchant:id,company_name')
             ->orderBy('points_required')
             ->get();
 
@@ -147,8 +164,8 @@ class CustomerController extends Controller
     {
         $customer = $request->user();
 
-        $rewardProduct = RewardProduct::where('id', $request->reward_product_id)
-            ->where('is_active', true)
+        $rewardProduct = MerchantReward::where('id', $request->reward_product_id)
+            ->where('status', 'active')
             ->firstOrFail();
 
         $quantity = $request->quantity ?? 1;
@@ -170,23 +187,23 @@ class CustomerController extends Controller
             ], 422);
         }
 
-        // Check balance
-        $balance = DB::table('points_balances')
+        // Check customer_merchant.points
+        $customerMerchantPoints = DB::table('customer_merchant')
             ->where('merchant_id', $rewardProduct->merchant_id)
             ->where('customer_id', $customer->id)
-            ->value('balance') ?? 0;
+            ->value('customer_merchant.points') ?? 0;
 
-        if ($balance < $totalPointsRequired) {
+        if ($customerMerchantPoints < $totalPointsRequired) {
             return response()->json([
                 'success' => false,
-                'message' => "Insufficient points. Required: {$totalPointsRequired}, Available: {$balance}.",
+                'message' => "Insufficient points. Required: {$totalPointsRequired}, Available: {$customerMerchantPoints}.",
             ], 422);
         }
 
         try {
             DB::beginTransaction();
 
-            $transaction = Transaction::create([
+            $transaction = PointsTransaction::create([
                 'merchant_id' => $rewardProduct->merchant_id,
                 'customer_id' => $customer->id,
                 'staff_id' => null,
@@ -203,10 +220,10 @@ class CustomerController extends Controller
             ]);
 
             // Deduct points
-            DB::table('points_balances')
+            DB::table('customer_merchant')
                 ->where('merchant_id', $rewardProduct->merchant_id)
                 ->where('customer_id', $customer->id)
-                ->decrement('balance', $totalPointsRequired);
+                ->decrement('customer_merchant.points', $totalPointsRequired);
 
             // Decrement stock
             if (!is_null($rewardProduct->stock)) {
@@ -236,24 +253,33 @@ class CustomerController extends Controller
     /**
      * View the global leaderboard.
      */
+    /**
+     * Show the leaderboard page.
+     */
+    public function leaderboardPage(): View
+    {
+        return view("customer.leaderboard");
+    }
+
+
     public function leaderboard(Request $request): JsonResponse
     {
         $limit = min((int) $request->query('limit', 20), 100);
         $merchantId = $request->query('merchant_id');
 
-        $query = DB::table('points_balances')
-            ->join('users', 'points_balances.customer_id', '=', 'users.id')
-            ->where('users.deleted_at', null)
+        $query = DB::table('customer_merchant')
+            ->join('customers', 'customer_merchant.customer_id', '=', 'customers.id')
+            ->whereNull('customers.deleted_at')
             ->select(
-                'users.id',
-                'users.name',
-                'users.tier',
-                DB::raw('SUM(points_balances.balance) as total_points')
+                'customers.id',
+                'customers.name',
+                'customers.tier_global',
+                DB::raw('SUM(customer_merchant.points) as total_points')
             )
-            ->groupBy('users.id', 'users.name', 'users.tier');
+            ->groupBy('customers.id', 'customers.name', 'customers.tier_global');
 
         if ($merchantId) {
-            $query->where('points_balances.merchant_id', $merchantId);
+            $query->where('customer_merchant.merchant_id', $merchantId);
         }
 
         $leaderboard = $query->orderBy('total_points', 'desc')
@@ -268,16 +294,16 @@ class CustomerController extends Controller
 
         // Get customer's own rank
         $customer = $request->user();
-        $customerTotal = DB::table('points_balances')
+        $customerTotal = DB::table('customer_merchant')
             ->where('customer_id', $customer->id)
             ->when($merchantId, function ($query) use ($merchantId) {
                 return $query->where('merchant_id', $merchantId);
             })
-            ->sum('balance');
+            ->sum('points');
 
         $customerRank = DB::table(DB::raw("(
-            SELECT customer_id, SUM(balance) as total
-            FROM points_balances
+            SELECT customer_id, SUM(customer_merchant.points) as total
+            FROM customer_merchant
             " . ($merchantId ? "WHERE merchant_id = {$merchantId}" : "") . "
             GROUP BY customer_id
         ) as ranks"))

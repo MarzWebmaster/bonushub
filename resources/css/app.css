@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* ── Design Tokens ─────────────────────────────────── */
 :root {
@@ -106,7 +106,7 @@
 
     /* Topbar */
     .topbar {
-        @apply fixed top-0 right-0 left-[var(--sidebar-width)] h-[var(--topbar-height)] z-30
+        @apply sticky top-0 z-30 h-[var(--topbar-height)]
                bg-white/80 backdrop-blur-lg border-b border-surface-200
                flex items-center justify-between px-6
                transition-all duration-300 ease-in-out;
@@ -115,7 +115,6 @@
         @apply bg-surface-800/80 border-surface-700;
     }
     .sidebar-collapsed .topbar {
-        @apply left-0;
     }
 
     .topbar-search {
@@ -130,15 +129,18 @@
 
     /* Main Content */
     .main-content {
-        @apply ml-[var(--sidebar-width)] pt-[var(--topbar-height)] min-h-screen
+        @apply ml-[var(--sidebar-width)] min-h-screen flex flex-col
                transition-all duration-300 ease-in-out;
+    }
+    .main-content-wrapper {
+        @apply flex flex-col flex-1;
     }
     .sidebar-collapsed .main-content {
         @apply ml-0;
     }
 
     .page-container {
-        @apply p-6 max-w-7xl mx-auto animate-fade-in;
+        @apply px-6 py-4 max-w-7xl mx-auto animate-fade-in;
     }
 
     /* ── Card System ────────────────────────────────── */
@@ -358,7 +360,7 @@
 
     /* ── Page Headers ──────────────────────────────── */
     .page-header {
-        @apply flex items-center justify-between mb-6;
+        @apply flex items-center justify-between mb-4;
     }
     .page-title {
         @apply text-2xl font-bold text-surface-800;
@@ -493,6 +495,17 @@
     /* Step number styling */
     .step-number {
         @apply w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold shrink-0;
+    }
+
+    /* How It Works tab buttons */
+    .how-tab-btn {
+        @apply text-surface-400;
+    }
+    .how-tab-btn.active-tab {
+        @apply bg-gradient-to-r from-bonus-500 to-purple-600 text-white shadow-lg shadow-bonus-500/25;
+    }
+    .how-tab-btn:hover:not(.active-tab) {
+        @apply text-white bg-white/5;
     }
 
     /* Bent grid gap */

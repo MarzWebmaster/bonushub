@@ -16,7 +16,12 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = auth()->user();
+    if ($user->hasRole('superadmin')) return redirect()->route('superadmin.dashboard');
+    if ($user->hasRole('merchant')) return redirect()->route('merchant.dashboard');
+    if ($user->hasRole('staff')) return redirect()->route('staff.dashboard');
+    if ($user->hasRole('customer')) return redirect()->route('customer.dashboard');
+    return redirect()->route('home');
 })->name('dashboard')->middleware('auth');
 
 // Auth routes
@@ -31,12 +36,18 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/manage/shop', [ShopController::class, 'index'])->name('manage.shop');
 Route::get('/manage/shop/package', [PackageController::class, 'index'])->name('manage.shop.package');
 Route::get('/finance', [FinanceController::class, 'index'])->name('finance');
-Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+Route::middleware('auth')->group(function () {
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
+    Route::post('/settings/password', [SettingsController::class, 'password'])->name('settings.password');
+});
 
 // ========================
 // Staff Routes
 // ========================
 Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     Route::post('/customer-lookup', [StaffController::class, 'customerLookup'])->name('customer.lookup');
     Route::post('/add-points', [StaffController::class, 'addPoints'])->name('add.points');
     Route::post('/redeem', [StaffController::class, 'redeemPoints'])->name('redeem');
@@ -97,6 +108,9 @@ Route::prefix('customer')->name('customer.')->middleware(['auth'])->group(functi
     // Rewards
     Route::get('/rewards', [CustomerController::class, 'availableRewards'])->name('rewards');
     Route::post('/redeem', [CustomerController::class, 'redeemReward'])->name('redeem');
+
+    // Dashboard
+    Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
 
     // Leaderboard
     Route::get('/leaderboard', [CustomerController::class, 'leaderboardPage'])->name('leaderboard');

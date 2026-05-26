@@ -39,7 +39,7 @@
     <div x-show="sidebarOpen" x-cloak class="fixed inset-0 bg-black/50 z-40 lg:hidden" x-on:click="sidebarOpen = false"></div>
 
     {{-- ===== SIDEBAR ===== --}}
-    <aside x-bind:class="sidebarOpen ? 'open' : ''" class="sidebar sidebar-mobile lg:!translate-x-0 lg:!relative flex flex-col">
+    <aside x-bind:class="sidebarOpen ? 'open' : ''" class="sidebar sidebar-mobile lg:!translate-x-0 flex flex-col">
         {{-- Logo --}}
         <div class="sidebar-logo">
             <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-bonus-500 to-purple-600 flex items-center justify-center shadow-lg shadow-bonus-500/30">
@@ -215,8 +215,7 @@
     </aside>
 
     {{-- ===== MAIN CONTENT ===== --}}
-    <div class="main-content flex flex-col min-h-screen">
-        {{-- TOPBAR --}}
+    <div class="main-content">
         <header class="topbar topbar-mobile">
             <div class="flex items-center gap-4">
                 <button x-on:click="sidebarOpen = !sidebarOpen" class="p-2 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors">
@@ -225,12 +224,10 @@
                 <h1 class="text-lg font-semibold text-surface-800 dark:text-white">@yield('title', 'Dashboard')</h1>
             </div>
             <div class="flex items-center gap-3">
-                {{-- Search (quick) --}}
                 <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-100 dark:bg-surface-700 text-surface-400 text-sm w-48">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input type="text" placeholder="Search..." class="bg-transparent border-none outline-none text-sm w-full text-surface-700 dark:text-surface-200 placeholder-surface-400">
                 </div>
-                {{-- User avatar --}}
                 <div class="flex items-center gap-2 text-sm text-surface-700 dark:text-surface-200">
                     <span class="hidden sm:inline font-medium">{{ Auth::user()->name ?? 'User' }}</span>
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-bonus-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
@@ -240,10 +237,8 @@
             </div>
         </header>
 
-        {{-- PAGE CONTENT --}}
-        <main class="flex-1 p-6 overflow-y-auto">
-            {{-- Validation Errors --}}
-            @if ($errors->any())
+        <main class="flex-1 overflow-y-auto">
+            @if (!empty($errors) && $errors->any())
                 <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-5 py-4 rounded-xl animate-fade-in">
                     <div class="flex items-center gap-2 mb-2">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -260,7 +255,6 @@
             @yield('content')
         </main>
 
-        {{-- FOOTER --}}
         <footer class="px-6 py-3 border-t border-surface-200 dark:border-surface-700 text-center text-xs text-surface-400">
             &copy; {{ date('Y') }} BonusHub Loyalty System by <a href="https://marztechnology.com.my" target="_blank" class="text-bonus-500 hover:text-bonus-600 font-medium">Marz Technology</a>
         </footer>

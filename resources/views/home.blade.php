@@ -1,810 +1,563 @@
-@extends('layouts.guest')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BonusHub — Rewards & Loyalty Platform Malaysia</title>
+    <meta name="description" content="BonusHub helps businesses build customer loyalty with points, tiers, and rewards. Malaysia's #1 loyalty rewards platform." />
 
-@section('title', 'Sistem Loyalty, Giveaway & Viral Loop Marketing Percuma')
-@section('meta_description', 'BonusHub platform loyalty dengan Viral Loop System & Giveaway. Daftar PERCUMA sebagai Merchant atau Pengguna. Tingkatkan jualan, kumpul mata, menang hadiah — semua dalam satu sistem.')
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-@section('content')
+    <!-- Vite Assets -->
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+        <style>
+            {{-- Fallback only -- will use inline Tailwind via CDN or compiled --}}
+            body { font-family: 'Inter', sans-serif; }
+        </style>
+    @endif
+</head>
+<body class="bg-surface-950 text-white antialiased">
 
-{{-- ═══════════════════════════════════════════════════════════════════════
-     LIVE FEED NOTIFICATIONS (Social Proof)
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<div id="live-feed-container" class="live-feed-wrapper"></div>
-
-<script>
-    const liveMessages = [
-        { name: 'Ali', action: 'just won a Giveaway! 🎉', type: 'giveaway' },
-        { name: 'Sarah', action: 'earned 250 points at Kedai Kopi ☕', type: 'points' },
-        { name: 'Restoran Murni', action: 'gained 12 new members today 📈', type: 'merchant' },
-        { name: 'Aiman', action: 'referred 5 friends this week! 🔥', type: 'referral' },
-        { name: 'Maya', action: 'redeemed RM50 reward 🎁', type: 'reward' },
-        { name: 'Kedai Buku Ilmu', action: 'just launched a Giveaway campaign 🚀', type: 'campaign' },
-    ];
-    let liveIndex = 0;
-
-    function showLiveFeed() {
-        const container = document.getElementById('live-feed-container');
-        if (!container) return;
-        const msg = liveMessages[liveIndex % liveMessages.length];
-        liveIndex++;
-
-        const colors = {
-            giveaway: 'from-purple-600/90 to-purple-800/90 border-purple-500/30',
-            points: 'from-emerald-600/90 to-emerald-800/90 border-emerald-500/30',
-            merchant: 'from-bonus-600/90 to-bonus-800/90 border-bonus-500/30',
-            referral: 'from-amber-600/90 to-amber-800/90 border-amber-500/30',
-            reward: 'from-rose-600/90 to-rose-800/90 border-rose-500/30',
-            campaign: 'from-sky-600/90 to-sky-800/90 border-sky-500/30',
-        };
-        const colorClass = colors[msg.type] || colors.giveaway;
-
-        const toast = document.createElement('div');
-        toast.className = `live-feed-toast bg-gradient-to-r ${colorClass} border text-white text-sm backdrop-blur-xl shadow-2xl`;
-        toast.style.animation = 'liveIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-        toast.innerHTML = `
-            <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shrink-0"></span>
-            <span><strong>${msg.name}</strong> ${msg.action}</span>
-        `;
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.style.animation = 'liveOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
-    }
-
-    setInterval(showLiveFeed, 8000);
-    setTimeout(showLiveFeed, 2000);
-</script>
-
-{{-- ═══════════════════════════════════════════════════════════════════════
-     1. HERO SECTION
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<section class="relative overflow-hidden bg-gradient-to-br from-gray-950 via-bonus-950 to-gray-950 min-h-[90vh] flex items-center">
-    <div class="absolute inset-0 bg-grid-white opacity-[0.03]"></div>
-    <div class="absolute inset-0">
-        <div class="absolute -top-40 -right-40 w-[500px] h-[500px] bg-bonus-500/10 rounded-full blur-[120px]"></div>
-        <div class="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]"></div>
-        <div class="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-[100px]"></div>
+    {{-- ─── FLOATING GRADIENT ORBS ─── --}}
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div class="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-bonus-500/20 via-purple-600/15 to-transparent blur-3xl animate-float"></div>
+        <div class="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-amber-500/10 via-pink-600/10 to-transparent blur-3xl animate-float-slow"></div>
+        <div class="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full bg-gradient-to-r from-cyan-500/5 via-bonus-400/10 to-transparent blur-3xl animate-float-delayed"></div>
+        <div class="absolute top-1/2 right-1/4 w-[350px] h-[350px] rounded-full bg-gradient-to-l from-purple-600/10 via-bonus-500/8 to-transparent blur-3xl animate-drift"></div>
     </div>
 
-    {{-- Floating Badges --}}
-    <div class="floating-badge top-20 left-[8%] hidden lg:block" style="animation: float 6s ease-in-out infinite">🚀</div>
-    <div class="floating-badge top-40 right-[12%] hidden lg:block" style="animation: float 8s ease-in-out 1s infinite">🎁</div>
-    <div class="floating-badge bottom-32 left-[15%] hidden lg:block" style="animation: float 7s ease-in-out 2s infinite">🔥</div>
-    <div class="floating-badge bottom-48 right-[8%] hidden lg:block" style="animation: float 9s ease-in-out 0.5s infinite">💎</div>
-    <div class="floating-badge top-1/2 right-[5%] hidden xl:block" style="animation: breathing 3s ease-in-out infinite">⭐</div>
+    {{-- ─── GRID OVERLAY ─── --}}
+    <div class="fixed inset-0 pointer-events-none bg-grid-dark opacity-40 -z-10"></div>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-36 relative z-10">
-        <div class="max-w-4xl mx-auto text-center">
-
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-bonus-400/10 border border-bonus-400/20 rounded-full text-bonus-200 text-xs font-semibold uppercase tracking-wider mb-6 animate-fade-in">
-                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                Kini Dilancarkan — Daftar PERCUMA
-            </div>
-
-            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] tracking-tight mb-6 animate-fade-in">
-                Platform Loyalty, Giveaway &amp;<br>
-                <span class="bg-gradient-to-r from-bonus-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">Viral Loop #1 Malaysia</span>
-            </h1>
-
-            <p class="text-lg sm:text-xl md:text-2xl text-surface-300 max-w-3xl mx-auto leading-relaxed mb-4 animate-fade-in">
-                Satu platform untuk <strong class="text-white">Merchant</strong> dan <strong class="text-white">Pengguna</strong>.
-            </p>
-
-            <p class="text-base sm:text-lg text-surface-400 max-w-2xl mx-auto leading-relaxed mb-10 animate-fade-in">
-                Daftar <strong class="text-emerald-400">100% PERCUMA</strong> — dapatkan akses kepada <strong class="text-white">Sistem Loyalty Points</strong>, <strong class="text-white">Cabutan Giveaway</strong>, dan <strong class="text-white">Viral Loop Marketing</strong> yang berfungsi secara automatik untuk anda.
-            </p>
-
-            <div class="flex flex-col sm:flex-row justify-center gap-4 animate-slide-up">
-                <a href="{{ url('/login') }}"
-                   class="group px-8 py-4 bg-gradient-to-r from-bonus-500 to-purple-600 text-white text-base font-bold rounded-2xl hover:from-bonus-600 hover:to-purple-700 transition-all shadow-2xl shadow-bonus-500/30 hover:shadow-bonus-500/50 flex items-center justify-center gap-2 glow-bonus">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Daftar Percuma Sebagai Merchant
-                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+    {{-- ─── NAVBAR ─── --}}
+    <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-white/[0.06] bg-surface-950/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                {{-- Logo --}}
+                <a href="/" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-bonus-400 to-purple-600 flex items-center justify-center shadow-lg shadow-bonus-500/25">
+                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight">
+                        <span class="bg-gradient-to-r from-bonus-300 to-purple-400 bg-clip-text text-transparent">Bonus</span>
+                        <span class="text-white">Hub</span>
+                    </span>
                 </a>
-                <a href="{{ url('/login') }}"
-                   class="group px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/10 text-white text-base font-bold rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    Sertai Sebagai Pengguna — Mula Menang!
-                </a>
-            </div>
 
-            <div class="mt-10 flex flex-wrap justify-center gap-6 text-sm text-surface-400 animate-fade-in">
-                <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Percuma Seumur Hidup</span>
-                <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Tiada Kadar Tersembunyi</span>
-                <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Ganjaran & Hadiah Menarik</span>
+                {{-- Nav Links --}}
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-sm font-medium text-surface-300 hover:text-white transition-colors">Features</a>
+                    <a href="#how-it-works" class="text-sm font-medium text-surface-300 hover:text-white transition-colors">How It Works</a>
+                    @if (Route::has('login'))
+                        @auth
+                            <a href="{{ url('/dashboard') }}" class="text-sm font-medium text-surface-300 hover:text-white transition-colors">Dashboard</a>
+                        @else
+                            <a href="{{ route('login') }}" class="text-sm font-medium text-surface-300 hover:text-white transition-colors">Login</a>
+                        @endauth
+                    @endif
+                </div>
+
+                {{-- CTA Button --}}
+                @if (Route::has('register'))
+                    @guest
+                        <a href="{{ Route::has('register') ? route('register') : route('login') }}"
+                           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
+                                  bg-gradient-to-r from-bonus-500 to-purple-600
+                                  hover:from-bonus-400 hover:to-purple-500
+                                  shadow-lg shadow-bonus-500/25 hover:shadow-bonus-500/40
+                                  transition-all duration-300 hover:-translate-y-0.5">
+                            Get Started Free
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </a>
+                    @endguest
+                @endif
+
+                {{-- Mobile menu button --}}
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-surface-400 hover:text-white hover:bg-white/10 transition-colors"
+                        onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
         </div>
-    </div>
-</section>
 
-
-{{-- ═══════════════════════════════════════════════════════════════════════
-     STATS BAR (Social Proof - Animated Counters)
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<section class="relative overflow-hidden bg-gray-950 border-y border-white/5">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-5xl mx-auto">
-            <div class="text-center counter-item">
-                <p class="text-3xl sm:text-4xl font-bold text-white counter-number" data-target="12847">0</p>
-                <p class="text-xs sm:text-sm text-surface-400 mt-1">Pengguna Aktif</p>
-            </div>
-            <div class="text-center counter-item">
-                <p class="text-3xl sm:text-4xl font-bold text-emerald-400 counter-number" data-target="3291">0</p>
-                <p class="text-xs sm:text-sm text-surface-400 mt-1">Giveaway Dimenangi</p>
-            </div>
-            <div class="text-center counter-item">
-                <p class="text-3xl sm:text-4xl font-bold text-purple-400 counter-number" data-target="486">0</p>
-                <p class="text-xs sm:text-sm text-surface-400 mt-1">Rakan Merchant</p>
-            </div>
-            <div class="text-center counter-item">
-                <p class="text-3xl sm:text-4xl font-bold text-bonus-400 counter-number" data-target="123456">RM 0</p>
-                <p class="text-xs sm:text-sm text-surface-400 mt-1">Ganjaran Ditebus</p>
+        {{-- Mobile Menu --}}
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/[0.06] bg-surface-900/95 backdrop-blur-xl">
+            <div class="px-4 py-4 space-y-3">
+                <a href="#features" class="block px-3 py-2 rounded-lg text-sm text-surface-300 hover:text-white hover:bg-white/5 transition-colors">Features</a>
+                <a href="#how-it-works" class="block px-3 py-2 rounded-lg text-sm text-surface-300 hover:text-white hover:bg-white/5 transition-colors">How It Works</a>
+                @if (Route::has('login'))
+                    @auth
+                        <a href="{{ url('/dashboard') }}" class="block px-3 py-2 rounded-lg text-sm text-surface-300 hover:text-white hover:bg-white/5 transition-colors">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="block px-3 py-2 rounded-lg text-sm text-surface-300 hover:text-white hover:bg-white/5 transition-colors">Login</a>
+                    @endauth
+                @endif
             </div>
         </div>
-    </div>
-</section>
+    </nav>
 
+    {{-- ─── HERO SECTION ─── --}}
+    <section class="relative min-h-screen flex items-center pt-20 pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
 
-{{-- ═══════════════════════════════════════════════════════════════════════
-     2. FEATURES OVERVIEW — BENTO GRID
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<section id="ciri" class="py-16 md:py-24 relative overflow-hidden bg-gradient-to-b from-gray-950 via-bonus-950/50 to-gray-950">
-    <div class="absolute inset-0 bg-grid-white opacity-[0.02]"></div>
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-bonus-500/5 rounded-full blur-[150px]"></div>
+                {{-- Left: Hero Content --}}
+                <div class="relative z-10">
+                    {{-- Pill badge --}}
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider
+                                bg-bonus-500/10 border border-bonus-500/20 text-bonus-300 mb-8 animate-fade-in">
+                        <span class="w-2 h-2 rounded-full bg-bonus-400 animate-pulse-slow"></span>
+                        Malaysia's #1 Loyalty Platform
+                    </div>
 
-    {{-- Floating Badges --}}
-    <div class="floating-badge top-20 left-[5%] hidden lg:block" style="animation: float 7s ease-in-out 0.3s infinite">✨</div>
-    <div class="floating-badge bottom-20 right-[8%] hidden lg:block" style="animation: float 8s ease-in-out 1.5s infinite">💫</div>
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-none tracking-tight animate-slide-up">
+                        <span class="text-white">Turn Every</span><br>
+                        <span class="bg-gradient-to-r from-bonus-300 via-purple-300 to-amber-300 bg-clip-text text-transparent">Customer Into</span><br>
+                        <span class="text-white">A Loyal Fan</span>
+                    </h1>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center max-w-3xl mx-auto mb-14">
-            <span class="text-emerald-400 font-semibold text-sm uppercase tracking-wider">Tiga Teras Utama</span>
-            <h2 class="text-3xl sm:text-4xl font-bold text-white mt-3 mb-4">Semua Yang Anda Perlukan Dalam Satu Platform</h2>
-            <p class="text-lg text-surface-400">Gabungan sistem loyalty, cabutan bertuah, dan viral loop yang direka untuk memaksimumkan pertumbuhan perniagaan dan ganjaran pengguna.</p>
+                    <p class="mt-8 text-lg sm:text-xl text-surface-400 leading-relaxed max-w-xl animate-slide-up" style="animation-delay: 0.1s;">
+                        Reward your customers with points, tiers, and exclusive perks.
+                        BonusHub makes loyalty simple — no code, no hassle, just happy customers coming back for more.
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 mt-10 animate-slide-up" style="animation-delay: 0.2s;">
+                        <a href="{{ Route::has('register') ? route('register') : route('login') }}"
+                           class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold text-white
+                                  bg-gradient-to-r from-bonus-500 to-purple-600
+                                  hover:from-bonus-400 hover:to-purple-500
+                                  shadow-xl shadow-bonus-500/25 hover:shadow-bonus-500/40
+                                  transition-all duration-300 hover:-translate-y-1">
+                            Start Free Trial
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </a>
+                        <a href="#how-it-works"
+                           class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-medium text-surface-300
+                                  border border-white/10 hover:border-white/20 hover:text-white
+                                  bg-white/5 hover:bg-white/10
+                                  transition-all duration-300">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            See How It Works
+                        </a>
+                    </div>
+
+                    {{-- Trust indicators --}}
+                    <div class="flex flex-wrap items-center gap-6 mt-12 pt-8 border-t border-white/[0.06] animate-fade-in" style="animation-delay: 0.3s;">
+                        <div class="flex -space-x-2">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-surface-950">A</div>
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-bonus-400 to-purple-600 flex items-center justify-center text-xs font-bold text-white ring-2 ring-surface-950">M</div>
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-surface-950">S</div>
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-xs font-bold text-white ring-2 ring-surface-950">K</div>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1">
+                                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                            </div>
+                            <p class="text-xs text-surface-500 mt-0.5">Trusted by 500+ businesses across Malaysia</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Right: Hero Visual --}}
+                <div class="hidden lg:flex relative items-center justify-center">
+                    <div class="relative w-full max-w-[480px]">
+                        {{-- Main glass card mockup --}}
+                        <div class="glass-card p-8 animate-tilt-in">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-bonus-400 to-purple-600 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                                        </svg>
+                                    </div>
+                                    <span class="text-sm font-semibold text-white">Dashboard</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-slow"></span>
+                                    <span class="text-xs text-surface-400">Live</span>
+                                </div>
+                            </div>
+
+                            {{-- Stats row --}}
+                            <div class="grid grid-cols-3 gap-3 mb-6">
+                                <div class="bg-white/5 rounded-xl p-3 text-center">
+                                    <p class="text-2xl font-black text-bonus-300">1.2k</p>
+                                    <p class="text-[10px] text-surface-400 mt-0.5">Members</p>
+                                </div>
+                                <div class="bg-white/5 rounded-xl p-3 text-center">
+                                    <p class="text-2xl font-black text-amber-300">8.5k</p>
+                                    <p class="text-[10px] text-surface-400 mt-0.5">Points Earned</p>
+                                </div>
+                                <div class="bg-white/5 rounded-xl p-3 text-center">
+                                    <p class="text-2xl font-black text-emerald-300">156</p>
+                                    <p class="text-[10px] text-surface-400 mt-0.5">Rewards</p>
+                                </div>
+                            </div>
+
+                            {{-- Recent activity list --}}
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-xs font-bold text-white">AK</div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-white truncate">Ahmad Kasim</p>
+                                        <p class="text-xs text-emerald-400">+250 points — Gold Tier</p>
+                                    </div>
+                                    <span class="text-xs text-surface-500">2m ago</span>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-bonus-400 to-purple-600 flex items-center justify-center text-xs font-bold text-white">SN</div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-white truncate">Siti Nurhaliza</p>
+                                        <p class="text-xs text-bonus-300">+100 points — Silver Tier</p>
+                                    </div>
+                                    <span class="text-xs text-surface-500">5m ago</span>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-xs font-bold text-white">RF</div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-white truncate">Reward claimed</p>
+                                        <p class="text-xs text-amber-300">RM50 Voucher — Premium</p>
+                                    </div>
+                                    <span class="text-xs text-surface-500">8m ago</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Floating badges --}}
+                        <div class="floating-badge -top-4 -right-4 animate-float">
+                            <div class="bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl px-4 py-2 shadow-xl shadow-amber-500/20">
+                                <p class="text-xs font-bold text-white">🎯 5x Points</p>
+                            </div>
+                        </div>
+                        <div class="floating-badge -bottom-4 -left-4 animate-float-slow">
+                            <div class="bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl px-4 py-2 shadow-xl shadow-emerald-500/20">
+                                <p class="text-xs font-bold text-white">🏆 Platinum Tier</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
-        {{-- Bento Grid Layout --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-
-            {{-- Loyalty Points — Featured (col-span-2) --}}
-            <div class="lg:col-span-2 group card-gradient rounded-2xl p-8 lg:p-10 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-bonus-500/15 to-transparent rounded-full blur-2xl"></div>
-                <div class="flex items-start gap-6">
-                    <div class="w-16 h-16 min-w-[64px] rounded-2xl bg-gradient-to-br from-bonus-500 to-purple-600 flex items-center justify-center shrink-0 shadow-lg shadow-bonus-500/30 group-hover:scale-110 transition-transform duration-500" style="animation: glowPulse 3s ease-in-out infinite">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h3 class="text-xl font-bold text-white mb-3">Sistem Loyalty Points</h3>
-                        <p class="text-surface-300 leading-relaxed max-w-xl text-base">Pengguna mengumpul mata setiap kali membuat pembelian di kedai-kedai yang berdaftar. Mata ini boleh ditebus untuk pelbagai ganjaran menarik — semuanya diurus secara automatik oleh platform.</p>
-                    </div>
-                </div>
-                <div class="mt-6 flex flex-wrap items-center gap-4 text-sm text-surface-400">
-                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Auto-kredit points</span>
-                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Real-time balance</span>
-                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Multi-merchant</span>
-                </div>
+    {{-- ─── FEATURES SECTION ─── --}}
+    <section id="features" class="relative py-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider
+                            bg-bonus-500/10 border border-bonus-500/20 text-bonus-300 mb-4">Features</span>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
+                    Everything You Need to<br>
+                    <span class="bg-gradient-to-r from-bonus-300 to-purple-300 bg-clip-text text-transparent">Build Customer Loyalty</span>
+                </h2>
+                <p class="mt-4 text-surface-400 text-lg max-w-2xl mx-auto">
+                    From points to tiers to rewards — BonusHub gives you the tools to create a loyalty program your customers will love.
+                </p>
             </div>
 
-            {{-- Giveaway — Compact (col-span-1) --}}
-            <div class="lg:col-span-1 group card-gradient rounded-2xl p-8 relative overflow-hidden flex flex-col">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gold-500/15 to-transparent rounded-full blur-2xl"></div>
-                <div class="w-14 h-14 min-w-[56px] rounded-2xl bg-gradient-to-br from-gold-500 to-amber-600 flex items-center justify-center mb-5 shadow-lg shadow-gold-500/30 group-hover:scale-110 transition-transform duration-500">
-                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {{-- Feature 1 --}}
+                <div class="glass-card group p-6 hover:bg-white/[0.08] transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-bonus-400 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-bonus-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Points Rewards</h3>
+                    <p class="text-sm text-surface-400 leading-relaxed">Set your own earn rates. Customers earn points with every purchase — automatically.</p>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-3">Cabutan Giveaway</h3>
-                <p class="text-surface-300 leading-relaxed text-base flex-1">Setiap pembelian atau perkongsian layak menyertai cabutan bertuah! Merchant boleh mencipta kempen giveaway untuk menarik pelanggan baru, manakala pengguna berpeluang memenangi hadiah-hadiah hebat.</p>
-                <div class="mt-4 inline-flex items-center gap-1.5 text-sm text-gold-400">
-                    <span>🔥</span> Hadiah bernilai tinggi menanti
+
+                {{-- Feature 2 --}}
+                <div class="glass-card group p-6 hover:bg-white/[0.08] transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-5 shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.77.896m0 0a6.023 6.023 0 01-2.77-.896" /></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Loyalty Tiers</h3>
+                    <p class="text-sm text-surface-400 leading-relaxed">Silver, Gold, Platinum — create custom tiers with escalating perks to keep customers engaged.</p>
+                </div>
+
+                {{-- Feature 3 --}}
+                <div class="glass-card group p-6 hover:bg-white/[0.08] transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center mb-5 shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Rewards Catalogue</h3>
+                    <p class="text-sm text-surface-400 leading-relaxed">Vouchers, physical items, digital downloads — let customers redeem points for what they love.</p>
+                </div>
+
+                {{-- Feature 4 --}}
+                <div class="glass-card group p-6 hover:bg-white/[0.08] transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center mb-5 shadow-lg shadow-cyan-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" /></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Smart Analytics</h3>
+                    <p class="text-sm text-surface-400 leading-relaxed">Track customer behaviour, redemption patterns, and campaign ROI with real-time dashboards.</p>
+                </div>
+
+                {{-- Feature 5 --}}
+                <div class="glass-card group p-6 hover:bg-white/[0.08] transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center mb-5 shadow-lg shadow-pink-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Secure & Reliable</h3>
+                    <p class="text-sm text-surface-400 leading-relaxed">Enterprise-grade security with encrypted data, fraud detection, and automatic backups.</p>
+                </div>
+
+                {{-- Feature 6 --}}
+                <div class="glass-card group p-6 hover:bg-white/[0.08] transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.75 12.75M6 12l-2.25 3M6 12l3-1.5m0 0l2.25-4.5m-2.25 4.5l3 3m3 0l2.25 3m-2.25-3l2.25-4.5m-2.25 4.5l1.5 1.5m4.5-7.5L18 12l-1.5 4.5M12 6l1.5-3M12 6l-1.5-3M6 12l6 6m0-12l6-6" /></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">POS Integration</h3>
+                    <p class="text-sm text-surface-400 leading-relaxed">Seamlessly connects with your existing POS system. No hardware changes needed.</p>
                 </div>
             </div>
-
-            {{-- Viral Loop System — Full Width (col-span-3) --}}
-            <div class="lg:col-span-3 group card-gradient rounded-2xl p-8 lg:p-10 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-60 h-60 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full blur-3xl"></div>
-                <div class="flex flex-col lg:flex-row items-start lg:items-center gap-6 lg:gap-10">
-                    <div class="w-16 h-16 min-w-[64px] rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-500" style="animation: glowPulse 3s ease-in-out infinite">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h3 class="text-xl font-bold text-white mb-3">Viral Loop System</h3>
-                        <p class="text-surface-300 leading-relaxed max-w-3xl text-base">Sistem rujukan berantai paling pintar. Apabila pelanggan merujuk rakan, kedua-duanya mendapat mata bonus. Rakan yang dirujuk pula akan merujuk rakan yang lain — mencipta kesan viral yang meledakkan pertumbuhan perniagaan anda secara automatik.</p>
-                    </div>
-                    <div class="hidden lg:flex flex-col items-center gap-2 px-6 py-4 dark-card rounded-xl border border-emerald-500/20 shrink-0 bg-gray-900/80 shadow-lg">
-                        <span class="text-3xl">📈</span>
-                        <span class="text-sm text-emerald-400 font-semibold">Viral Loop</span>
-                        <span class="text-2xl font-bold text-white">3.2x</span>
-                        <span class="text-xs text-surface-400">purata rujukan</span>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </div>
-</section>
+    </section>
 
-
-{{-- ═══════════════════════════════════════════════════════════════════════
-     3. BENEFITS TO CUSTOMER
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<section class="py-16 md:py-24 relative overflow-hidden bg-gradient-to-br from-gray-950 via-emerald-950/20 to-gray-950">
-    <div class="absolute inset-0 bg-grid-white opacity-[0.02]"></div>
-    <div class="absolute top-20 left-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[120px]"></div>
-
-    <div class="floating-badge top-32 right-[10%] hidden lg:block" style="animation: float 8s ease-in-out 1s infinite">🎯</div>
-    <div class="floating-badge bottom-20 left-[8%] hidden lg:block" style="animation: float 7s ease-in-out 2.5s infinite">🏆</div>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
-
-            <div>
-                <span class="text-emerald-400 font-semibold text-sm uppercase tracking-wider">Untuk Pengguna</span>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mt-3 mb-6">Dapatkan Ganjaran Setiap Kali Anda Membeli!</h2>
-                <p class="text-lg text-surface-400 mb-8">Sebagai pengguna, anda boleh menikmati pelbagai manfaat tanpa perlu mengeluarkan sebarang kos.</p>
-
-                <div class="space-y-6">
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Pendaftaran 100% PERCUMA Seumur Hidup</h3>
-                            <p class="text-base text-surface-400 mt-1">Tiada yuran pendaftaran, tiada caj bulanan. Daftar sekali, nikmati selamanya.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Bebas Memilih Mana-Mana Kedai</h3>
-                            <p class="text-base text-surface-400 mt-1">Anda bebas menyertai dan mengumpul mata di semua Merchant yang berdaftar dalam sistem BonusHub.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Peluang Menang Hadiah Besar</h3>
-                            <p class="text-base text-surface-400 mt-1">Setiap pembelian atau perkongsian memberi anda tiket ke cabutan giveaway. Lebih banyak anda berinteraksi, lebih tinggi peluang anda menang!</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Ganjaran Mudah Ditebus</h3>
-                            <p class="text-base text-surface-400 mt-1">Tukarkan mata ganjaran anda dengan mudah melalui platform. Proses tebusan cepat, telus, dan tanpa kerumitan.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <a href="{{ url('/login') }}" class="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/25 glow-emerald">
-                    Mula Dapatkan Ganjaran
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                </a>
+    {{-- ─── HOW IT WORKS ─── --}}
+    <section id="how-it-works" class="relative py-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider
+                            bg-bonus-500/10 border border-bonus-500/20 text-bonus-300 mb-4">How It Works</span>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
+                    Built for<br>
+                    <span class="bg-gradient-to-r from-bonus-300 to-purple-300 bg-clip-text text-transparent">Merchants & Customers</span>
+                </h2>
+                <p class="mt-4 text-surface-400 text-lg max-w-2xl mx-auto">
+                    Whether you're a business owner or a shopper — BonusHub makes loyalty rewarding for everyone.
+                </p>
             </div>
 
-            <div class="relative">
-                <div class="absolute -inset-4 bg-gradient-to-br from-emerald-500/10 to-purple-600/10 rounded-3xl blur-xl"></div>
-                <div class="relative card-dark rounded-3xl p-8 lg:p-10 overflow-hidden" style="transform: perspective(1000px) rotateY(-2deg);">
-                    <div class="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl"></div>
-                    <div class="text-center mb-6">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-semibold rounded-full border border-emerald-500/20 mb-4">Pelbagai Ganjaran Menanti</div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="card-dark rounded-2xl p-5 text-center hover:bg-gray-700/80 transition-colors">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400 to-amber-500 flex items-center justify-center mx-auto mb-3 shadow-lg" style="animation: glowPulse 3s ease-in-out infinite">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                </div>
-                                <p class="text-2xl font-bold text-white">Mata Points</p>
-                                <p class="text-xs text-surface-400">Kumpul & tebus</p>
-                            </div>
-                            <div class="card-dark rounded-2xl p-5 text-center hover:bg-gray-700/80 transition-colors">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-bonus-400 to-purple-500 flex items-center justify-center mx-auto mb-3 shadow-lg" style="animation: glowPulse 3s ease-in-out 0.5s infinite">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                                </div>
-                                <p class="text-2xl font-bold text-white">Giveaway</p>
-                                <p class="text-sm text-surface-400">Cabutan hadiah</p>
-                            </div>
-                            <div class="card-dark rounded-2xl p-5 text-center hover:bg-gray-700/80 transition-colors">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mx-auto mb-3 shadow-lg" style="animation: glowPulse 3s ease-in-out 1s infinite">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                                </div>
-                                <p class="text-2xl font-bold text-white">Bonus Rujukan</p>
-                                <p class="text-sm text-surface-400">Bawa rakan & menang</p>
-                            </div>
-                            <div class="card-dark rounded-2xl p-5 text-center hover:bg-gray-700/80 transition-colors">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center mx-auto mb-3 shadow-lg" style="animation: glowPulse 3s ease-in-out 1.5s infinite">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
-                                </div>
-                                <p class="text-2xl font-bold text-white">Reward</p>
-                                <p class="text-sm text-surface-400">Tebus sekarang</p>
-                            </div>
-                        </div>
-                    </div>
+            {{-- Tab Buttons --}}
+            <div class="flex justify-center mb-12">
+                <div class="inline-flex rounded-2xl bg-white/[0.04] border border-white/[0.08] p-1.5" id="how-tabs">
+                    <button onclick="switchHowTab('merchant')"
+                            class="how-tab-btn px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 active-tab"
+                            data-tab="merchant">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" /></svg>
+                            For Merchants
+                        </span>
+                    </button>
+                    <button onclick="switchHowTab('customer')"
+                            class="how-tab-btn px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300"
+                            data-tab="customer">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                            For Customers
+                        </span>
+                    </button>
                 </div>
             </div>
-
-        </div>
-    </div>
-</section>
-
-
-{{-- ═══════════════════════════════════════════════════════════════════════
-     4. BENEFITS TO MERCHANT
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<section class="py-16 md:py-24 relative overflow-hidden bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950">
-    <div class="absolute inset-0 bg-grid-white opacity-[0.02]"></div>
-    <div class="absolute top-20 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-[120px]"></div>
-
-    <div class="floating-badge top-32 left-[8%] hidden lg:block" style="animation: float 9s ease-in-out 0.5s infinite">💼</div>
-    <div class="floating-badge bottom-20 right-[12%] hidden lg:block" style="animation: float 7s ease-in-out 2s infinite">📊</div>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
-
-            <div class="relative order-2 lg:order-1">
-                <div class="absolute -inset-4 bg-gradient-to-br from-bonus-500/10 to-purple-600/10 rounded-3xl blur-xl"></div>
-                <div class="relative card-dark rounded-3xl p-8 lg:p-10 overflow-hidden" style="transform: perspective(1000px) rotateY(2deg);">
-                    <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-500/15 rounded-full blur-3xl"></div>
-                    <div class="text-center mb-6">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-bonus-500/15 text-bonus-400 text-sm font-semibold rounded-full border border-bonus-500/20 mb-4">Tool Lengkap Untuk Merchant</div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="card-dark rounded-2xl p-5 text-center hover:bg-gray-700/80 transition-colors">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-bonus-400 to-purple-500 flex items-center justify-center mx-auto mb-3 shadow-lg" style="animation: glowPulse 3s ease-in-out infinite">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                </div>
-                                <p class="text-2xl font-bold text-white">Analitik</p>
-                                <p class="text-sm text-surface-400">Dashboard real-time</p>
-                            </div>
-                            <div class="card-dark rounded-2xl p-5 text-center hover:bg-gray-700/80 transition-colors">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mx-auto mb-3 shadow-lg" style="animation: glowPulse 3s ease-in-out 0.5s infinite">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                </div>
-                                <p class="text-2xl font-bold text-white">Unlimited</p>
-                                <p class="text-sm text-surface-400">Pelanggan</p>
-                            </div>
-                            <div class="card-dark rounded-2xl p-5 text-center hover:bg-gray-700/80 transition-colors">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400 to-amber-500 flex items-center justify-center mx-auto mb-3 shadow-lg" style="animation: glowPulse 3s ease-in-out 1s infinite">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                                </div>
-                                <p class="text-2xl font-bold text-white">Viral Loop</p>
-                                <p class="text-sm text-surface-400">Auto referral</p>
-                            </div>
-                            <div class="card-dark rounded-2xl p-5 text-center hover:bg-gray-700/80 transition-colors">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center mx-auto mb-3 shadow-lg" style="animation: glowPulse 3s ease-in-out 1.5s infinite">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                                </div>
-                                <p class="text-2xl font-bold text-white">Giveaway</p>
-                                <p class="text-sm text-surface-400">Kempen jualan</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="order-1 lg:order-2">
-                <span class="text-purple-400 font-semibold text-sm uppercase tracking-wider">Untuk Merchant</span>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mt-3 mb-6">Kembangkan Perniagaan Anda Secara Viral & Automatik!</h2>
-                <p class="text-lg text-surface-400 mb-8">Tool lengkap untuk membina kesetiaan pelanggan dan meledakkan jualan tanpa perlu keluar modal besar.</p>
-
-                <div class="space-y-6">
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-purple-500/15 flex items-center justify-center shrink-0 border border-purple-500/20">
-                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Pendaftaran PERCUMA Selamanya</h3>
-                            <p class="text-base text-surface-400 mt-1">Akaun asas percuma tanpa had masa. Nikmati semua ciri teras tanpa dikenakan sebarang yuran.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-purple-500/15 flex items-center justify-center shrink-0 border border-purple-500/20">
-                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Tiada Had Pelanggan (Unlimited)</h3>
-                            <p class="text-base text-surface-400 mt-1">Daftarkan seramai mungkin pelanggan tanpa had. Semakin ramai, semakin kuat ekosistem loyalty anda.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-purple-500/15 flex items-center justify-center shrink-0 border border-purple-500/20">
-                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Viral Loop System Automatik</h3>
-                            <p class="text-base text-surface-400 mt-1">Pelanggan sedia ada menjadi ejen pemasaran anda. Sistem referral pintar memberi insentif kepada mereka untuk membawa pelanggan baru secara berantai.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-purple-500/15 flex items-center justify-center shrink-0 border border-purple-500/20">
-                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Dashboard Analitik Lengkap</h3>
-                            <p class="text-base text-surface-400 mt-1">Pantau data pelanggan, retention rate, jumlah mata diedar, dan pulangan pelaburan (ROI) program loyalty anda dalam masa nyata.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-5">
-                        <div class="w-12 h-12 min-w-[48px] rounded-xl bg-purple-500/15 flex items-center justify-center shrink-0 border border-purple-500/20">
-                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-white">Kempen Giveaway Mudah</h3>
-                            <p class="text-base text-surface-400 mt-1">Cipta dan lancarkan kempen cabutan bertuah dalam beberapa klik. Giveaway adalah cara paling berkesan untuk melonjakkan jualan dan menarik pelanggan baru.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <a href="{{ url('/login') }}" class="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all shadow-lg shadow-purple-500/25 glow-purple">
-                    Daftar Kedai Anda Sekarang
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                </a>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-
-{{-- ═══════════════════════════════════════════════════════════════════════
-     5. HOW IT WORKS
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<section id="cara-kerja" class="py-16 md:py-24 relative overflow-hidden bg-gradient-to-br from-gray-950 via-bonus-950/30 to-gray-950">
-    <div class="absolute inset-0 bg-grid-white opacity-[0.02]"></div>
-    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-bonus-500/5 rounded-full blur-[120px]"></div>
-
-    <div class="floating-badge top-16 right-[12%] hidden lg:block" style="animation: float 8s ease-in-out 1.2s infinite">📋</div>
-    <div class="floating-badge bottom-24 left-[6%] hidden lg:block" style="animation: float 7s ease-in-out 0.8s infinite">✅</div>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center max-w-3xl mx-auto mb-14">
-            <span class="text-bonus-400 font-semibold text-sm uppercase tracking-wider">Cara Ia Berfungsi</span>
-            <h2 class="text-3xl sm:text-4xl font-bold text-white mt-3 mb-4">Mulakan Hanya Dalam 3 Langkah Mudah</h2>
-            <p class="text-lg text-surface-400">Proses yang ringkas dan pantas untuk kedua-dua Merchant dan Pengguna.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
 
             {{-- Merchant Steps --}}
-            <div class="card-dark rounded-2xl p-8 lg:p-10 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-bonus-500/10 rounded-full blur-2xl"></div>
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 min-w-[48px] rounded-xl bg-gradient-to-br from-bonus-500 to-purple-600 flex items-center justify-center shadow-lg shadow-bonus-500/30" style="animation: glowPulse 3s ease-in-out infinite">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            <div id="how-merchant" class="how-content">
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div class="text-center group">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-bonus-400 to-purple-600 flex items-center justify-center mb-6 shadow-xl shadow-bonus-500/20 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-2xl font-black text-white">1</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3">Sign Up Free</h3>
+                        <p class="text-sm text-surface-400 leading-relaxed">Create your merchant account in under 2 minutes. No credit card needed.</p>
                     </div>
-                    <h3 class="text-xl font-bold text-white">Untuk Merchant</h3>
-                </div>
-
-                <div class="space-y-8">
-                    <div class="flex gap-6">
-                        <div class="flex flex-col items-center">
-                            <div class="step-number bg-gradient-to-br from-bonus-500 to-purple-600 text-white shadow-lg shadow-bonus-500/30">1</div>
-                            <div class="flex-1 w-px bg-gradient-to-b from-bonus-500/30 to-transparent mt-2"></div>
-                        </div>
-                        <div class="pb-2">
-                            <h4 class="text-base font-semibold text-white mb-1">Daftar Akaun Merchant</h4>
-                            <p class="text-base text-surface-400">Isi borang pendaftaran percuma. Tiada yuran tersembunyi. Sahkan emel anda dan mula sedia dalam masa 5 minit.</p>
-                        </div>
+                    <div class="hidden md:flex items-start justify-center pt-8">
+                        <div class="w-full max-w-[120px] h-px bg-gradient-to-r from-bonus-500/50 via-purple-500/50 to-transparent"></div>
                     </div>
-
-                    <div class="flex gap-6">
-                        <div class="flex flex-col items-center">
-                            <div class="step-number bg-gradient-to-br from-bonus-500 to-purple-600 text-white shadow-lg shadow-bonus-500/30">2</div>
-                            <div class="flex-1 w-px bg-gradient-to-b from-bonus-500/30 to-transparent mt-2"></div>
+                    <div class="text-center group">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-6 shadow-xl shadow-amber-500/20 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-2xl font-black text-white">2</span>
                         </div>
-                        <div class="pb-2">
-                            <h4 class="text-base font-semibold text-white mb-1">Setkan Kadar Loyalty & Giveaway</h4>
-                            <p class="text-base text-surface-400">Tentukan berapa mata untuk setiap RM pembelian, dan cipta kempen giveaway pertama anda. Sistem akan berfungsi secara automatik.</p>
-                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3">Customize Rules</h3>
+                        <p class="text-sm text-surface-400 leading-relaxed">Set points earn rate, tier thresholds, and your reward catalogue in minutes.</p>
                     </div>
-
-                    <div class="flex gap-6">
-                        <div class="flex flex-col items-center">
-                            <div class="step-number bg-gradient-to-br from-bonus-500 to-purple-600 text-white shadow-lg shadow-bonus-500/30">3</div>
+                    <div class="hidden md:flex items-start justify-center pt-8">
+                        <div class="w-full max-w-[120px] h-px bg-gradient-to-r from-amber-500/50 via-orange-500/50 to-transparent"></div>
+                    </div>
+                    <div class="text-center group">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center mb-6 shadow-xl shadow-emerald-500/20 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-2xl font-black text-white">3</span>
                         </div>
-                        <div>
-                            <h4 class="text-base font-semibold text-white mb-1">Pantau & Kembangkan</h4>
-                            <p class="text-base text-surface-400">Gunakan dashboard analitik untuk melihat prestasi, dan biarkan Viral Loop System membawa lebih ramai pelanggan kepada anda secara automatik.</p>
-                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3">Go Live!</h3>
+                        <p class="text-sm text-surface-400 leading-relaxed">Your loyalty program goes live instantly. Customers start earning and redeeming.</p>
                     </div>
                 </div>
             </div>
 
-            {{-- Customer Steps --}}
-            <div class="card-dark rounded-2xl p-8 lg:p-10 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl"></div>
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 min-w-[48px] rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30" style="animation: glowPulse 3s ease-in-out 0.5s infinite">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            {{-- Customer Steps (hidden by default) --}}
+            <div id="how-customer" class="how-content hidden">
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div class="text-center group">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center mb-6 shadow-xl shadow-pink-500/20 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-2xl font-black text-white">1</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3">Join a Merchant</h3>
+                        <p class="text-sm text-surface-400 leading-relaxed">Scan a QR code or sign up at any participating BonusHub merchant. It's free!</p>
                     </div>
-                    <h3 class="text-xl font-bold text-white">Untuk Pengguna</h3>
-                </div>
-
-                <div class="space-y-8">
-                    <div class="flex gap-6">
-                        <div class="flex flex-col items-center">
-                            <div class="step-number bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">1</div>
-                            <div class="flex-1 w-px bg-gradient-to-b from-emerald-500/30 to-transparent mt-2"></div>
-                        </div>
-                        <div class="pb-2">
-                            <h4 class="text-base font-semibold text-white mb-1">Daftar Akaun Pengguna</h4>
-                            <p class="text-base text-surface-400">Daftar secara PERCUMA menggunakan emel atau nombor telefon. Lengkapkan profil dan mula terokai kedai-kedai menarik dalam platform.</p>
-                        </div>
+                    <div class="hidden md:flex items-start justify-center pt-8">
+                        <div class="w-full max-w-[120px] h-px bg-gradient-to-r from-pink-500/50 via-rose-500/50 to-transparent"></div>
                     </div>
-
-                    <div class="flex gap-6">
-                        <div class="flex flex-col items-center">
-                            <div class="step-number bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">2</div>
-                            <div class="flex-1 w-px bg-gradient-to-b from-emerald-500/30 to-transparent mt-2"></div>
+                    <div class="text-center group">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center mb-6 shadow-xl shadow-amber-500/20 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-2xl font-black text-white">2</span>
                         </div>
-                        <div class="pb-2">
-                            <h4 class="text-base font-semibold text-white mb-1">Beli & Kumpul Mata</h4>
-                            <p class="text-base text-surface-400">Buat pembelian di mana-mana kedai berdaftar. Mata loyalty akan dikredit secara automatik. Kongsikan dengan rakan untuk bonus rujukan tambahan.</p>
-                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3">Earn Points</h3>
+                        <p class="text-sm text-surface-400 leading-relaxed">Shop as usual — points auto-accumulate. Level up from Silver → Gold → Platinum!</p>
                     </div>
-
-                    <div class="flex gap-6">
-                        <div class="flex flex-col items-center">
-                            <div class="step-number bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">3</div>
+                    <div class="hidden md:flex items-start justify-center pt-8">
+                        <div class="w-full max-w-[120px] h-px bg-gradient-to-r from-amber-500/50 via-yellow-500/50 to-transparent"></div>
+                    </div>
+                    <div class="text-center group">
+                        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center mb-6 shadow-xl shadow-emerald-500/20 group-hover:scale-110 transition-transform duration-300">
+                            <span class="text-2xl font-black text-white">3</span>
                         </div>
-                        <div>
-                            <h4 class="text-base font-semibold text-white mb-1">Tebus Ganjaran & Menang Giveaway</h4>
-                            <p class="text-base text-surface-400">Tukarkan mata dengan pelbagai hadiah menarik, dan dapatkan tiket cabutan giveaway untuk peluang memenangi hadiah besar secara percuma!</p>
-                        </div>
+                        <h3 class="text-lg font-bold text-white mb-3">Redeem Rewards</h3>
+                        <p class="text-sm text-surface-400 leading-relaxed">Use your points to get vouchers, free items, and exclusive perks — instantly!</p>
                     </div>
                 </div>
             </div>
 
-        </div>
-    </div>
-</section>
-
-
-{{-- ═══════════════════════════════════════════════════════════════════════
-     6. SOCIAL PROOF & FAQ
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<section class="py-16 md:py-24 relative overflow-hidden bg-gradient-to-b from-gray-950 via-gray-950 to-gray-950">
-    <div class="absolute inset-0 bg-grid-white opacity-[0.02]"></div>
-    <div class="absolute top-0 left-0 w-96 h-96 bg-bonus-500/5 rounded-full blur-[120px]"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[120px]"></div>
-
-    <div class="floating-badge top-20 left-[12%] hidden lg:block" style="animation: float 8s ease-in-out 0.3s infinite">💬</div>
-    <div class="floating-badge bottom-20 right-[10%] hidden lg:block" style="animation: float 7s ease-in-out 1.8s infinite">⭐</div>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-        {{-- Testimonials --}}
-        <div class="max-w-3xl mx-auto text-center mb-14">
-            <span class="text-bonus-400 font-semibold text-sm uppercase tracking-wider">Apa Kata Mereka</span>
-            <h2 class="text-3xl sm:text-4xl font-bold text-white mt-3 mb-4">Dipercayai Oleh Usahawan & Pengguna</h2>
-            <p class="text-lg text-surface-400">Ribuan Merchant dan Pengguna telah menyertai BonusHub. Inilah pengalaman mereka.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
-            <div class="card-dark rounded-2xl p-6 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-24 h-24 bg-bonus-500/15 rounded-full blur-2xl"></div>
-                <div class="flex gap-1 mb-4">
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                </div>
-                <p class="text-surface-300 text-base leading-relaxed mb-4">"Sejak guna BonusHub, pelanggan saya semakin ramai. Viral Loop System betul-betul berkesan — pelanggan lama bawa pelanggan baru tanpa saya perlu buat apa-apa!"</p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-bonus-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm shadow-md">AN</div>
-                    <div>
-                        <p class="font-semibold text-white text-base">Ahmad N.</p>
-                        <p class="text-sm text-surface-400">Pengusaha Kafe, Kuala Lumpur</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-dark rounded-2xl p-6 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/15 rounded-full blur-2xl"></div>
-                <div class="flex gap-1 mb-4">
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                </div>
-                <p class="text-surface-300 text-base leading-relaxed mb-4">"Saya suka sebab boleh kumpul mata di banyak kedai berbeza. Giveaway dia pun best, saya dah menang hadiah twice! Memang recommended untuk semua pengguna."</p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-sm shadow-md">SN</div>
-                    <div>
-                        <p class="font-semibold text-white text-base">Siti N.</p>
-                        <p class="text-sm text-surface-400">Pengguna Setia, Shah Alam</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-dark rounded-2xl p-6 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-24 h-24 bg-gold-500/15 rounded-full blur-2xl"></div>
-                <div class="flex gap-1 mb-4">
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <svg class="w-5 h-5 text-gold-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                </div>
-                <p class="text-surface-300 text-base leading-relaxed mb-4">"Dashboard analitik sangat membantu. Saya boleh track customer retention dan lihat program giveaway mana yang paling berkesan. ROI meningkat 40% dalam 2 bulan pertama!"</p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-amber-500 flex items-center justify-center text-white font-bold text-sm shadow-md">MR</div>
-                    <div>
-                        <p class="font-semibold text-white text-base">Mohan R.</p>
-                        <p class="text-sm text-surface-400">Pemilik Rantaian Kedai, Pulau Pinang</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- FAQ --}}
-        <div id="faq" class="max-w-3xl mx-auto">
-            <div class="text-center mb-10">
-                <span class="text-bonus-400 font-semibold text-sm uppercase tracking-wider">Soalan Lazim</span>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mt-3">Ada Soalan? Kami Ada Jawapan</h2>
-            </div>
-
-            <div id="faq-accordion" class="space-y-3">
-                @php
-                    $faqs = [
-                        [
-                            'q' => 'Apakah itu Sistem Loyalty dan bagaimana ia berfungsi?',
-                            'a' => 'Sistem Loyalty adalah program ganjaran yang membolehkan pengguna mengumpul mata setiap kali membuat pembelian di kedai-kedai berdaftar. Mata ini boleh ditebus untuk pelbagai ganjaran. Merchant boleh menetapkan kadar mata mereka sendiri — contohnya 1 mata untuk setiap RM1 pembelian. Sistem berfungsi sepenuhnya secara automatik, dari pengiraan mata sehinggalah kepada proses penebusan.'
-                        ],
-                        [
-                            'q' => 'Adakah benar-benar PERCUMA untuk mendaftar?',
-                            'a' => 'Ya! Pendaftaran adalah 100% PERCUMA untuk kedua-dua Merchant dan Pengguna. Tiada yuran pendaftaran, tiada caj bulanan, dan tiada yuran tersembunyi. Akaun asas Merchant kekal percuma selamanya. Kami percaya setiap perniagaan berhak mendapat sistem loyalty tanpa perlu risau tentang kos.'
-                        ],
-                        [
-                            'q' => 'Bagaimana Viral Loop System membantu perniagaan saya?',
-                            'a' => 'Viral Loop System adalah teknologi pemasaran rujukan berantai paling pintar. Apabila pelanggan anda merujuk rakan mereka, kedua-duanya mendapat mata bonus. Rakan yang dirujuk kemudiannya akan merujuk lebih ramai rakan — mewujudkan kesan viral yang melipatgandakan pertumbuhan pelanggan anda secara organik, tanpa perlu anda belanja besar untuk iklan.'
-                        ],
-                        [
-                            'q' => 'Apakah itu Giveaway dan bagaimana ia berfungsi?',
-                            'a' => 'Giveaway adalah cabutan bertuah di mana pengguna berpeluang memenangi hadiah-hadiah menarik. Merchant boleh mencipta kempen giveaway dengan mudah — tetapkan hadiah, tempoh masa, dan syarat penyertaan. Setiap pembelian atau perkongsian memberikan pengguna tiket untuk cabutan. Ini adalah strategi viral marketing paling berkesan untuk menarik pelanggan baru dan meningkatkan jualan.'
-                        ],
-                        [
-                            'q' => 'Apa yang membezakan BonusHub daripada aplikasi kad setia yang lain?',
-                            'a' => 'BonusHub adalah platform komprehensif yang menggabungkan 3 fungsi utama dalam satu sistem: Sistem Loyalty Points, Cabutan Giveaway, dan Viral Loop System. Kebanyakan aplikasi kad setia hanya menawarkan fungsi asas loyalty sahaja. BonusHub juga menyediakan dashboard analitik lengkap untuk Merchant dan membolehkan pengguna mengumpul mata di pelbagai kedai berbeza — bukan terikat kepada satu perniagaan sahaja.'
-                        ],
-                        [
-                            'q' => 'Bagaimana cara untuk memulakan sebagai Merchant?',
-                            'a' => 'Sangat mudah! Hanya daftar akaun secara percuma, lengkapkan profil kedai anda, dan tetapkan kadar mata loyalty yang ingin diberikan. Anda boleh mula mendaftarkan pelanggan serta-merta dan mencipta kempen giveaway pertama anda dalam masa beberapa minit. Tiada pengalaman teknikal diperlukan.'
-                        ],
-                    ];
-                @endphp
-
-                @foreach ($faqs as $index => $faq)
-                <div class="faq-item card-dark rounded-xl overflow-hidden transition-all duration-200 hover:bg-gray-700/80 border-gray-700/50">
-                    <button
-                        onclick="toggleFaq(this)"
-                        class="faq-trigger w-full flex items-center justify-between px-6 py-5 text-left bg-transparent transition-colors"
-                        aria-expanded="false">
-                        <h3 class="font-semibold text-white pr-4 text-base sm:text-lg">{{ $faq['q'] }}</h3>
-                        <svg class="faq-icon w-6 h-6 text-bonus-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                    </button>
-                    <div class="faq-content px-6 max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-                        <p class="pb-5 text-base text-surface-400 leading-relaxed">{{ $faq['a'] }}</p>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-
-            <script>
-                function toggleFaq(button) {
-                    const item = button.closest('.faq-item');
-                    const content = item.querySelector('.faq-content');
-                    const icon = item.querySelector('.faq-icon');
-                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
-
-                    document.querySelectorAll('.faq-item').forEach(el => {
-                        const c = el.querySelector('.faq-content');
-                        const i = el.querySelector('.faq-icon');
-                        const b = el.querySelector('.faq-trigger');
-                        c.style.maxHeight = '0px';
-                        i.classList.remove('rotate-45');
-                        b.setAttribute('aria-expanded', 'false');
-                        el.classList.remove('shadow-[0_12px_48px_rgba(0,0,0,0.6)]', 'border-bonus-500/40');
-                    });
-
-                    if (!isOpen) {
-                        content.style.maxHeight = content.scrollHeight + 'px';
-                        icon.classList.add('rotate-45');
-                        button.setAttribute('aria-expanded', 'true');
-                        item.classList.add('shadow-[0_12px_48px_rgba(0,0,0,0.6)]', 'border-bonus-500/40');
-                    }
-                }
-            </script>
-        </div>
-
-    </div>
-</section>
-
-
-{{-- ═══════════════════════════════════════════════════════════════════════
-     FINAL CTA SECTION
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<section class="py-16 md:py-20 relative overflow-hidden bg-gradient-to-br from-bonus-600 via-purple-600 to-indigo-800">
-    <div class="absolute inset-0 bg-grid-white opacity-[0.05]"></div>
-    <div class="absolute top-0 right-0 w-80 h-80 bg-bonus-300/20 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 left-0 w-80 h-80 bg-purple-300/20 rounded-full blur-3xl"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gold-400/10 rounded-full blur-3xl"></div>
-
-    <div class="floating-badge top-12 left-[10%] hidden lg:block" style="animation: float 7s ease-in-out 0.5s infinite">🚀</div>
-    <div class="floating-badge bottom-12 right-[12%] hidden lg:block" style="animation: float 8s ease-in-out 1.5s infinite">🎯</div>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="max-w-3xl mx-auto text-center">
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-                Jangan Tunggu Lagi — <span class="text-bonus-200">Sertai BonusHub Sekarang!</span>
-            </h2>
-            <p class="text-lg sm:text-xl text-bonus-100 max-w-2xl mx-auto mb-8">
-                Ribuan Merchant dan Pengguna sudah mula meraih manfaat. Daftar PERCUMA hari ini dan jadilah sebahagian daripada revolusi loyalty & viral marketing di Malaysia.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="{{ url('/login') }}"
-                   class="group px-8 py-4 bg-white text-bonus-700 text-base font-bold rounded-2xl hover:bg-bonus-50 transition-all shadow-2xl flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Daftar Percuma Sebagai Merchant
-                </a>
-                <a href="{{ url('/login') }}"
-                   class="group px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-base font-bold rounded-2xl hover:bg-white/20 transition-all flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    Sertai Sebagai Pengguna
+            <div class="text-center mt-12">
+                <a href="{{ Route::has('register') ? route('register') : route('login') }}"
+                   class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-base font-semibold text-white
+                          bg-gradient-to-r from-bonus-500 to-purple-600
+                          hover:from-bonus-400 hover:to-purple-500
+                          shadow-xl shadow-bonus-500/25 hover:shadow-bonus-500/40
+                          transition-all duration-300 hover:-translate-y-1">
+                    Start Your Free Trial
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
                 </a>
             </div>
-            <p class="mt-6 text-sm text-bonus-200/80">Percuma seumur hidup &bull; Tiada kad tersembunyi &bull; Batal bila-bila masa</p>
         </div>
-    </div>
-</section>
+    </section>
 
+    {{-- Tab switching script --}}
+    <script>
+        function switchHowTab(tab) {
+            document.querySelectorAll('.how-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.how-tab-btn').forEach(el => el.classList.remove('active-tab'));
+            document.getElementById('how-' + tab).classList.remove('hidden');
+            document.querySelector('.how-tab-btn[data-tab="' + tab + '"]').classList.add('active-tab');
+        }
+    </script>
 
-{{-- ═══════════════════════════════════════════════════════════════════════
-     COUNTER ANIMATION SCRIPT
-     ═══════════════════════════════════════════════════════════════════════ --}}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const counters = document.querySelectorAll('.counter-number');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const el = entry.target;
-                    const target = parseInt(el.dataset.target);
-                    const isRupiah = el.dataset.target === '123456';
-                    let current = 0;
-                    const step = Math.max(1, Math.floor(target / 80));
-                    const interval = setInterval(() => {
-                        current += step;
-                        if (current >= target) {
-                            current = target;
-                            clearInterval(interval);
-                        }
-                        if (isRupiah) {
-                            el.textContent = 'RM ' + current.toLocaleString();
-                        } else {
-                            el.textContent = current.toLocaleString();
-                        }
-                    }, 25);
-                    observer.unobserve(el);
-                }
-            });
-        }, { threshold: 0.3 });
-        counters.forEach(c => observer.observe(c));
-    });
-</script>
+    {{-- ─── STATS SECTION ─── --}}
+    <section class="relative py-24 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-card p-8 md:p-12">
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.06]">
+                    <div class="text-center sm:pr-8">
+                        <p class="text-4xl md:text-5xl font-black bg-gradient-to-r from-bonus-300 to-purple-400 bg-clip-text text-transparent">10K+</p>
+                        <p class="text-sm text-surface-400 mt-2">Active Members</p>
+                    </div>
+                    <div class="text-center sm:px-8 pt-8 sm:pt-0">
+                        <p class="text-4xl md:text-5xl font-black bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">500+</p>
+                        <p class="text-sm text-surface-400 mt-2">Registered Businesses</p>
+                    </div>
+                    <div class="text-center sm:px-8 pt-8 sm:pt-0">
+                        <p class="text-4xl md:text-5xl font-black bg-gradient-to-r from-emerald-300 to-green-400 bg-clip-text text-transparent">250K</p>
+                        <p class="text-sm text-surface-400 mt-2">Points Issued</p>
+                    </div>
+                    <div class="text-center sm:pl-8 pt-8 sm:pt-0">
+                        <p class="text-4xl md:text-5xl font-black bg-gradient-to-r from-pink-300 to-rose-400 bg-clip-text text-transparent">98%</p>
+                        <p class="text-sm text-surface-400 mt-2">Satisfaction Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-@endsection
+    {{-- ─── CTA SECTION ─── --}}
+    <section class="relative py-24 overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="relative">
+                {{-- Background glow --}}
+                <div class="absolute inset-0 flex items-center justify-center -z-10">
+                    <div class="w-[400px] h-[400px] rounded-full bg-gradient-to-r from-bonus-500/15 to-purple-600/15 blur-3xl animate-breathing"></div>
+                </div>
+
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-6">
+                    Ready to Transform<br>
+                    <span class="bg-gradient-to-r from-bonus-300 via-purple-300 to-amber-300 bg-clip-text text-transparent">Your Customer Loyalty?</span>
+                </h2>
+                <p class="text-surface-400 text-lg max-w-xl mx-auto mb-10">
+                    Join hundreds of Malaysian businesses using BonusHub to reward their customers and drive repeat sales.
+                </p>
+                <a href="{{ Route::has('register') ? route('register') : route('login') }}"
+                   class="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-lg font-bold text-white
+                          bg-gradient-to-r from-bonus-500 to-purple-600
+                          hover:from-bonus-400 hover:to-purple-500
+                          shadow-2xl shadow-bonus-500/30 hover:shadow-bonus-500/50
+                          transition-all duration-300 hover:-translate-y-1">
+                    Get Started — It's Free
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </a>
+                <p class="text-xs text-surface-500 mt-4">No credit card required • Cancel anytime • Free forever plan available</p>
+            </div>
+        </div>
+    </section>
+
+    {{-- ─── FOOTER ─── --}}
+    <footer class="border-t border-white/[0.06] py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-bonus-400 to-purple-600 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold">
+                            <span class="bg-gradient-to-r from-bonus-300 to-purple-400 bg-clip-text text-transparent">Bonus</span>Hub
+                        </span>
+                    </div>
+                    <p class="text-sm text-surface-500 max-w-xs">Making customer loyalty simple for Malaysian businesses. Reward. Retain. Repeat.</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">Product</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#features" class="text-sm text-surface-400 hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#how-it-works" class="text-sm text-surface-400 hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="{{ Route::has('register') ? route('register') : route('login') }}" class="text-sm text-surface-400 hover:text-white transition-colors">Pricing</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><span class="text-sm text-surface-500">Marz Technology & Trading</span></li>
+                        <li><span class="text-sm text-surface-500">Malaysia</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-10 pt-8 border-t border-white/[0.06] text-center">
+                <p class="text-xs text-surface-500">© {{ date('Y') }} BonusHub by Marz Technology & Trading (Ssm 001884868v 200903206205). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

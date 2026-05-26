@@ -8,7 +8,7 @@ class LoyaltyRateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('Shop Admin');
+        return $this->user()->hasRole('merchant');
     }
 
     public function rules(): array

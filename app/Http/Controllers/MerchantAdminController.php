@@ -42,7 +42,7 @@ class MerchantAdminController extends Controller
         $merchant = $this->getMerchant();
         return view('merchant.dashboard', [
             'customers_count' => CustomerMerchant::where('merchant_id', $merchant->id)->count(),
-            'staff_count' => $merchant->staff()->count(),
+            'staff_count' => $merchant->users()->count(),
             'pending_approvals' => PointsTransaction::where('merchant_id', $merchant->id)->where('status', 'pending_approval')->count(),
             'rewards_count' => MerchantReward::where('merchant_id', $merchant->id)->count(),
         ]);

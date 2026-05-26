@@ -8,7 +8,7 @@ class MerchantUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('Superadmin');
+        return $this->user()->hasRole('superadmin');
     }
 
     public function rules(): array
