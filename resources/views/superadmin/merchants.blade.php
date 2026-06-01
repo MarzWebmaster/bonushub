@@ -29,10 +29,10 @@
             <tbody>
                 @forelse($merchants as $m)
                 <tr>
-                    <td class="font-medium">{{ $m->company_name }}</td>
+                    <td class="font-medium"><a href="/superadmin/merchants/{{ $m->id }}" class="text-bonus-600 hover:text-bonus-700 hover:underline font-medium">{{ $m->company_name }}</a></td>
                     <td class="text-surface-500">{{ $m->phone ?? '—' }}</td>
                     <td>
-                        @if($m->is_active)
+                        @if($m->status)
                             <span class="badge-success">Active</span>
                         @else
                             <span class="badge-danger">Inactive</span>
@@ -43,8 +43,8 @@
                     <td class="text-surface-400 text-xs">{{ $m->created_at->format('d M Y') }}</td>
                     <td>
                         <div class="flex items-center justify-center gap-1">
-                            <button onclick="toggleStatus({{ $m->id }})" class="btn-sm {{ $m->is_active ? 'btn-warning' : 'btn-success' }}" title="{{ $m->is_active ? 'Deactivate' : 'Activate' }}">
-                                {{ $m->is_active ? 'Deact' : 'Act' }}
+                            <button onclick="toggleStatus({{ $m->id }})" class="btn-sm {{ $m->status ? 'btn-warning' : 'btn-success' }}" title="{{ $m->status == "active" ? 'Deactivate' : 'Activate' }}">
+                                {{ $m->status ? 'Deact' : 'Act' }}
                             </button>
                             <button onclick="openEditModal({{ $m->id }})" class="btn-sm btn-secondary">Edit</button>
                             <button onclick="deleteMerchant({{ $m->id }})" class="btn-sm btn-danger">Del</button>
@@ -107,7 +107,7 @@
 <script>
 function openCreateModal(){document.getElementById('modal-title').textContent='Add Merchant';document.getElementById('edit-id').value='';document.getElementById('f-password').required=true;document.getElementById('merchant-modal').classList.remove('hidden');}
 function closeModal(){document.getElementById('merchant-modal').classList.add('hidden');}
-function openEditModal(id){document.getElementById('modal-title').textContent='Edit Merchant';document.getElementById('edit-id').value=id;document.getElementById('f-password').required=false;fetch('/superadmin/api/merchants/'+id).then(r=>r.json()).then(d=>{if(d.success){let m=d.merchant;document.getElementById('f-merchant_name').value=m.name;document.getElementById('f-name').value=m.admins?.[0]?.name||'';document.getElementById('f-email').value=m.admins?.[0]?.email||'';document.getElementById('f-phone').value=m.phone||'';if(m.package_id)document.getElementById('f-package_id').value=m.package_id;document.getElementById('f-address').value=m.address||'';document.getElementById('merchant-modal').classList.remove('hidden');}});}
+function openEditModal(id){document.getElementById('modal-title').textContent='Edit Merchant';document.getElementById('edit-id').value=id;document.getElementById('f-password').required=false;fetch('/superadmin/api/merchants/'+id).then(r=>r.json()).then(d=>{if(d.success){let m=d.merchant;document.getElementById("f-merchant_name").value=m.company_name;document.getElementById('f-name').value=m.users?.[0]?.name||'';document.getElementById('f-email').value=m.users?.[0]?.email||'';document.getElementById('f-phone').value=m.phone||'';if(m.package_id)document.getElementById('f-package_id').value=m.package_id;document.getElementById('f-address').value=m.address||'';document.getElementById('merchant-modal').classList.remove('hidden');}});}
 function saveMerchant(e){e.preventDefault();let id=document.getElementById('edit-id').value;let url=id?'/superadmin/api/merchants/'+id:'/superadmin/api/merchants';let method=id?'PUT':'POST';let data={merchant_name:document.getElementById('f-merchant_name').value,name:document.getElementById('f-name').value,email:document.getElementById('f-email').value,phone:document.getElementById('f-phone').value,package_id:document.getElementById('f-package_id').value,address:document.getElementById('f-address').value};let pwd=document.getElementById('f-password').value;if(pwd)data.password=pwd;fetch(url,{method:method,headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify(data)}).then(r=>r.json()).then(d=>{if(d.success){location.reload();}else{alert(d.message||'Error');}});return false;}
 function toggleStatus(id){fetch('/superadmin/api/merchants/'+id+'/toggle',{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(r=>r.json()).then(d=>{if(d.success)location.reload();});}
 function deleteMerchant(id){if(confirm('Delete this merchant?')){fetch('/superadmin/api/merchants/'+id,{method:'DELETE',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(r=>r.json()).then(d=>{if(d.success)location.reload();});}}

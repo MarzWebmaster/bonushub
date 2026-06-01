@@ -36,14 +36,14 @@ class SuperadminController extends Controller
     {
         $merchants = Merchant::withCount(['customers', 'pointsTransactions', 'users'])
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(5);
         $packages = Package::orderBy('price')->get();
         return view('superadmin.merchants', compact('merchants', 'packages'));
     }
 
     public function packagesPage(): View
     {
-        $packages = Package::orderBy('price')->paginate(20);
+        $packages = Package::orderBy('price')->paginate(5);
         return view('superadmin.packages', compact('packages'));
     }
 
@@ -70,7 +70,7 @@ class SuperadminController extends Controller
     {
         $merchants = Merchant::withCount(['customers', 'pointsTransactions', 'users'])
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(5);
 
         return response()->json(['success' => true, 'merchants' => $merchants]);
     }
@@ -78,10 +78,9 @@ class SuperadminController extends Controller
     public function showMerchant(int $id): JsonResponse
     {
         $merchant = Merchant::with([
-            'admins:id,name,email',
-            'staff:id,name,email',
+            'users:id,name,email',
             'loyaltyRate',
-        ])->withCount(['customers', 'pointsTransactions rewardProducts'])
+        ])->withCount(['customers', 'pointsTransactions', 'rewards'])
             ->findOrFail($id);
 
         return response()->json(['success' => true, 'merchant' => $merchant]);
@@ -144,6 +143,11 @@ class SuperadminController extends Controller
     {
         $merchant = Merchant::findOrFail($id);
         $data = $request->validated();
+        // Map merchant_name to company_name (model field)
+        if (isset($data["merchant_name"])) {
+            $data["company_name"] = $data["merchant_name"];
+            unset($data["merchant_name"]);
+        }
         $merchant->update($data);
 
         return response()->json([
@@ -180,7 +184,7 @@ class SuperadminController extends Controller
 
     public function packages(): JsonResponse
     {
-        $packages = Package::orderBy('price')->paginate(20);
+        $packages = Package::orderBy('price')->paginate(5);
         return response()->json(['success' => true, 'packages' => $packages]);
     }
 
@@ -288,5 +292,25 @@ class SuperadminController extends Controller
     public function leaderboardPage(): View
     {
         return view('superadmin.leaderboard');
+    }
+
+    public function showMerchantPage(int $id): View
+    {
+        $merchant = Merchant::with(['users:id,name,email', 'branches', 'loyaltyRate', 'package'])
+            ->withCount(['customers', 'pointsTransactions', 'rewards'])
+            ->findOrFail($id);
+
+        $recentTransactions = \App\Models\PointsTransaction::where('merchant_id', $id)
+            ->latest()
+            ->take(10)
+            ->get();
+
+        $rewards = \App\Models\MerchantReward::where('merchant_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $packages = \App\Models\Package::orderBy('price')->get();
+
+        return view('superadmin.merchant-detail', compact('merchant', 'recentTransactions', 'rewards', 'packages'));
     }
 }

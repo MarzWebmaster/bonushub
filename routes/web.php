@@ -129,6 +129,7 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth'])->group(fu
     // Pages (HTML views)
     Route::get('/dashboard', [SuperadminController::class, 'dashboard'])->name('dashboard');
     Route::get('/merchants', [SuperadminController::class, 'merchantsPage'])->name('merchants');
+    Route::get("/merchants/{id}", [SuperadminController::class, "showMerchantPage"])->name("merchants.show");
     Route::get('/packages', [SuperadminController::class, 'packagesPage'])->name('packages');
     Route::get('/audit', [SuperadminController::class, 'auditLogsPage'])->name('audit');
     Route::get('/leaderboard', [SuperadminController::class, 'leaderboardPage'])->name('leaderboard');
