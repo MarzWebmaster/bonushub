@@ -81,6 +81,8 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(functi
 
     // Customers (HTML page)
     Route::get('/customers', [MerchantAdminController::class, 'customerListPage'])->name('customers');
+        Route::get('/customers/{id}', [MerchantAdminController::class, 'customerDetailPage'])->name('customers.detail');
+        Route::get('/api/customers/{id}', [MerchantAdminController::class, 'customerDetail'])->name('api.customers.detail');
 
     // Leaderboard (HTML page)
     Route::get('/leaderboard', [MerchantAdminController::class, 'leaderboardPage'])->name('leaderboard');

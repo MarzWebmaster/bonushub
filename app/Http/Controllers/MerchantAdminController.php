@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 
 class MerchantAdminController extends Controller
 {
@@ -189,9 +190,10 @@ class MerchantAdminController extends Controller
     public function customerListByTier(Request $request)
     {
         $merchant = $this->getMerchant();
+        $perPage = min((int) $request->query('per_page', 5), 50);
         $customers = CustomerMerchant::with('customer')->where('merchant_id', $merchant->id);
         if ($request->tier) $customers->where('tier_per_merchant', $request->tier);
-        return response()->json(['success' => true, 'customers' => $customers->orderBy('points', 'desc')->paginate(20)]);
+        return response()->json(['success' => true, 'customers' => $customers->orderBy('points', 'desc')->paginate($perPage)]);
     }
 
     public function leaderboard(Request $request)
@@ -307,4 +309,51 @@ class MerchantAdminController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Show single customer detail page for merchant.
+     */
+    public function customerDetailPage(int $id): View
+    {
+        $merchant = $this->getMerchant();
+        $cm = CustomerMerchant::with('customer')
+            ->where('merchant_id', $merchant->id)
+            ->where('customer_id', $id)
+            ->firstOrFail();
+        return view('merchant.customer-detail', compact('cm'));
+    }
+
+    /**
+     * API: single customer detail + transaction history.
+     */
+    public function customerDetail(int $id): JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $cm = CustomerMerchant::with('customer')
+            ->where('merchant_id', $merchant->id)
+            ->where('customer_id', $id)
+            ->firstOrFail();
+
+        $transactions = PointsTransaction::where('merchant_id', $merchant->id)
+            ->where('customer_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'customer' => [
+                'id' => $cm->customer->id,
+                'name' => $cm->customer->name,
+                'email' => $cm->customer->email,
+                'phone' => $cm->customer->phone,
+                'tier' => $cm->tier_per_merchant ?? 'Basic',
+                'points' => $cm->points,
+                'tied_at' => $cm->tied_at,
+                'campaign_link_id' => $cm->campaign_link_id,
+            ],
+            'transactions' => $transactions,
+        ]);
+    }
+
 }
