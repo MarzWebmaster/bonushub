@@ -15,7 +15,7 @@ class RedeemRewardRequest extends FormRequest
     {
         return [
             'merchant_id' => 'required|integer|exists:merchants,id',
-            'reward_product_id' => 'required|integer|exists:reward_products,id',
+            'reward_product_id' => 'required|integer|exists:merchant_rewards,id',
             'quantity' => 'nullable|integer|min:1|max:100',
         ];
     }
