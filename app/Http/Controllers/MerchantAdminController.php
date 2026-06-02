@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\PointsTransaction;
 use App\Models\CustomerMerchant;
 use App\Models\LoyaltyRate;
+use App\Models\MerchantTier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -354,6 +355,58 @@ class MerchantAdminController extends Controller
             ],
             'transactions' => $transactions,
         ]);
+    }
+
+
+    // ========================
+    // TIER MANAGEMENT
+    // ========================
+
+    public function tiersPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $tiers = MerchantTier::where('merchant_id', $merchant->id)->orderBy('min_points', 'asc')->get();
+        return view('merchant.tiers', compact('tiers'));
+    }
+
+    public function getTiers(): JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $tiers = MerchantTier::where('merchant_id', $merchant->id)->orderBy('min_points', 'asc')->get();
+        return response()->json(['success' => true, 'tiers' => $tiers]);
+    }
+
+    public function updateTiers(Request $request): JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $data = $request->validate([
+            'tiers' => 'required|array|min:1',
+            'tiers.*.tier_name' => 'required|string|in:Basic,Silver,Gold,Platinum',
+            'tiers.*.min_points' => 'required|integer|min:0',
+        ]);
+
+        foreach ($data['tiers'] as $tier) {
+            MerchantTier::updateOrCreate(
+                ['merchant_id' => $merchant->id, 'tier_name' => $tier['tier_name']],
+                ['min_points' => $tier['min_points']]
+            );
+        }
+
+        // Recalculate all customer tiers for this merchant
+        $tiers = MerchantTier::where('merchant_id', $merchant->id)->orderBy('min_points', 'desc')->get();
+        $customers = CustomerMerchant::where('merchant_id', $merchant->id)->get();
+        foreach ($customers as $cm) {
+            $resolved = 'Basic';
+            foreach ($tiers as $t) {
+                if ($cm->points >= $t->min_points) {
+                    $resolved = $t->tier_name;
+                    break;
+                }
+            }
+            $cm->update(['tier_per_merchant' => $resolved]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Tiers updated & customers recalculated']);
     }
 
 }

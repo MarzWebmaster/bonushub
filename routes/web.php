@@ -92,6 +92,9 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(functi
 
     // Loyalty rate settings (HTML page)
     Route::get('/loyalty-rates', [MerchantAdminController::class, 'loyaltyRatesPage'])->name('loyalty.rates');
+        Route::get('/tiers', [MerchantAdminController::class, 'tiersPage'])->name('tiers');
+        Route::get('/api/tiers', [MerchantAdminController::class, 'getTiers'])->name('api.tiers');
+        Route::put('/api/tiers', [MerchantAdminController::class, 'updateTiers'])->name('api.tiers.update');
     Route::post('/loyalty-rates', [MerchantAdminController::class, 'updateLoyaltyRates'])->name('loyalty.rates.update');
 
     // Campaign tracking links (HTML page)
