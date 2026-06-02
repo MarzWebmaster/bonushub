@@ -9,6 +9,14 @@
         </div>
     </div>
 
+    {{-- Top Save Button --}}
+    <div class="mb-5">
+        <button onclick="saveTiers()" id="save-btn-top" class="w-full px-6 py-3.5 bg-bonus-600 text-white rounded-xl font-bold text-lg hover:bg-bonus-700 active:scale-[0.98] transition-all shadow-lg shadow-bonus-600/30">
+            💾 Save Tier Settings
+        </button>
+        <span id="save-status-top" class="text-sm text-emerald-600 mt-1 block"></span>
+    </div>
+
     {{-- Tier Config Cards --}}
     <div class="grid gap-4 md:grid-cols-2 mb-6" id="tier-cards">
         <div class="card p-5 border-l-4 border-surface-300">
@@ -61,12 +69,6 @@
         </div>
     </div>
 
-    <div class="sticky bottom-4 z-30 flex items-center gap-4 bg-white/90 backdrop-blur-sm border border-surface-200 rounded-xl p-4 shadow-lg">
-        <button onclick="saveTiers()" id="save-btn" class="px-8 py-3 bg-bonus-600 text-white rounded-lg font-bold text-lg hover:bg-bonus-700 transition-colors shadow-md">
-            💾 Save Tiers
-        </button>
-        <span id="save-status" class="text-sm text-surface-400"></span>
-    </div>
 
     {{-- Preview --}}
     <div class="card p-5 mt-6">
@@ -93,8 +95,9 @@ fetch('/merchant/api/tiers').then(r => r.json()).then(d => {
 });
 
 function saveTiers() {
-    const btn = document.getElementById('save-btn');
-    const status = document.getElementById('save-status');
+    const btn = document.getElementById('save-btn-top');
+    const status = document.getElementById('save-status-top');
+    const statusTop = document.getElementById('save-status-top');
     btn.disabled = true;
     btn.textContent = 'Saving...';
     status.textContent = '';
@@ -121,18 +124,18 @@ function saveTiers() {
         btn.textContent = 'Save Tiers';
         if (d.success) {
             status.className = 'text-sm text-emerald-600';
-            status.textContent = '✓ Tiers saved & customers recalculated!';
+            status.textContent = '✓ Tiers saved & customers recalculated!'; 
             setTimeout(() => status.textContent = '', 4000);
         } else {
             status.className = 'text-sm text-red-500';
-            status.textContent = 'Error: ' + (d.message || 'Validation failed');
+            status.textContent = 'Error: ' + (d.message || 'Validation failed'); 
         }
     })
     .catch(() => {
         btn.disabled = false;
         btn.textContent = 'Save Tiers';
         status.className = 'text-sm text-red-500';
-        status.textContent = 'Network error';
+        status.textContent = 'Network error'; 
     });
 }
 </script>
