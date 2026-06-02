@@ -61,9 +61,9 @@
         </div>
     </div>
 
-    <div class="flex items-center gap-4">
-        <button onclick="saveTiers()" id="save-btn" class="px-6 py-2.5 bg-bonus-600 text-white rounded-lg font-medium hover:bg-bonus-700 transition-colors">
-            Save Tiers
+    <div class="sticky bottom-4 z-30 flex items-center gap-4 bg-white/90 backdrop-blur-sm border border-surface-200 rounded-xl p-4 shadow-lg">
+        <button onclick="saveTiers()" id="save-btn" class="px-8 py-3 bg-bonus-600 text-white rounded-lg font-bold text-lg hover:bg-bonus-700 transition-colors shadow-md">
+            💾 Save Tiers
         </button>
         <span id="save-status" class="text-sm text-surface-400"></span>
     </div>
