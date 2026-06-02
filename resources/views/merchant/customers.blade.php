@@ -92,13 +92,13 @@ function loadCustomers(page, tier) {
         if (p.last_page && p.last_page > 1) {
             let btns = '<span>Showing ' + p.from + '-' + p.to + ' of ' + p.total + '</span><div class="flex gap-1">';
             if (p.current_page > 1)
-                btns += '<button onclick="loadCustomers(' + (p.current_page - 1) + ')" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200">← Prev</button>';
+                btns += '<button onclick="loadCustomers(' + (p.current_page - 1) + ')" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200 text-surface-700">← Prev</button>';
             for (let i = 1; i <= p.last_page; i++) {
                 btns += '<button onclick="loadCustomers(' + i + ')" class="px-3 py-1 rounded ' +
-                    (i === p.current_page ? 'bg-bonus-600 text-white' : 'bg-surface-100 hover:bg-surface-200') + '">' + i + '</button>';
+                    (i === p.current_page ? 'bg-bonus-600 text-white' : 'bg-surface-100 hover:bg-surface-200 text-surface-700') + '">' + i + '</button>';
             }
             if (p.current_page < p.last_page)
-                btns += '<button onclick="loadCustomers(' + (p.current_page + 1) + ')" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200">Next →</button>';
+                btns += '<button onclick="loadCustomers(' + (p.current_page + 1) + ')" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200 text-surface-700">Next →</button>';
             btns += '</div>';
             pg.innerHTML = btns;
         } else {
