@@ -206,10 +206,17 @@ class MerchantAdminController extends Controller
     public function liabilityReport(Request $request)
     {
         $merchant = $this->getMerchant();
-        $total = CustomerMerchant::where('merchant_id', $merchant->id)->sum('points');
-        $count = CustomerMerchant::where('merchant_id', $merchant->id)->where('points', '>', 0)->count();
+        $mid = $merchant->id;
+        $total_issued = (int) PointsTransaction::where('merchant_id', $mid)->where('type', 'earn')->where('status', 'approved')->sum('points');
+        $total_redeemed = (int) PointsTransaction::where('merchant_id', $mid)->where('type', 'redeem')->where('status', 'approved')->sum('points');
+        $outstanding = $total_issued - $total_redeemed;
+        $rate = $total_issued > 0 ? round($total_redeemed / $total_issued * 100, 1) : 0;
+        $count = CustomerMerchant::where('merchant_id', $mid)->where('points', '>', 0)->count();
         return response()->json(['success' => true, 'report' => [
-            'total_points_outstanding' => (int)$total,
+            'total_issued' => $total_issued,
+            'total_redeemed' => $total_redeemed,
+            'outstanding' => $outstanding,
+            'redemption_rate' => $rate,
             'active_customers' => $count,
             'generated_at' => now()->toDateTimeString(),
         ]]);
@@ -232,5 +239,72 @@ class MerchantAdminController extends Controller
         ]);
         LoyaltyRate::updateOrCreate(['merchant_id' => $merchant->id], $data);
         return redirect()->back()->with('success', 'Loyalty rates updated!');
+    }
+    /**
+     * JSON API: Dashboard stats for merchant.
+     */
+    public function dashboardStats(): \Illuminate\Http\JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $mid = $merchant->id;
+        $months = 6;
+
+        // Monthly registrations
+        $registrations = DB::table('customer_merchant')
+            ->where('merchant_id', $mid)
+            ->where('tied_at', '>=', now()->subMonths($months))
+            ->selectRaw('DATE_FORMAT(tied_at, "%Y-%m") as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Monthly points earned
+        $earned = DB::table('points_transactions')
+            ->where('merchant_id', $mid)
+            ->where('type', 'earn')
+            ->where('created_at', '>=', now()->subMonths($months))
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, SUM(points) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        // Monthly points redeemed (stored as negative, flip to positive)
+        $redeemed = DB::table('points_transactions')
+            ->where('merchant_id', $mid)
+            ->where('type', 'redeem')
+            ->where('created_at', '>=', now()->subMonths($months))
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, ABS(SUM(points)) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        // Build label list (all months that appear)
+        $allMonths = array_unique(array_merge(array_keys($registrations), array_keys($earned), array_keys($redeemed)));
+        sort($allMonths);
+
+        // Fill gaps with 0
+        $regData = []; $earnData = []; $redeemData = [];
+        foreach ($allMonths as $m) {
+            $regData[] = (int) ($registrations[$m] ?? 0);
+            $earnData[] = (int) ($earned[$m] ?? 0);
+            $redeemData[] = (int) ($redeemed[$m] ?? 0);
+        }
+
+        return response()->json([
+            'success' => true,
+            'total_customers' => CustomerMerchant::where('merchant_id', $mid)->count(),
+            'total_points' => (int) CustomerMerchant::where('merchant_id', $mid)->sum('points'),
+            'pending_approvals' => PointsTransaction::where('merchant_id', $mid)->where('status', 'pending_approval')->count(),
+            'total_products' => MerchantReward::where('merchant_id', $mid)->count(),
+            'chart' => [
+                'labels' => array_map(function($m) { return date('M Y', strtotime($m."-01")); }, $allMonths),
+                'registrations' => $regData,
+                'earned' => $earnData,
+                'redeemed' => $redeemData,
+            ],
+        ]);
     }
 }

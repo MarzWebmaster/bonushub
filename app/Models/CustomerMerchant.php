@@ -14,6 +14,7 @@ class CustomerMerchant extends Pivot
         'points',
         'tier_per_merchant',
         'tied_at',
+        'campaign_link_id',
     ];
 
     protected $casts = [
@@ -37,5 +38,13 @@ class CustomerMerchant extends Pivot
     public function merchant()
     {
         return $this->belongsTo(Merchant::class);
+    }
+
+    /**
+     * Get the campaign link that brought this customer.
+     */
+    public function campaignLink()
+    {
+        return $this->belongsTo(CampaignLink::class);
     }
 }

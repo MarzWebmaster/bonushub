@@ -15,17 +15,35 @@ use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
+    public function profilePage(): View
+    {
+        return view('customer.profile');
+    }
+
+    public function pointsPage(): View
+    {
+        return view('customer.points');
+    }
+
+    public function rewardsPage(): View
+    {
+        return view('customer.rewards');
+    }
+
     public function dashboard(): View
     {
-        $customer = auth()->user();
-        $totalPoints = \DB::table('customer_merchant')
-            ->where('customer_id', $customer->id)
-            ->sum('customer_merchant.points') ?? 0;
-        $merchantCount = \DB::table('customer_merchant')
-            ->where('customer_id', $customer->id)
+        $user = auth()->user();
+        $customer = $user->customer; // User->customer() via email match
+
+        $customerId = $customer ? $customer->id : 0;
+        $totalPoints = $customerId ? (float) \DB::table('customer_merchant')
+            ->where('customer_id', $customerId)
+            ->sum('points') : 0;
+        $merchantCount = $customerId ? \DB::table('customer_merchant')
+            ->where('customer_id', $customerId)
             ->distinct('merchant_id')
-            ->count('merchant_id');
-        $tier = $customer->tier_global ?? 'Basic';
+            ->count('merchant_id') : 0;
+        $tier = $customer ? ($customer->tier_global ?? 'Basic') : 'Basic';
         $availableRewards = \App\Models\MerchantReward::where('status', 'active')->count();
 
         return view('customer.dashboard', compact('totalPoints', 'merchantCount', 'tier', 'availableRewards'));
@@ -42,7 +60,7 @@ class CustomerController extends Controller
     /**
      * Get the authenticated customer's profile.
      */
-    public function profile(Request $request): JsonResponse
+    public function profileApi(Request $request): JsonResponse
     {
         $customer = $request->user()->load([
             'pointsBalances' => function ($query) {
@@ -94,17 +112,42 @@ class CustomerController extends Controller
      */
     public function pointsBalance(Request $request): JsonResponse
     {
-        $customer = $request->user();
+        $user = $request->user();
+        $customer = $user->customer;
+        $customerId = $customer ? $customer->id : 0;
 
-        $customerMerchantPoints = $customer->pointsBalances()
-            ->with('merchant:id,company_name')
-            ->get();
+        // Points per merchant
+        $customerMerchantPoints = $customerId ? DB::table('customer_merchant')
+            ->join('merchants', 'merchants.id', '=', 'customer_merchant.merchant_id')
+            ->where('customer_merchant.customer_id', $customerId)
+            ->select('merchants.company_name as merchant', 'customer_merchant.points', 'customer_merchant.tier_per_merchant')
+            ->get() : collect();
 
         $totalPoints = $customerMerchantPoints->sum('points');
+        $merchantCount = $customerMerchantPoints->count();
+        $tier = $customer ? ($customer->tier_global ?? 'Basic') : 'Basic';
+
+        // Build history from points_transactions
+        $history = $customerId ? PointsTransaction::with('merchant:id,company_name')
+            ->where('customer_id', $customerId)
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get()
+            ->map(function ($tx) {
+                return [
+                    'merchant' => $tx->merchant->company_name ?? '-',
+                    'points' => abs($tx->points),
+                    'type' => $tx->type,
+                    'created_at' => $tx->created_at->format('d M Y'),
+                ];
+            }) : collect();
 
         return response()->json([
             'success' => true,
             'total_points' => $totalPoints,
+            'merchant_count' => $merchantCount,
+            'tier' => $tier,
+            'history' => $history,
             'points' => $customerMerchantPoints,
         ]);
     }
@@ -114,12 +157,12 @@ class CustomerController extends Controller
      */
     public function pointsHistory(Request $request): JsonResponse
     {
-        $customer = $request->user();
+        $customerId = $request->user()->customer ? $request->user()->customer->id : 0;
 
         $merchantId = $request->query('merchant_id');
 
         $transactions = PointsTransaction::with(['merchant:id,company_name', 'staff:id,name'])
-            ->where('customer_id', $customer->id)
+            ->where('customer_id', $customerId)
             ->when($merchantId, function ($query, $merchantId) {
                 return $query->where('merchant_id', $merchantId);
             })
@@ -141,8 +184,8 @@ class CustomerController extends Controller
 
         $products = MerchantReward::where('status', 'active')
             ->where(function ($query) {
-                $query->whereNull("customers.deleted_at")('stock')
-                    ->orWhere('stock', '>', 0);
+                $query->whereNull('stock_left')
+                    ->orWhere('stock_left', '>', 0);
             })
             ->when($merchantId, function ($query, $merchantId) {
                 return $query->where('merchant_id', $merchantId);
@@ -162,7 +205,10 @@ class CustomerController extends Controller
      */
     public function redeemReward(RedeemRewardRequest $request): JsonResponse
     {
-        $customer = $request->user();
+        $customer = $request->user()->customer;
+        if (!$customer) {
+            return response()->json(['success' => false, 'message' => 'Customer profile not found.'], 404);
+        }
 
         $rewardProduct = MerchantReward::where('id', $request->reward_product_id)
             ->where('status', 'active')
@@ -180,10 +226,10 @@ class CustomerController extends Controller
         }
 
         // Check stock
-        if (!is_null($rewardProduct->stock) && $rewardProduct->stock < $quantity) {
+        if (!is_null($rewardProduct->stock_left) && $rewardProduct->stock_left < $quantity) {
             return response()->json([
                 'success' => false,
-                'message' => "Insufficient stock. Available: {$rewardProduct->stock}.",
+                'message' => "Insufficient stock. Available: {$rewardProduct->stock_left}.",
             ], 422);
         }
 
@@ -210,13 +256,7 @@ class CustomerController extends Controller
                 'type' => 'debit',
                 'points' => -$totalPointsRequired,
                 'status' => 'approved',
-                'reason' => "Self-redeemed: {$rewardProduct->name} x{$quantity}",
-                'metadata' => json_encode([
-                    'reward_product_id' => $rewardProduct->id,
-                    'reward_product_name' => $rewardProduct->name,
-                    'quantity' => $quantity,
-                    'redeemed_by_customer' => true,
-                ]),
+                'notes' => "Self-redeemed: {$rewardProduct->name} x{$quantity}",
             ]);
 
             // Deduct points
@@ -226,8 +266,8 @@ class CustomerController extends Controller
                 ->decrement('customer_merchant.points', $totalPointsRequired);
 
             // Decrement stock
-            if (!is_null($rewardProduct->stock)) {
-                $rewardProduct->decrement('stock', $quantity);
+            if (!is_null($rewardProduct->stock_left)) {
+                $rewardProduct->decrement('stock_left', $quantity);
             }
 
             DB::commit();
@@ -293,9 +333,9 @@ class CustomerController extends Controller
         });
 
         // Get customer's own rank
-        $customer = $request->user();
+        $customerId = $request->user()->customer ? $request->user()->customer->id : 0;
         $customerTotal = DB::table('customer_merchant')
-            ->where('customer_id', $customer->id)
+            ->where('customer_id', $customerId)
             ->when($merchantId, function ($query) use ($merchantId) {
                 return $query->where('merchant_id', $merchantId);
             })

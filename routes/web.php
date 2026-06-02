@@ -6,10 +6,13 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\MerchantAdminController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SuperadminController;
+use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\CampaignRedirectController;
 
 Route::get('/', function () {
     return view('home');
@@ -24,6 +27,9 @@ Route::get('/dashboard', function () {
     return redirect()->route('home');
 })->name('dashboard')->middleware('auth');
 
+// Public campaign redirect (no auth required)
+Route::get('/r/{slug}', [CampaignRedirectController::class, 'redirect'])->name('campaign.redirect');
+
 // Auth routes
 Route::get('/login', function () {
     return view('auth.login');
@@ -31,6 +37,10 @@ Route::get('/login', function () {
 
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Register routes
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
 // Existing management routes
 Route::get('/manage/shop', [ShopController::class, 'index'])->name('manage.shop');
@@ -82,6 +92,10 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(functi
     Route::get('/loyalty-rates', [MerchantAdminController::class, 'loyaltyRatesPage'])->name('loyalty.rates');
     Route::post('/loyalty-rates', [MerchantAdminController::class, 'updateLoyaltyRates'])->name('loyalty.rates.update');
 
+    // Campaign tracking links (HTML page)
+    Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns');
+    Route::get('/campaigns/{slug}', [CampaignController::class, 'show'])->name('campaigns.show');
+
     // JSON API endpoints (for AJAX)
     Route::get('/api/dashboard', [MerchantAdminController::class, 'dashboardStats'])->name('api.dashboard');
     Route::get('/api/points/pending', [MerchantAdminController::class, 'pendingApprovals'])->name('api.points.pending');
@@ -91,6 +105,15 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(functi
     Route::get('/api/leaderboard', [MerchantAdminController::class, 'leaderboard'])->name('api.leaderboard');
     Route::get('/api/reports/liability', [MerchantAdminController::class, 'liabilityReport'])->name('api.reports.liability');
     Route::get('/api/loyalty-rates', [MerchantAdminController::class, 'getLoyaltyRates'])->name('api.loyalty.rates');
+
+    // Campaign API
+    Route::get('/api/campaigns', [CampaignController::class, 'list'])->name('api.campaigns');
+    Route::get('/api/campaigns/analytics', [CampaignController::class, 'analytics'])->name('api.campaigns.analytics');
+    Route::get('/api/campaigns/registrations', [CampaignController::class, 'registrationStats'])->name('api.campaigns.registrations');
+    Route::post('/api/campaigns', [CampaignController::class, 'store'])->name('api.campaigns.store');
+    Route::put('/api/campaigns/{id}', [CampaignController::class, 'update'])->name('api.campaigns.update');
+    Route::post('/api/campaigns/{id}/toggle', [CampaignController::class, 'toggleStatus'])->name('api.campaigns.toggle');
+    Route::delete('/api/campaigns/{id}', [CampaignController::class, 'destroy'])->name('api.campaigns.destroy');
 });
 
 // ========================
@@ -98,15 +121,15 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(functi
 // ========================
 Route::prefix('customer')->name('customer.')->middleware(['auth'])->group(function () {
     // Profile
-    Route::get('/profile', [CustomerController::class, 'profile'])->name('profile');
+    Route::get('/profile', [CustomerController::class, 'profilePage'])->name('profile');
     Route::post('/profile', [CustomerController::class, 'updateProfile'])->name('profile.update');
 
     // Points
-    Route::get('/points', [CustomerController::class, 'pointsBalance'])->name('points');
+    Route::get('/points', [CustomerController::class, 'pointsPage'])->name('points');
     Route::get('/points/history', [CustomerController::class, 'pointsHistory'])->name('points.history');
 
     // Rewards
-    Route::get('/rewards', [CustomerController::class, 'availableRewards'])->name('rewards');
+    Route::get('/rewards', [CustomerController::class, 'rewardsPage'])->name('rewards');
     Route::post('/redeem', [CustomerController::class, 'redeemReward'])->name('redeem');
 
     // Dashboard
