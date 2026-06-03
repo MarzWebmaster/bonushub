@@ -7,6 +7,7 @@ use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\MerchantRegisterController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\MerchantAdminController;
 use App\Http\Controllers\CustomerController;
@@ -38,9 +39,13 @@ Route::get('/login', function () {
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Register routes
+// Customer Register routes
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
+// Merchant Register routes
+Route::get('/merchant/register', [MerchantRegisterController::class, 'showRegisterForm'])->name('merchant.register');
+Route::post('/merchant/register', [MerchantRegisterController::class, 'register'])->name('merchant.register.post');
 
 // Existing management routes
 Route::get('/manage/shop', [ShopController::class, 'index'])->name('manage.shop');

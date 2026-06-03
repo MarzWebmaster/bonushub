@@ -41,7 +41,7 @@
             <div>
                 <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Untuk Merchant</h4>
                 <ul class="space-y-2.5">
-                    <li><a href="{{ url('/login') }}" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Daftar Kedai</a></li>
+                    <li><a href="{{ url('/merchant/register') }}" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Daftar Kedai</a></li>
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Sistem Loyalty</a></li>
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Viral Loop</a></li>
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Kempen Giveaway</a></li>
@@ -52,7 +52,7 @@
             <div>
                 <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-4">Untuk Pengguna</h4>
                 <ul class="space-y-2.5">
-                    <li><a href="{{ url('/login') }}" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Daftar Percuma</a></li>
+                    <li><a href="{{ url('/register') }}" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Daftar Percuma</a></li>
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Kumpul Mata</a></li>
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Cabutan Giveaway</a></li>
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Tebus Ganjaran</a></li>
