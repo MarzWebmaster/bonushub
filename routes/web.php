@@ -135,6 +135,13 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(functi
     Route::put('/api/campaigns/{id}', [CampaignController::class, 'update'])->name('api.campaigns.update');
     Route::post('/api/campaigns/{id}/toggle', [CampaignController::class, 'toggleStatus'])->name('api.campaigns.toggle');
     Route::delete('/api/campaigns/{id}', [CampaignController::class, 'destroy'])->name('api.campaigns.destroy');
+
+    // Promos
+    Route::get('/promos', [MerchantAdminController::class, 'promosPage'])->name('promos.index');
+    Route::get('/api/promos', [MerchantAdminController::class, 'getPromos'])->name('api.promos');
+    Route::post('/api/promos', [MerchantAdminController::class, 'storePromo'])->name('api.promos.store');
+    Route::put('/api/promos/{id}', [MerchantAdminController::class, 'updatePromo'])->name('api.promos.update');
+    Route::delete('/api/promos/{id}', [MerchantAdminController::class, 'deletePromo'])->name('api.promos.destroy');
 });
 
 // ========================
@@ -155,6 +162,10 @@ Route::prefix('customer')->name('customer.')->middleware(['auth'])->group(functi
 
     // Dashboard
     Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
+
+    // Join Merchants
+    Route::get('/merchants', [CustomerController::class, 'merchantsPage'])->name('merchants');
+    Route::post('/merchants/{id}/join', [CustomerController::class, 'joinMerchant'])->name('merchants.join');
 
     // Leaderboard
     Route::get('/leaderboard', [CustomerController::class, 'leaderboardPage'])->name('leaderboard');

@@ -357,4 +357,100 @@ class CustomerController extends Controller
             'my_points' => $customerTotal,
         ]);
     }
+
+    // ========================
+    // JOIN MERCHANTS
+    // ========================
+
+    public function merchantsPage(): View
+    {
+        $customer = auth()->user()->customer;
+        $joinedIds = $customer
+            ? \App\Models\CustomerMerchant::where('customer_id', $customer->id)->pluck('merchant_id')->toArray()
+            : [];
+
+        $merchants = \App\Models\Merchant::with(['promos' => fn($q) => $q->active(), 'rewards', 'branches'])
+            ->where('status', 'active')
+            ->orderBy('company_name')
+            ->get()
+            ->map(function ($m) use ($joinedIds) {
+                $m->joined = in_array($m->id, $joinedIds);
+                $m->reward_count = $m->rewards->count();
+                $m->branch_count = $m->branches->count();
+                $m->promo_list = $m->promos->map(fn($p) => [
+                    'name' => $p->name,
+                    'type' => $p->type,
+                    'value' => $p->value,
+                ]);
+                return $m;
+            });
+
+        return view('customer.merchants', compact('merchants'));
+    }
+
+    public function joinMerchant($id): JsonResponse
+    {
+        $customer = auth()->user()->customer;
+        if (!$customer) {
+            return response()->json(['success' => false, 'message' => 'Customer profile not found.'], 400);
+        }
+
+        $merchant = \App\Models\Merchant::where('status', 'active')->findOrFail($id);
+
+        $exists = \App\Models\CustomerMerchant::where('customer_id', $customer->id)
+            ->where('merchant_id', $merchant->id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['success' => false, 'message' => 'Already joined.'], 409);
+        }
+
+        DB::beginTransaction();
+        try {
+            $cm = \App\Models\CustomerMerchant::create([
+                'customer_id'       => $customer->id,
+                'merchant_id'       => $merchant->id,
+                'points'            => 0,
+                'tier_per_merchant' => 'Basic',
+                'tied_at'           => now(),
+            ]);
+
+            // Auto-apply registration bonus promo
+            $bonusPromo = \App\Models\Promo::active()
+                ->where('merchant_id', $merchant->id)
+                ->where('type', 'registration_bonus')
+                ->first();
+
+            if ($bonusPromo) {
+                $cm->points += $bonusPromo->value;
+                $cm->save();
+
+                \App\Models\PointsTransaction::create([
+                    'merchant_id'  => $merchant->id,
+                    'customer_id'  => $customer->id,
+                    'staff_id'     => null,
+                    'points'       => $bonusPromo->value,
+                    'type'         => 'earn',
+                    'status'       => 'approved',
+                    'notes'        => "Registration bonus: {$bonusPromo->name}",
+                    'branch_id'    => null,
+                ]);
+            }
+
+            DB::commit();
+
+            Log::info("Customer #{$customer->id} joined merchant #{$merchant->id}" . ($bonusPromo ? " +{$bonusPromo->value} bonus pts" : ''));
+
+            return response()->json([
+                'success' => true,
+                'message' => "Joined {$merchant->company_name}!" . ($bonusPromo ? " +{$bonusPromo->value} bonus points!" : ''),
+                'bonus_points' => $bonusPromo ? (int)$bonusPromo->value : 0,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Join merchant failed: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to join. Please try again.'], 500);
+        }
+    }
 }

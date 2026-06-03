@@ -88,4 +88,9 @@ class Merchant extends Model
     {
         return $this->hasMany(Redemption::class);
     }
+
+    public function promos()
+    {
+        return $this->hasMany(Promo::class);
+    }
 }

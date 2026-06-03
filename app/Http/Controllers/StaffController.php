@@ -97,6 +97,17 @@ class StaffController extends Controller
         $points = $request->points;
         $needsApproval = $points >= 1000;
 
+        // Check for active multiplier promo
+        $multiplier = \App\Models\Promo::active()
+            ->where('merchant_id', $merchant->id)
+            ->where('type', 'multiplier')
+            ->first();
+
+        $originalPoints = $points;
+        if ($multiplier) {
+            $points = (int)($points * $multiplier->value);
+        }
+
         try {
             DB::beginTransaction();
 
@@ -111,6 +122,9 @@ class StaffController extends Controller
                 'metadata' => json_encode([
                     'added_by' => $staff->name,
                     'needs_approval' => $needsApproval,
+                    'original_points' => $originalPoints,
+                    'multiplier' => $multiplier ? $multiplier->value : null,
+                    'multiplier_promo' => $multiplier ? $multiplier->name : null,
                 ]),
             ]);
 

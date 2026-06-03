@@ -621,4 +621,80 @@ class MerchantAdminController extends Controller
         return redirect()->route('merchant.profile')
             ->with('success', "Cawangan \"{$name}\" telah dipadam.");
     }
+
+    // ========================
+    // PROMO MANAGEMENT
+    // ========================
+
+    public function promosPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $promos = \App\Models\Promo::where('merchant_id', $merchant->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return view('merchant.promos', compact('merchant', 'promos'));
+    }
+
+    public function getPromos(): JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $promos = \App\Models\Promo::where('merchant_id', $merchant->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json(['success' => true, 'promos' => $promos]);
+    }
+
+    public function storePromo(Request $request): JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $validated = $request->validate([
+            'name'      => 'required|string|max:255',
+            'type'      => 'required|in:registration_bonus,multiplier,fixed_bonus',
+            'value'     => 'required|numeric|min:0',
+            'status'    => 'required|in:active,inactive',
+            'starts_at' => 'nullable|date',
+            'ends_at'   => 'nullable|date|after_or_equal:starts_at',
+        ]);
+
+        $promo = \App\Models\Promo::create([
+            'merchant_id' => $merchant->id,
+            ...$validated,
+        ]);
+
+        Log::info("Merchant #{$merchant->id} created promo #{$promo->id}: {$promo->name}");
+
+        return response()->json(['success' => true, 'promo' => $promo, 'message' => 'Promo created.']);
+    }
+
+    public function updatePromo(Request $request, $id): JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $promo = \App\Models\Promo::where('merchant_id', $merchant->id)->findOrFail($id);
+
+        $validated = $request->validate([
+            'name'      => 'required|string|max:255',
+            'type'      => 'required|in:registration_bonus,multiplier,fixed_bonus',
+            'value'     => 'required|numeric|min:0',
+            'status'    => 'required|in:active,inactive',
+            'starts_at' => 'nullable|date',
+            'ends_at'   => 'nullable|date|after_or_equal:starts_at',
+        ]);
+
+        $promo->update($validated);
+
+        Log::info("Merchant #{$merchant->id} updated promo #{$promo->id}");
+
+        return response()->json(['success' => true, 'promo' => $promo, 'message' => 'Promo updated.']);
+    }
+
+    public function deletePromo($id): JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $promo = \App\Models\Promo::where('merchant_id', $merchant->id)->findOrFail($id);
+        $promo->delete();
+
+        Log::info("Merchant #{$merchant->id} deleted promo #{$id}");
+
+        return response()->json(['success' => true, 'message' => 'Promo deleted.']);
+    }
 }
