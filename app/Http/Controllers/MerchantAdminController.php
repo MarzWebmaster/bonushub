@@ -343,7 +343,7 @@ class MerchantAdminController extends Controller
     /**
      * API: single customer detail + transaction history.
      */
-    public function customerDetail(int $id): JsonResponse
+    public function customerDetail(int $id, Request $request = null): JsonResponse
     {
         $merchant = $this->getMerchant();
         $cm = CustomerMerchant::with('customer')
@@ -351,11 +351,11 @@ class MerchantAdminController extends Controller
             ->where('customer_id', $id)
             ->firstOrFail();
 
+        $perPage = $request ? min((int)$request->query('per_page', 10), 50) : 10;
         $transactions = PointsTransaction::where('merchant_id', $merchant->id)
             ->where('customer_id', $id)
             ->orderBy('created_at', 'desc')
-            ->limit(50)
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'success' => true,
