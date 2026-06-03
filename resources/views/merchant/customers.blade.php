@@ -11,11 +11,11 @@
 
     {{-- Tier filter tabs --}}
     <div class="flex gap-2 mb-4 flex-wrap">
-        <button onclick="loadCustomers(1,'')" class="tier-tab active" data-tier="">All</button>
-        <button onclick="loadCustomers(1,'basic')" class="tier-tab" data-tier="basic">Basic</button>
-        <button onclick="loadCustomers(1,'silver')" class="tier-tab" data-tier="silver">Silver</button>
-        <button onclick="loadCustomers(1,'gold')" class="tier-tab" data-tier="gold">Gold</button>
-        <button onclick="loadCustomers(1,'platinum')" class="tier-tab" data-tier="platinum">Platinum</button>
+        <button onclick="loadPage(1,'')" class="tier-tab active" data-tier="">All</button>
+        <button onclick="loadPage(1,'basic')" class="tier-tab" data-tier="basic">Basic</button>
+        <button onclick="loadPage(1,'silver')" class="tier-tab" data-tier="silver">Silver</button>
+        <button onclick="loadPage(1,'gold')" class="tier-tab" data-tier="gold">Gold</button>
+        <button onclick="loadPage(1,'platinum')" class="tier-tab" data-tier="platinum">Platinum</button>
     </div>
 
     <div class="card overflow-hidden">
@@ -30,13 +30,47 @@
                 </tr>
             </thead>
             <tbody id="cust-table">
-                <tr><td colspan="5" class="text-center text-surface-400 py-8">Loading...</td></tr>
+                @forelse($customers as $cm)
+                <tr onclick="window.location.href='{{ route("customers.detail", $cm->customer?->id) }}'" style="cursor:pointer">
+                    <td>
+                        <div class="font-medium">{{ $cm->customer?->name ?? 'N/A' }}</div>
+                        <div class="text-xs text-surface-400">{{ $cm->customer?->email ?? '' }}</div>
+                    </td>
+                    <td class="text-surface-500">{{ $cm->customer?->phone ?? '-' }}</td>
+                    <td class="font-bold text-bonus-600">{{ number_format($cm->points) }}</td>
+                    <td><span class="badge-tier {{ strtolower($cm->tier_per_merchant ?? 'basic') }}">{{ $cm->tier_per_merchant ?? 'Basic' }}</span></td>
+                    <td class="text-surface-400 text-xs">{{ $cm->tied_at ? $cm->tied_at->format('d M Y') : '-' }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="5" class="text-center text-surface-400 py-8">No customers found</td></tr>
+                @endforelse
             </tbody>
         </table></div>
     </div>
 
     {{-- Pagination --}}
-    <div id="pagination" class="flex justify-between items-center mt-4 text-sm text-surface-500"></div>
+    <div id="pagination" class="flex justify-between items-center mt-4 text-sm text-surface-500">
+        @if($customers->hasPages())
+        <span>Showing {{ $customers->firstItem() }}-{{ $customers->lastItem() }} of {{ $customers->total() }}</span>
+        <div class="flex gap-1">
+            @if($customers->onFirstPage())
+                <span class="px-3 py-1 rounded bg-surface-50 text-surface-400 cursor-default">← Prev</span>
+            @else
+                <button onclick="loadPage({{ $customers->currentPage()-1 }})" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200 text-surface-700">← Prev</button>
+            @endif
+            @for($i=1; $i<=$customers->lastPage(); $i++)
+                <button onclick="loadPage({{ $i }})" class="px-3 py-1 rounded {{ $i==$customers->currentPage() ? 'bg-bonus-600 text-white' : 'bg-surface-100 hover:bg-surface-200 text-surface-700' }}">{{ $i }}</button>
+            @endfor
+            @if($customers->hasMorePages())
+                <button onclick="loadPage({{ $customers->currentPage()+1 }})" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200 text-surface-700">Next →</button>
+            @else
+                <span class="px-3 py-1 rounded bg-surface-50 text-surface-400 cursor-default">Next →</span>
+            @endif
+        </div>
+        @else
+        <span>{{ $customers->total() }} customer(s)</span><div></div>
+        @endif
+    </div>
 </div>
 
 <style>
@@ -50,9 +84,9 @@
 
 <script>
 let currentTier = '';
-let currentPage = 1;
+let currentPage = {{ $customers->currentPage() }};
 
-function loadCustomers(page, tier) {
+function loadPage(page, tier) {
     if (tier !== undefined) currentTier = tier;
     currentPage = page || 1;
 
@@ -61,7 +95,7 @@ function loadCustomers(page, tier) {
         t.classList.toggle('active', t.dataset.tier === currentTier);
     });
 
-    let url = '/merchant/api/customers?per_page=5&page=' + currentPage;
+    let url = '/merchant/api/customers?per_page=10&page=' + currentPage;
     if (currentTier) url += '&tier=' + currentTier;
 
     fetch(url).then(r => r.json()).then(d => {
@@ -92,13 +126,17 @@ function loadCustomers(page, tier) {
         if (p.last_page && p.last_page > 1) {
             let btns = '<span>Showing ' + p.from + '-' + p.to + ' of ' + p.total + '</span><div class="flex gap-1">';
             if (p.current_page > 1)
-                btns += '<button onclick="loadCustomers(' + (p.current_page - 1) + ')" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200 text-surface-700">← Prev</button>';
+                btns += '<button onclick="loadPage(' + (p.current_page - 1) + ')" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200 text-surface-700">← Prev</button>';
+            else
+                btns += '<span class="px-3 py-1 rounded bg-surface-50 text-surface-400 cursor-default">← Prev</span>';
             for (let i = 1; i <= p.last_page; i++) {
-                btns += '<button onclick="loadCustomers(' + i + ')" class="px-3 py-1 rounded ' +
+                btns += '<button onclick="loadPage(' + i + ')" class="px-3 py-1 rounded ' +
                     (i === p.current_page ? 'bg-bonus-600 text-white' : 'bg-surface-100 hover:bg-surface-200 text-surface-700') + '">' + i + '</button>';
             }
             if (p.current_page < p.last_page)
-                btns += '<button onclick="loadCustomers(' + (p.current_page + 1) + ')" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200 text-surface-700">Next →</button>';
+                btns += '<button onclick="loadPage(' + (p.current_page + 1) + ')" class="px-3 py-1 rounded bg-surface-100 hover:bg-surface-200 text-surface-700">Next →</button>';
+            else
+                btns += '<span class="px-3 py-1 rounded bg-surface-50 text-surface-400 cursor-default">Next →</span>';
             btns += '</div>';
             pg.innerHTML = btns;
         } else {
@@ -106,7 +144,5 @@ function loadCustomers(page, tier) {
         }
     });
 }
-
-loadCustomers(1, '');
 </script>
 @endsection

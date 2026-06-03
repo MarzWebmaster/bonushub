@@ -191,7 +191,7 @@ class MerchantAdminController extends Controller
     public function customerListByTier(Request $request)
     {
         $merchant = $this->getMerchant();
-        $perPage = min((int) $request->query('per_page', 5), 50);
+        $perPage = min((int) $request->query('per_page', 10), 50);
         $customers = CustomerMerchant::with('customer')->where('merchant_id', $merchant->id);
         if ($request->tier) $customers->where('tier_per_merchant', $request->tier);
         return response()->json(['success' => true, 'customers' => $customers->orderBy('points', 'desc')->paginate($perPage)]);
