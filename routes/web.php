@@ -67,7 +67,7 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
 // ========================
 // Merchant Admin Routes
 // ========================
-Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(function () {
+Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'throttle:api'])->group(function () {
     // Pages (HTML views)
     Route::get('/dashboard', [MerchantAdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/points/pending', [MerchantAdminController::class, 'pendingApprovalsPage'])->name('points.pending');
@@ -110,6 +110,7 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(functi
     Route::get('/api/leaderboard', [MerchantAdminController::class, 'leaderboard'])->name('api.leaderboard');
     Route::get('/api/reports/liability', [MerchantAdminController::class, 'liabilityReport'])->name('api.reports.liability');
     Route::get('/api/loyalty-rates', [MerchantAdminController::class, 'getLoyaltyRates'])->name('api.loyalty.rates');
+    Route::post('/api/loyalty-rates', [MerchantAdminController::class, 'updateLoyaltyRatesApi'])->name('api.loyalty.rates.update');
 
     // Campaign API
     Route::get('/api/campaigns', [CampaignController::class, 'list'])->name('api.campaigns');
