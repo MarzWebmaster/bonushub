@@ -31,7 +31,7 @@
             </thead>
             <tbody id="cust-table">
                 @forelse($customers as $cm)
-                <tr onclick="window.location.href='{{ route("customers.detail", $cm->customer?->id) }}'" style="cursor:pointer">
+                <tr onclick="window.location.href='{{ route("merchant.customers.detail", $cm->customer?->id) }}'" style="cursor:pointer">
                     <td>
                         <div class="font-medium">{{ $cm->customer?->name ?? 'N/A' }}</div>
                         <div class="text-xs text-surface-400">{{ $cm->customer?->email ?? '' }}</div>
