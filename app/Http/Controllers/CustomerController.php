@@ -422,8 +422,12 @@ class CustomerController extends Controller
                 ->first();
 
             if ($bonusPromo) {
-                $cm->points += $bonusPromo->value;
-                $cm->save();
+                $newPoints = $bonusPromo->value;
+                // Use DB::table directly — Pivot model has no auto-increment id
+                DB::table('customer_merchant')
+                    ->where('customer_id', $customer->id)
+                    ->where('merchant_id', $merchant->id)
+                    ->update(['points' => $newPoints]);
 
                 \App\Models\PointsTransaction::create([
                     'merchant_id'  => $merchant->id,
