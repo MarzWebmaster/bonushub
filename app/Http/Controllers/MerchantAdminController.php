@@ -448,9 +448,18 @@ class MerchantAdminController extends Controller
     }
 
     /**
+     * Show edit company profile form.
+     */
+    public function editProfile(): View
+    {
+        $merchant = $this->getMerchant();
+        return view('merchant.profile-edit', compact('merchant'));
+    }
+
+    /**
      * Update company profile info.
      */
-    public function updateProfile(Request $request): JsonResponse
+    public function updateProfile(Request $request)
     {
         $merchant = $this->getMerchant();
 
@@ -464,17 +473,23 @@ class MerchantAdminController extends Controller
 
         Log::info("Merchant #{$merchant->id} updated profile", ['user_id' => Auth::id()]);
 
-        return response()->json([
-            'success'  => true,
-            'message'  => 'Profil syarikat dikemaskini.',
-            'merchant' => $merchant->fresh(),
-        ]);
+        return redirect()->route('merchant.profile')
+            ->with('success', 'Profil syarikat dikemaskini.');
+    }
+
+    /**
+     * Show create branch form.
+     */
+    public function createBranch(): View
+    {
+        $merchant = $this->getMerchant();
+        return view('merchant.branch-create', compact('merchant'));
     }
 
     /**
      * Store a new branch.
      */
-    public function storeBranch(Request $request): JsonResponse
+    public function storeBranch(Request $request)
     {
         $merchant = $this->getMerchant();
 
@@ -484,26 +499,33 @@ class MerchantAdminController extends Controller
             'address' => 'nullable|string|max:500',
         ]);
 
-        $branch = $merchant->branches()->create([
+        $merchant->branches()->create([
             'name'    => $validated['name'],
             'phone'   => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
             'status'  => 'active',
         ]);
 
-        Log::info("Merchant #{$merchant->id} created branch #{$branch->id}: {$branch->name}");
+        Log::info("Merchant #{$merchant->id} created branch: {$validated['name']}");
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Cawangan berjaya ditambah.',
-            'branch'  => $branch,
-        ]);
+        return redirect()->route('merchant.profile')
+            ->with('success', 'Cawangan berjaya ditambah.');
+    }
+
+    /**
+     * Show edit branch form.
+     */
+    public function editBranch($id): View
+    {
+        $merchant = $this->getMerchant();
+        $branch = \App\Models\Branch::where('merchant_id', $merchant->id)->findOrFail($id);
+        return view('merchant.branch-edit', compact('merchant', 'branch'));
     }
 
     /**
      * Update a branch.
      */
-    public function updateBranch(Request $request, $id): JsonResponse
+    public function updateBranch(Request $request, $id)
     {
         $merchant = $this->getMerchant();
         $branch = \App\Models\Branch::where('merchant_id', $merchant->id)->findOrFail($id);
@@ -519,17 +541,14 @@ class MerchantAdminController extends Controller
 
         Log::info("Merchant #{$merchant->id} updated branch #{$branch->id}");
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Cawangan dikemaskini.',
-            'branch'  => $branch->fresh(),
-        ]);
+        return redirect()->route('merchant.profile')
+            ->with('success', 'Cawangan dikemaskini.');
     }
 
     /**
      * Delete a branch.
      */
-    public function deleteBranch($id): JsonResponse
+    public function deleteBranch($id)
     {
         $merchant = $this->getMerchant();
         $branch = \App\Models\Branch::where('merchant_id', $merchant->id)->findOrFail($id);
@@ -539,9 +558,7 @@ class MerchantAdminController extends Controller
 
         Log::info("Merchant #{$merchant->id} deleted branch #{$id}: {$name}");
 
-        return response()->json([
-            'success' => true,
-            'message' => "Cawangan \"{$name}\" telah dipadam.",
-        ]);
+        return redirect()->route('merchant.profile')
+            ->with('success', "Cawangan \"{$name}\" telah dipadam.");
     }
 }

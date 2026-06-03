@@ -100,8 +100,11 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(functi
 
     // Profile & Branches
     Route::get('/profile', [MerchantAdminController::class, 'profilePage'])->name('profile');
+    Route::get('/profile/edit', [MerchantAdminController::class, 'editProfile'])->name('profile.edit');
     Route::post('/profile', [MerchantAdminController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/branches/create', [MerchantAdminController::class, 'createBranch'])->name('branches.create');
     Route::post('/branches', [MerchantAdminController::class, 'storeBranch'])->name('branches.store');
+    Route::get('/branches/{id}/edit', [MerchantAdminController::class, 'editBranch'])->name('branches.edit');
     Route::put('/branches/{id}', [MerchantAdminController::class, 'updateBranch'])->name('branches.update');
     Route::delete('/branches/{id}', [MerchantAdminController::class, 'deleteBranch'])->name('branches.destroy');
         Route::get('/tiers', [MerchantAdminController::class, 'tiersPage'])->name('tiers');
