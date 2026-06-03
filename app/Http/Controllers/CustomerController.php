@@ -309,7 +309,7 @@ class CustomerController extends Controller
 
         $query = DB::table('customer_merchant')
             ->join('customers', 'customer_merchant.customer_id', '=', 'customers.id')
-            ->whereNull('customers.deleted_at')
+            
             ->select(
                 'customers.id',
                 'customers.name',
