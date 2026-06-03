@@ -19,7 +19,7 @@
     </div>
 
     <div class="card overflow-hidden">
-        <table class="data-table">
+        <div class="overflow-x-auto"><table class="data-table">
             <thead>
                 <tr>
                     <th>Customer</th>
@@ -32,7 +32,7 @@
             <tbody id="cust-table">
                 <tr><td colspan="5" class="text-center text-surface-400 py-8">Loading...</td></tr>
             </tbody>
-        </table>
+        </table></div>
     </div>
 
     {{-- Pagination --}}
@@ -79,7 +79,7 @@ function loadCustomers(page, tier) {
                     + '<td class="font-bold text-bonus-600">' + Number(c.points).toLocaleString() + '</td>'
                     + '<td><span class="badge-tier ' + (c.tier_per_merchant || 'basic').toLowerCase() + '">'
                     + (c.tier_per_merchant || 'Basic') + '</span></td>'
-                    + '<td class="text-surface-400 text-xs">' + (c.tied_at || '-') + '</td>'
+                    + '<td class="text-surface-400 text-xs">' + (c.tied_at ? new Date(c.tied_at).toLocaleDateString('en-MY',{day:'2-digit',month:'short',year:'numeric'}) : '-') + '</td>'
                     + '</tr>';
             });
         } else {

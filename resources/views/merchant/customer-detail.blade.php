@@ -91,7 +91,7 @@ function loadTransactions(page) {
             document.getElementById('c-tier').textContent = c.tier || 'Basic';
             document.getElementById('c-tier').className = 'badge-tier ' + (c.tier || 'basic').toLowerCase();
             document.getElementById('avatar').textContent = (c.name || '?')[0].toUpperCase();
-            document.getElementById('s-joined').textContent = (c.tied_at || '-').substring(0, 10);
+            document.getElementById('s-joined').textContent = c.tied_at ? new Date(c.tied_at).toLocaleDateString('en-MY',{day:'2-digit',month:'short',year:'numeric'}) : '-';
             document.getElementById('s-txcount').textContent = txData.total || 0;
         }
 
