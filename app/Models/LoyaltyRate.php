@@ -9,6 +9,10 @@ class LoyaltyRate extends Model
     protected $fillable = [
         'merchant_id',
         'rate_per_rm',
+        'earn_rate',
+        'redeem_rate',
+        'min_redeem',
+        'max_redeem',
         'festive_multiplier',
         'product_specific_rules',
     ];

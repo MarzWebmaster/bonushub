@@ -200,9 +200,9 @@ class MerchantAdminController extends Controller
     public function leaderboard(Request $request)
     {
         $merchant = $this->getMerchant();
-        $limit = min((int)$request->query('limit', 20), 100);
+        $perPage = min((int)$request->query('per_page', 10), 50);
         $data = CustomerMerchant::with('customer')->where('merchant_id', $merchant->id)
-            ->orderBy('points', 'desc')->limit($limit)->get();
+            ->orderBy('points', 'desc')->paginate($perPage);
         return response()->json(['success' => true, 'merchant' => $merchant->name, 'leaderboard' => $data]);
     }
 
@@ -241,7 +241,23 @@ class MerchantAdminController extends Controller
             'max_redeem' => 'nullable|integer|min:0',
         ]);
         LoyaltyRate::updateOrCreate(['merchant_id' => $merchant->id], $data);
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Loyalty rates updated!', 'rate' => LoyaltyRate::where('merchant_id', $merchant->id)->first()]);
+        }
         return redirect()->back()->with('success', 'Loyalty rates updated!');
+    }
+
+    public function updateLoyaltyRatesApi(Request $request)
+    {
+        $merchant = $this->getMerchant();
+        $data = $request->validate([
+            'earn_rate' => 'required|numeric|min:0.01',
+            'redeem_rate' => 'required|numeric|min:1',
+            'min_redeem' => 'nullable|integer|min:0',
+            'max_redeem' => 'nullable|integer|min:0',
+        ]);
+        LoyaltyRate::updateOrCreate(['merchant_id' => $merchant->id], $data);
+        return response()->json(['success' => true, 'message' => 'Loyalty rates updated!', 'rate' => LoyaltyRate::where('merchant_id', $merchant->id)->first()]);
     }
     /**
      * JSON API: Dashboard stats for merchant.
