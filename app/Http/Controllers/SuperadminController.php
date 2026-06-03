@@ -239,7 +239,7 @@ class SuperadminController extends Controller
 
     public function auditLogs(Request $request): JsonResponse
     {
-        $query = DB::table('activity_logs');
+        $query = \App\Models\ActivityLog::with('user:id,name');
 
         if ($request->has('user_id'))
             $query->where('user_id', $request->user_id);
@@ -257,7 +257,7 @@ class SuperadminController extends Controller
 
     public function auditLogsPage(): View
     {
-        $logs = DB::table('activity_logs')
+        $logs = \App\Models\ActivityLog::with('user:id,name')
             ->orderBy('created_at', 'desc')
             ->paginate(50);
         return view('superadmin.audit', compact('logs'));

@@ -13,7 +13,7 @@
         </button>
     </div>
 
-    <div class="table-container">
+    <div class="table-container"><div class="overflow-x-auto">
         <table class="data-table">
             <thead>
                 <tr>
@@ -63,7 +63,7 @@
                 </tr>
                 @endforelse
             </tbody>
-        </table>
+        </table></div>
     </div>
     @if($merchants->hasPages())
         <div class="mt-4">{{ $merchants->links() }}</div>
