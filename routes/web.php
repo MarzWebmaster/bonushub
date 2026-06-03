@@ -67,7 +67,7 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
 // ========================
 // Merchant Admin Routes
 // ========================
-Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'throttle:api'])->group(function () {
+Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(function () {
     // Pages (HTML views)
     Route::get('/dashboard', [MerchantAdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/points/pending', [MerchantAdminController::class, 'pendingApprovalsPage'])->name('points.pending');
