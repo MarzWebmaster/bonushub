@@ -54,13 +54,14 @@
                 <tr>
                     <th>Date</th>
                     <th>Type</th>
+                    <th>Branch</th>
                     <th>Points</th>
                     <th>Status</th>
                     <th>Notes</th>
                 </tr>
             </thead>
             <tbody id="tx-table">
-                <tr><td colspan="5" class="text-center text-surface-400 py-8">Loading...</td></tr>
+                <tr><td colspan="6" class="text-center text-surface-400 py-8">Loading...</td></tr>
             </tbody>
         </table></div>
         <div id="tx-pagination" class="flex items-center justify-between px-4 py-3 border-t border-surface-200"></div>
@@ -111,6 +112,7 @@ function loadTransactions(page) {
                     + '<td class="text-xs text-surface-400">' + new Date(t.created_at).toLocaleDateString('en-MY', {day:'2-digit',month:'short',year:'numeric'}) + '</td>'
                     + '<td><span class="px-2 py-0.5 rounded-full text-xs font-medium ' + (isEarn ? 'bg-emerald-50 text-emerald-700' : 'bg-orange-50 text-orange-700') + '">'
                     + (t.type || (isEarn ? 'earn' : 'redeem')) + '</span></td>'
+                    + '<td class="text-sm text-surface-600">' + (t.branch_name || '-') + '</td>'
                     + '<td class="font-bold ' + (isEarn ? 'text-emerald-600' : 'text-orange-500') + '">' + (isEarn ? '+' : '') + pts.toLocaleString() + '</td>'
                     + '<td><span class="px-2 py-0.5 rounded text-xs ' + (t.status === 'approved' ? 'bg-emerald-50 text-emerald-600' : t.status === 'pending' ? 'bg-yellow-50 text-yellow-600' : 'bg-surface-100 text-surface-500') + '">'
                     + (t.status || '-') + '</span></td>'
@@ -118,7 +120,7 @@ function loadTransactions(page) {
                     + '</tr>';
             });
         } else {
-            h = '<tr><td colspan="5" class="text-center text-surface-400 py-8">No transactions yet</td></tr>';
+            h = '<tr><td colspan="6" class="text-center text-surface-400 py-8">No transactions yet</td></tr>';
         }
         document.getElementById('tx-table').innerHTML = h;
 

@@ -357,10 +357,17 @@ class MerchantAdminController extends Controller
             ->firstOrFail();
 
         $perPage = $request ? min((int)$request->query('per_page', 10), 50) : 10;
-        $transactions = PointsTransaction::where('merchant_id', $merchant->id)
+        $transactions = PointsTransaction::with('branch')
+            ->where('merchant_id', $merchant->id)
             ->where('customer_id', $id)
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
+
+        // Append branch_name to each transaction
+        $txData = $transactions->toArray();
+        foreach ($transactions as $i => $tx) {
+            $txData['data'][$i]['branch_name'] = $tx->branch ? $tx->branch->name : null;
+        }
 
         return response()->json([
             'success' => true,
@@ -374,7 +381,7 @@ class MerchantAdminController extends Controller
                 'tied_at' => $cm->tied_at,
                 'campaign_link_id' => $cm->campaign_link_id,
             ],
-            'transactions' => $transactions,
+            'transactions' => $txData,
         ]);
     }
 
