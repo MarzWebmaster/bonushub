@@ -43,13 +43,13 @@
                     <option value="pie">Pie</option>
                 </select>
             </div>
-            <div class="relative h-[220px] sm:h-[260px]"><canvas id="chart-registrations"></canvas></div>
+            <div class="chart-wrap"><canvas id="chart-registrations"></canvas></div>
         </div>
 
-        {{-- Points Earned vs Redeemed (combined) --}}
+        {{-- Points Earned vs Redeemed --}}
         <div class="card p-3 sm:p-5">
             <h3 class="text-xs sm:text-sm font-semibold text-surface-700 mb-3">Points Earned vs Redeemed</h3>
-            <div class="relative h-[220px] sm:h-[260px]"><canvas id="chart-points"></canvas></div>
+            <div class="chart-wrap"><canvas id="chart-points"></canvas></div>
         </div>
 
     </div>
@@ -73,12 +73,19 @@ const doughnutColors = [
     '#ef4444','#3b82f6','#ec4899','#14b8a6','#f97316'
 ];
 
+function isMobile() { return window.innerWidth < 640; }
+
+function setChartHeights() {
+    var h = isMobile() ? '200px' : '260px';
+    document.querySelectorAll('.chart-wrap').forEach(function(el) { el.style.height = h; });
+}
+
 function buildRegChart(type) {
     if (regChart) regChart.destroy();
-    const ctx = document.getElementById('chart-registrations').getContext('2d');
-    const labels = chartData.chart.labels;
-    const data = chartData.chart.registrations;
-    const isMobile = window.innerWidth < 640;
+    var ctx = document.getElementById('chart-registrations').getContext('2d');
+    var labels = chartData.chart.labels;
+    var data = chartData.chart.registrations;
+    var mobile = isMobile();
 
     if (type === 'bar' || type === 'line') {
         regChart = new Chart(ctx, {
@@ -91,10 +98,11 @@ function buildRegChart(type) {
                     borderColor: chartColors.registrations.border,
                     borderWidth: type === 'line' ? 2 : 0,
                     borderRadius: type === 'bar' ? 4 : 0,
-                    barThickness: type === 'bar' ? (isMobile ? 16 : 28) : undefined,
+                    barThickness: type === 'bar' ? (mobile ? 14 : 28) : undefined,
+                    maxBarThickness: mobile ? 20 : 40,
                     fill: type === 'line',
                     tension: 0.4,
-                    pointRadius: type === 'line' ? (isMobile ? 3 : 5) : 0,
+                    pointRadius: type === 'line' ? (mobile ? 3 : 5) : 0,
                     pointBackgroundColor: chartColors.registrations.border
                 }]
             },
@@ -103,8 +111,8 @@ function buildRegChart(type) {
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: isMobile ? 9 : 11 } } },
-                    y: { grid: { color: 'rgba(148,163,184,0.15)' }, ticks: { color: '#94a3b8', font: { size: isMobile ? 9 : 11 } }, beginAtZero: true }
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: mobile ? 9 : 11 } } },
+                    y: { grid: { color: 'rgba(148,163,184,0.15)' }, ticks: { color: '#94a3b8', font: { size: mobile ? 9 : 11 } }, beginAtZero: true }
                 }
             }
         });
@@ -126,7 +134,7 @@ function buildRegChart(type) {
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { color: '#64748b', font: { size: isMobile ? 9 : 11 }, padding: isMobile ? 8 : 12, usePointStyle: true, pointStyle: 'circle' }
+                        labels: { color: '#64748b', font: { size: mobile ? 9 : 11 }, padding: mobile ? 8 : 12, usePointStyle: true, pointStyle: 'circle' }
                     }
                 }
             }
@@ -136,8 +144,8 @@ function buildRegChart(type) {
 
 function buildPointsChart() {
     if (pointsChart) pointsChart.destroy();
-    const ctx = document.getElementById('chart-points').getContext('2d');
-    const isMobile = window.innerWidth < 640;
+    var ctx = document.getElementById('chart-points').getContext('2d');
+    var mobile = isMobile();
     pointsChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -150,7 +158,7 @@ function buildPointsChart() {
                     backgroundColor: chartColors.earned.bg,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: isMobile ? 3 : 5,
+                    pointRadius: mobile ? 3 : 5,
                     pointBackgroundColor: chartColors.earned.point,
                     borderWidth: 2
                 },
@@ -161,7 +169,7 @@ function buildPointsChart() {
                     backgroundColor: chartColors.redeemed.bg,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: isMobile ? 3 : 5,
+                    pointRadius: mobile ? 3 : 5,
                     pointBackgroundColor: chartColors.redeemed.point,
                     borderWidth: 2
                 }
@@ -173,18 +181,27 @@ function buildPointsChart() {
             plugins: {
                 legend: {
                     position: 'top',
-                    labels: { color: '#64748b', font: { size: isMobile ? 10 : 12 }, padding: isMobile ? 10 : 16, usePointStyle: true, pointStyle: 'circle' }
+                    labels: { color: '#64748b', font: { size: mobile ? 10 : 12 }, padding: mobile ? 10 : 16, usePointStyle: true, pointStyle: 'circle' }
                 }
             },
             scales: {
-                x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: isMobile ? 9 : 11 } } },
-                y: { grid: { color: 'rgba(148,163,184,0.15)' }, ticks: { color: '#94a3b8', font: { size: isMobile ? 9 : 11 } }, beginAtZero: true }
+                x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: mobile ? 9 : 11 } } },
+                y: { grid: { color: 'rgba(148,163,184,0.15)' }, ticks: { color: '#94a3b8', font: { size: mobile ? 9 : 11 } }, beginAtZero: true }
             }
         }
     });
 }
 
-fetch('/merchant/api/dashboard').then(r=>r.json()).then(d=>{
+function buildAll() {
+    setChartHeights();
+    if (chartData) {
+        var type = document.getElementById('reg-chart-type').value;
+        buildRegChart(type);
+        buildPointsChart();
+    }
+}
+
+fetch('/merchant/api/dashboard').then(function(r){return r.json()}).then(function(d){
     if(!d.success) return;
     document.getElementById('m-total-customers').textContent = d.total_customers;
     document.getElementById('m-points').textContent = d.total_points.toLocaleString();
@@ -192,12 +209,15 @@ fetch('/merchant/api/dashboard').then(r=>r.json()).then(d=>{
     document.getElementById('m-products').textContent = d.total_products;
     if(!d.chart || !d.chart.labels.length) return;
     chartData = d;
-    buildRegChart('bar');
-    buildPointsChart();
+    buildAll();
 });
 
 document.getElementById('reg-chart-type').addEventListener('change', function(){
     if (chartData) buildRegChart(this.value);
+});
+
+window.addEventListener('resize', function(){
+    if (chartData) buildAll();
 });
 </script>
 @endpush
