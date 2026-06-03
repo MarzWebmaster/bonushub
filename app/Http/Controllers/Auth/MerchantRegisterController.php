@@ -45,6 +45,18 @@ class MerchantRegisterController extends Controller
                 ->with('success', 'Registration submitted! Please check your email for next steps.');
         }
 
+        // 3. Turnstile: verify Cloudflare token
+        $turnstileResponse = $request->input('cf-turnstile-response');
+        if (!$turnstileResponse || !static::verifyTurnstile($turnstileResponse, $request->ip())) {
+            Log::warning("MerchantRegister: Turnstile verification failed", [
+                'ip'    => $request->ip(),
+                'email' => $request->input('email'),
+            ]);
+            return back()->withErrors([
+                'turnstile' => 'Sila sahkan anda bukan robot.',
+            ])->withInput();
+        }
+
         // ── VALIDATION ─────────────────────────
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
@@ -117,6 +129,36 @@ class MerchantRegisterController extends Controller
             return back()->withErrors([
                 'email' => 'Pendaftaran gagal. Sila cuba lagi.',
             ])->withInput();
+        }
+    }
+
+    /**
+     * Verify Cloudflare Turnstile token.
+     */
+    private static function verifyTurnstile(string $token, string $ip): bool
+    {
+        $secret = config('services.turnstile.secret_key') ?? env('TURNSTILE_SECRET_KEY');
+
+        if (!$secret || $secret === 'your-secret-key-here') {
+            // Not configured yet — allow through (dev mode)
+            return true;
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::asForm()
+                ->withOptions(['verify' => false])
+                ->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                    'secret'   => $secret,
+                    'response' => $token,
+                    'remoteip' => $ip,
+                ]);
+
+            $result = $response->json();
+
+            return ($result['success'] ?? false) === true;
+        } catch (\Throwable $e) {
+            Log::error("Turnstile verify failed: {$e->getMessage()}");
+            return true; // fail-open: don't block real users if Turnstile API down
         }
     }
 }

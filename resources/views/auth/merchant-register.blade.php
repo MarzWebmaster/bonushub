@@ -11,14 +11,14 @@
                 </div>
                 <h1 class="text-2xl font-bold text-surface-800">Daftar Sebagai Merchant</h1>
                 <p class="text-surface-500 mt-1">Mula program loyalty untuk bisnes anda</p>
-                <p class="text-xs text-surface-400 mt-1">✅ Percuma • ✅ Aktif serta-merta • ✅ Tiada approval</p>
+                <p class="text-xs text-surface-400 mt-1">&#x2705; Percuma &#x2022; &#x2705; Aktif serta-merta &#x2022; &#x2705; Tiada approval</p>
             </div>
 
             <form action="{{ route('merchant.register.post') }}" method="POST" class="space-y-4" id="merchant-register-form">
                 @csrf
                 <input type="hidden" name="_t" value="{{ time() }}">
 
-                {{-- 🪤 HONEYPOT — hidden from humans, visible to bots --}}
+                {{-- &#x1FABD; HONEYPOT — hidden from humans, visible to bots --}}
                 <div style="position:absolute;left:-9999px;" aria-hidden="true">
                     <label for="website">Website</label>
                     <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
@@ -74,6 +74,16 @@
                     </div>
                 @endif
 
+                {{-- Cloudflare Turnstile — only shown when keys configured --}}
+                @if(config('services.turnstile.site_key') && !str_contains(config('services.turnstile.site_key'), 'placeholder'))
+                <div class="flex justify-center">
+                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="light" data-language="ms"></div>
+                </div>
+                @error('turnstile')
+                    <p class="text-red-500 text-xs text-center">{{ $message }}</p>
+                @enderror
+                @endif
+
                 <button type="submit" class="btn-primary w-full py-3 text-base flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     Aktifkan Akaun Merchant
@@ -90,4 +100,6 @@
         </div>
     </div>
 </div>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 @endsection
