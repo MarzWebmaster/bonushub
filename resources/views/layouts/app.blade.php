@@ -11,7 +11,7 @@
         @media (max-width: 1023px) {
             .sidebar-mobile { transform: translateX(-100%); position: fixed; z-index: 50; }
             .sidebar-mobile.open { transform: translateX(0); }
-            .topbar-mobile { left: 0 !important; }
+            .topbar-mobile { left: 0 !important; z-index: 50 !important; }
             .main-content { margin-left: 0 !important; }
         }
     </style>
