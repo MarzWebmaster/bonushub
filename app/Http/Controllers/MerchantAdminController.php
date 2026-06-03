@@ -79,6 +79,31 @@ class MerchantAdminController extends Controller
             ->where('merchant_id', $merchant->id)
             ->orderBy('points', 'desc')
             ->paginate(20);
+
+        // Append last branch name for each customer
+        $customerIds = $customers->pluck('customer_id')->filter()->toArray();
+        $lastBranches = [];
+        if ($customerIds) {
+            $latestTx = PointsTransaction::selectRaw('customer_id, MAX(id) as max_id')
+                ->where('merchant_id', $merchant->id)
+                ->whereIn('customer_id', $customerIds)
+                ->whereNotNull('branch_id')
+                ->groupBy('customer_id')
+                ->pluck('max_id', 'customer_id');
+
+            if ($latestTx->isNotEmpty()) {
+                $branches = PointsTransaction::with('branch')
+                    ->whereIn('id', $latestTx->values())
+                    ->get()
+                    ->mapWithKeys(fn($tx) => [$tx->customer_id => $tx->branch?->name]);
+                $lastBranches = $branches->toArray();
+            }
+        }
+
+        foreach ($customers as $cm) {
+            $cm->last_branch_name = $lastBranches[$cm->customer_id] ?? null;
+        }
+
         return view('merchant.customers', compact('customers'));
     }
 
@@ -199,7 +224,35 @@ class MerchantAdminController extends Controller
         $perPage = min((int) $request->query('per_page', 10), 50);
         $customers = CustomerMerchant::with('customer')->where('merchant_id', $merchant->id);
         if ($request->tier) $customers->where('tier_per_merchant', $request->tier);
-        return response()->json(['success' => true, 'customers' => $customers->orderBy('points', 'desc')->paginate($perPage)]);
+        $paginated = $customers->orderBy('points', 'desc')->paginate($perPage);
+
+        // Append last branch name
+        $customerIds = collect($paginated->items())->pluck('customer_id')->filter()->toArray();
+        $lastBranches = [];
+        if ($customerIds) {
+            $latestTx = PointsTransaction::selectRaw('customer_id, MAX(id) as max_id')
+                ->where('merchant_id', $merchant->id)
+                ->whereIn('customer_id', $customerIds)
+                ->whereNotNull('branch_id')
+                ->groupBy('customer_id')
+                ->pluck('max_id', 'customer_id');
+
+            if ($latestTx->isNotEmpty()) {
+                $branches = PointsTransaction::with('branch')
+                    ->whereIn('id', $latestTx->values())
+                    ->get()
+                    ->mapWithKeys(fn($tx) => [$tx->customer_id => $tx->branch?->name]);
+                $lastBranches = $branches->toArray();
+            }
+        }
+
+        $result = $paginated->toArray();
+        foreach ($result['data'] as $i => $item) {
+            $cid = $item['customer_id'] ?? null;
+            $result['data'][$i]['last_branch_name'] = $lastBranches[$cid] ?? null;
+        }
+
+        return response()->json(['success' => true, 'customers' => $result]);
     }
 
     public function leaderboard(Request $request)

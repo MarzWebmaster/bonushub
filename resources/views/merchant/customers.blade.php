@@ -23,6 +23,7 @@
             <thead>
                 <tr>
                     <th>Customer</th>
+                    <th>Branch</th>
                     <th>Phone</th>
                     <th>Points</th>
                     <th>Tier</th>
@@ -36,13 +37,14 @@
                         <div class="font-medium">{{ $cm->customer?->name ?? 'N/A' }}</div>
                         <div class="text-xs text-surface-400">{{ $cm->customer?->email ?? '' }}</div>
                     </td>
+                    <td class="text-surface-500 text-sm">{{ $cm->last_branch_name ?? '-' }}</td>
                     <td class="text-surface-500">{{ $cm->customer?->phone ?? '-' }}</td>
                     <td class="font-bold text-bonus-600">{{ number_format($cm->points) }}</td>
                     <td><span class="badge-tier {{ strtolower($cm->tier_per_merchant ?? 'basic') }}">{{ $cm->tier_per_merchant ?? 'Basic' }}</span></td>
                     <td class="text-surface-400 text-xs">{{ $cm->tied_at ? $cm->tied_at->format('d M Y') : '-' }}</td>
                 </tr>
                 @empty
-                <tr><td colspan="5" class="text-center text-surface-400 py-8">No customers found</td></tr>
+                <tr><td colspan="6" class="text-center text-surface-400 py-8">No customers found</td></tr>
                 @endforelse
             </tbody>
         </table></div>
@@ -90,7 +92,6 @@ function loadPage(page, tier) {
     if (tier !== undefined) currentTier = tier;
     currentPage = page || 1;
 
-    // Update active tab
     document.querySelectorAll('.tier-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.tier === currentTier);
     });
@@ -109,6 +110,7 @@ function loadPage(page, tier) {
                 h += '<tr onclick="window.location.href=\'/merchant/customers/' + cu.id + '\'">'
                     + '<td><div class="font-medium">' + (cu.name || 'N/A') + '</div>'
                     + '<div class="text-xs text-surface-400">' + (cu.email || '') + '</div></td>'
+                    + '<td class="text-surface-500 text-sm">' + (c.last_branch_name || '-') + '</td>'
                     + '<td class="text-surface-500">' + (cu.phone || '-') + '</td>'
                     + '<td class="font-bold text-bonus-600">' + Number(c.points).toLocaleString() + '</td>'
                     + '<td><span class="badge-tier ' + (c.tier_per_merchant || 'basic').toLowerCase() + '">'
@@ -117,11 +119,10 @@ function loadPage(page, tier) {
                     + '</tr>';
             });
         } else {
-            h = '<tr><td colspan="5" class="text-center text-surface-400 py-8">No customers found</td></tr>';
+            h = '<tr><td colspan="6" class="text-center text-surface-400 py-8">No customers found</td></tr>';
         }
         document.getElementById('cust-table').innerHTML = h;
 
-        // Pagination controls
         const pg = document.getElementById('pagination');
         if (p.last_page && p.last_page > 1) {
             let btns = '<span>Showing ' + p.from + '-' + p.to + ' of ' + p.total + '</span><div class="flex gap-1">';
