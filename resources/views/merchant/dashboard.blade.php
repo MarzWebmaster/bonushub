@@ -36,7 +36,7 @@
         <div class="card p-3 sm:p-5">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                 <h3 class="text-xs sm:text-sm font-semibold text-surface-700">Registered Customers</h3>
-                <select id="reg-chart-type" class="text-xs border border-surface-200 rounded-lg px-2 py-1 bg-white text-surface-600 focus:outline-none focus:ring-2 focus:ring-bonus-400 w-full sm:w-auto">
+                <select id="reg-chart-type" class="text-xs border border-surface-200 rounded-lg px-2 py-1 bg-surface-50 text-surface-600 focus:outline-none focus:ring-2 focus:ring-bonus-400 w-full sm:w-auto">
                     <option value="bar">Bar</option>
                     <option value="line">Line</option>
                     <option value="doughnut">Doughnut</option>

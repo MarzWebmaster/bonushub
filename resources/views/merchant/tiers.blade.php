@@ -10,7 +10,7 @@
         </div>
         <div class="flex items-center gap-2">
             <span id="save-status" class="text-xs sm:text-sm hidden"></span>
-            <button onclick="saveTiers()" id="save-btn" class="inline-flex items-center gap-1.5 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-700 active:scale-95 transition-all shadow-sm whitespace-nowrap">
+            <button onclick="saveTiers()" id="save-btn" class="inline-flex items-center gap-1.5 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-700 active:scale-95 transition-all whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 Save
             </button>
