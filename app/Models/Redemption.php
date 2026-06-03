@@ -9,6 +9,7 @@ class Redemption extends Model
     protected $fillable = [
         'customer_id',
         'merchant_id',
+        'branch_id',
         'reward_id',
         'points_used',
         'cash_topup',
@@ -56,5 +57,13 @@ class Redemption extends Model
     public function staff()
     {
         return $this->belongsTo(User::class, 'staff_id');
+    }
+
+    /**
+     * Get the branch where the redemption was processed.
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }
