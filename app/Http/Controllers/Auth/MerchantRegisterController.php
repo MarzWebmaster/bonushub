@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Merchant;
 use App\Models\NotificationSetting;
 use App\Models\User;
+use App\Models\VerificationOtp;
 use App\Services\BonusNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +30,6 @@ class MerchantRegisterController extends Controller
                 'email'  => $request->input('email'),
                 'honeypot_value' => $request->input('website'),
             ]);
-            // Silently redirect back — don't tell the bot it was caught
             return redirect()->route('merchant.register')
                 ->with('success', 'Registration submitted! Please check your email for next steps.');
         }
@@ -45,18 +45,6 @@ class MerchantRegisterController extends Controller
                 ->with('success', 'Registration submitted! Please check your email for next steps.');
         }
 
-        // 3. Turnstile: verify Cloudflare token
-        $turnstileResponse = $request->input('cf-turnstile-response');
-        if (!$turnstileResponse || !static::verifyTurnstile($turnstileResponse, $request->ip())) {
-            Log::warning("MerchantRegister: Turnstile verification failed", [
-                'ip'    => $request->ip(),
-                'email' => $request->input('email'),
-            ]);
-            return back()->withErrors([
-                'turnstile' => 'Sila sahkan anda bukan robot.',
-            ])->withInput();
-        }
-
         // ── VALIDATION ─────────────────────────
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
@@ -64,7 +52,16 @@ class MerchantRegisterController extends Controller
             'email'        => 'required|email|unique:users,email',
             'phone'        => 'required|string|max:20',
             'password'     => 'required|string|min:8|confirmed',
+            'otp'          => 'required|string|size:6',
         ]);
+
+        // ── VERIFY OTP ─────────────────────────
+        $otpVerified = VerificationOtp::verify($validated['email'], $validated['otp'], 'registration');
+        if (!$otpVerified) {
+            return back()->withErrors([
+                'otp' => 'Kod pengesahan tidak sah atau telah tamat tempoh.',
+            ])->withInput();
+        }
 
         try {
             DB::beginTransaction();
@@ -79,11 +76,12 @@ class MerchantRegisterController extends Controller
             ]);
             $user->assignRole('merchant');
 
-            // 2. Create Merchant — AUTO APPROVED
+            // 2. Create Merchant — PENDING VERIFICATION (not auto-approved)
             $merchant = Merchant::create([
                 'company_name' => $validated['company_name'],
+                'owner_name'   => $validated['name'],
                 'phone'        => $validated['phone'],
-                'status'       => 'active',
+                'status'       => Merchant::STATUS_PENDING,
             ]);
 
             // 3. Link user to merchant
@@ -92,7 +90,6 @@ class MerchantRegisterController extends Controller
             DB::commit();
 
             // ── NOTIFY ──────────────────────────
-            // Seed defaults if not already seeded
             if (NotificationSetting::count() === 0) {
                 NotificationSetting::seedDefaults();
             }
@@ -101,14 +98,14 @@ class MerchantRegisterController extends Controller
                 'title'   => '🎉 Selamat datang ke BonusHub!',
                 'message' => "Hai {$validated['name']},\n\n"
                     . "Akaun merchant anda untuk **{$validated['company_name']}** telah berjaya didaftarkan!\n\n"
-                    . "Anda kini boleh log masuk dan mula menggunakan BonusHub untuk program loyalty anda.\n\n"
-                    . "👉 " . route('login') . "\n\n"
+                    . "Sila lengkapkan proses pengesahan dengan memuat naik dokumen IC dan SSM anda.\n\n"
+                    . "👉 " . route('merchant.verification') . "\n\n"
                     . "Terima kasih,\nPasukan BonusHub",
                 'type'    => 'success',
                 'data'    => [
                     'merchant_id'   => $merchant->id,
                     'company_name'  => $validated['company_name'],
-                    'redirect_url'  => route('login'),
+                    'redirect_url'  => route('merchant.verification'),
                 ],
             ]);
 
@@ -119,8 +116,9 @@ class MerchantRegisterController extends Controller
                 'merchant_id' => $merchant->id,
             ]);
 
-            return redirect()->route('merchant.dashboard')
-                ->with('success', '🎉 Selamat datang ke BonusHub! Akaun merchant anda telah diaktifkan.');
+            // Redirect to verification page (upload IC & SSM)
+            return redirect()->route('merchant.verification')
+                ->with('success', '🎉 Pendaftaran berjaya! Sila lengkapkan pengesahan dokumen.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -129,36 +127,6 @@ class MerchantRegisterController extends Controller
             return back()->withErrors([
                 'email' => 'Pendaftaran gagal. Sila cuba lagi.',
             ])->withInput();
-        }
-    }
-
-    /**
-     * Verify Cloudflare Turnstile token.
-     */
-    private static function verifyTurnstile(string $token, string $ip): bool
-    {
-        $secret = config('services.turnstile.secret_key') ?? env('TURNSTILE_SECRET_KEY');
-
-        if (!$secret || $secret === 'your-secret-key-here') {
-            // Not configured yet — allow through (dev mode)
-            return true;
-        }
-
-        try {
-            $response = \Illuminate\Support\Facades\Http::asForm()
-                ->withOptions(['verify' => false])
-                ->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-                    'secret'   => $secret,
-                    'response' => $token,
-                    'remoteip' => $ip,
-                ]);
-
-            $result = $response->json();
-
-            return ($result['success'] ?? false) === true;
-        } catch (\Throwable $e) {
-            Log::error("Turnstile verify failed: {$e->getMessage()}");
-            return true; // fail-open: don't block real users if Turnstile API down
         }
     }
 }

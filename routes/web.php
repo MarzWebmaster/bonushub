@@ -8,6 +8,8 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\MerchantRegisterController;
+use App\Http\Controllers\Auth\MerchantVerificationController;
+use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\MerchantAdminController;
 use App\Http\Controllers\CustomerController;
@@ -43,9 +45,20 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
+// OTP routes (for both customer and merchant registration)
+Route::post('/otp/send', [OtpController::class, 'send'])->name('otp.send');
+Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify');
+
 // Merchant Register routes
 Route::get('/merchant/register', [MerchantRegisterController::class, 'showRegisterForm'])->name('merchant.register');
 Route::post('/merchant/register', [MerchantRegisterController::class, 'register'])->name('merchant.register.post');
+
+// Merchant Verification routes (upload IC & SSM)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/merchant/verification', [MerchantVerificationController::class, 'showVerificationForm'])->name('merchant.verification');
+    Route::post('/merchant/verification', [MerchantVerificationController::class, 'uploadDocuments'])->name('merchant.verification.upload');
+    Route::post('/merchant/verification/skip', [MerchantVerificationController::class, 'skipVerification'])->name('merchant.verification.skip');
+});
 
 // Existing management routes
 Route::get('/manage/shop', [ShopController::class, 'index'])->name('manage.shop');
@@ -72,7 +85,7 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
 // ========================
 // Merchant Admin Routes
 // ========================
-Route::prefix('merchant')->name('merchant.')->middleware(['auth'])->group(function () {
+Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.approved'])->group(function () {
     // Pages (HTML views)
     Route::get('/dashboard', [MerchantAdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/points/pending', [MerchantAdminController::class, 'pendingApprovalsPage'])->name('points.pending');
@@ -199,6 +212,12 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth'])->group(fu
     Route::put('/api/merchants/{id}', [SuperadminController::class, 'updateMerchant'])->name('api.merchants.update');
     Route::post('/api/merchants/{id}/toggle', [SuperadminController::class, 'toggleMerchantStatus'])->name('api.merchants.toggle');
     Route::delete('/api/merchants/{id}', [SuperadminController::class, 'destroyMerchant'])->name('api.merchants.destroy');
+
+    // Merchant Approval (Superadmin)
+    Route::get('/merchants-pending', [SuperadminController::class, 'pendingMerchantsPage'])->name('merchants.pending');
+    Route::get('/api/merchants-pending', [SuperadminController::class, 'pendingMerchants'])->name('api.merchants.pending');
+    Route::post('/api/merchants/{id}/approve', [SuperadminController::class, 'approveMerchant'])->name('api.merchants.approve');
+    Route::post('/api/merchants/{id}/reject', [SuperadminController::class, 'rejectMerchant'])->name('api.merchants.reject');
 
     // Packages CRUD (API)
     Route::get('/api/packages', [SuperadminController::class, 'packages'])->name('api.packages');

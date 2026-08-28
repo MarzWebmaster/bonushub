@@ -1,0 +1,91 @@
+TASKREWARD BLOG: Cara Buat Tugasan — Panduan Lengkap (2026)
+Source: https://taskreward.cc/blog/cara-buat-tugasan-taskreward
+Published: 28 April 2026
+
+## SUMMARY: HOW TASKREWARD WORKS
+
+### User Flow:
+1. Register (free, email-based)
+2. Create account on dashboard
+3. See available tasks on homepage
+4. Click task → open merchant link (Instagram/TikTok/etc)
+5. Complete task (follow/like/comment)
+6. Upload screenshot proof on TaskReward page
+7. Submit → merchant reviews (24-48h)
+8. Task approved → points/money credited
+9. Cashout via FPX transfer to bank
+
+### Task Categories:
+- Instagram: Follow, Like, Comment, Share
+- TikTok: Follow, Like, Comment, Share
+- YouTube: Subscribe, Like, Comment, Watch
+- Twitter/X: Follow, Like, Retweet, Reply
+- Facebook: Like Page, Share Post, Comment
+- Telegram: Join Group
+- Custom: Merchant-defined tasks
+
+### Merchant Features:
+- Create tasks with custom requirements
+- Set reward amount per task
+- Approve/reject submissions
+- Dashboard with analytics
+- Bulk task creation
+
+### VIP System:
+- Tier 1-5 (Bronze → Legend)
+- Higher tier = more tasks available + higher rewards
+- Earn VIP points through task completion
+
+### Payment System:
+- Points = RM1 value
+- Min cashout: RM10
+- Payment via FPX bank transfer
+- Processing time: 24-48 hours
+
+### Anti-Fraud:
+- Screenshot proof required
+- AI-powered image verification (Google Gemini)
+- Signed/certified proof images
+- IP tracking + duplicate detection
+- Task completion rate monitoring
+
+### Business Model:
+- TaskReward takes commission from merchant payments
+- Merchants pay to create tasks (marketplace model)
+- Users earn from completing tasks
+- VIP subscription for premium features
+- SMM panel services (separate revenue)
+
+### Key Competitor Insights:
+- 15,000+ registered users
+- RM25,000+ paid out total
+- 1,000,000+ tasks completed
+- Tech: React + Supabase + Vercel
+- Focus: Malaysian market
+- Language: Malay primary
+- Anti-abuse: Screenshot + AI + IP tracking
+
+### Lessons for BonusHub:
+1. Screenshot proof = must-have for task verification
+2. VIP tier system works for engagement/retention
+3. FPX integration essential for Malaysian market
+4. AI verification (Gemini) reduces manual review
+5. Avoid deposit model (red flag for users)
+6. Focus on merchant-centric (not user-centric) model
+7. Marketplace approach for merchant acquisition
+
+### Compliance Notes:
+- TaskReward model: task-completion = upah atas kerja (halal)
+- No random draw/lottery element
+- No deposit requirement from users
+- Commission-based revenue from merchants
+- Must comply with PDPA 2010 for user data
+- Must comply with Consumer Protection Act 1999
+
+### Technical Architecture:
+- Frontend: React (SPA)
+- Backend: Supabase (PostgreSQL + Auth + Storage)
+- Deployment: Vercel
+- AI: Google Gemini for image verification
+- Payment: FPX integration
+- Database: PostgreSQL (via Supabase)

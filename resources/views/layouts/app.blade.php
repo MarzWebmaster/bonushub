@@ -36,6 +36,13 @@
             <button onclick="this.parentElement.remove()" class="ml-2 hover:text-red-200">&times;</button>
         </div>
     @endif
+    @if (session('warning'))
+        <div id="flash-message" class="fixed top-4 right-4 z-[60] bg-amber-500 text-white px-5 py-3 rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 animate-slide-down">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <span>{{ session('warning') }}</span>
+            <button onclick="this.parentElement.remove()" class="ml-2 hover:text-amber-200">&times;</button>
+        </div>
+    @endif
 
     {{-- Mobile overlay --}}
     <div x-show="sidebarOpen" x-cloak class="fixed inset-0 bg-black/50 z-40 lg:hidden" x-on:click="sidebarOpen = false"></div>
@@ -80,9 +87,14 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ route('superadmin.merchants') }}" class="sidebar-link {{ request()->routeIs('superadmin.merchants*') ? 'active' : '' }}">
+            <a href="{{ route('superadmin.merchants') }}" class="sidebar-link {{ request()->routeIs('superadmin.merchants*') && !request()->routeIs('superadmin.merchants.pending*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 <span>Merchants</span>
+            </a>
+            <a href="{{ route('superadmin.merchants.pending') }}" class="sidebar-link {{ request()->routeIs('superadmin.merchants.pending*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Merchant Menunggu</span>
+                <span class="sidebar-badge bg-amber-500" id="pending-merchant-count">0</span>
             </a>
             <a href="{{ route('superadmin.packages') }}" class="sidebar-link {{ request()->routeIs('superadmin.packages*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -311,6 +323,23 @@
             .then(d => {
                 if(d.success) {
                     document.getElementById('pending-count').textContent = d.pending || 0;
+                }
+            })
+            .catch(() => {});
+        @endrole
+
+        // Load pending merchant count (for superadmin sidebar badge)
+        @role('superadmin')
+        fetch('{{ route("superadmin.api.merchants.pending") }}')
+            .then(r => r.json())
+            .then(d => {
+                if(d.success) {
+                    const count = d.merchants ? d.merchants.length : 0;
+                    const badge = document.getElementById('pending-merchant-count');
+                    if (badge) {
+                        badge.textContent = count;
+                        badge.style.display = count > 0 ? 'inline-flex' : 'none';
+                    }
                 }
             })
             .catch(() => {});

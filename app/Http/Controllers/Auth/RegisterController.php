@@ -7,6 +7,7 @@ use App\Models\CampaignLink;
 use App\Models\Customer;
 use App\Models\CustomerMerchant;
 use App\Models\User;
+use App\Models\VerificationOtp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -35,7 +36,16 @@ class RegisterController extends Controller
             'phone'    => 'required|string|max:20',
             'password' => 'required|string|min:8|confirmed',
             'ref'      => 'nullable|string',
+            'otp'      => 'required|string|size:6',
         ]);
+
+        // Verify OTP first
+        $otpVerified = VerificationOtp::verify($validated['email'], $validated['otp'], 'registration');
+        if (!$otpVerified) {
+            return back()->withErrors([
+                'otp' => 'Kod pengesahan tidak sah atau telah tamat tempoh.',
+            ])->withInput();
+        }
 
         try {
             DB::beginTransaction();

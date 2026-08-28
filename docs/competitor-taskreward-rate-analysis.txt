@@ -1,0 +1,124 @@
+# TASKREWARD RATE STRUCTURE ANALYSIS
+# Source: Supabase marketplace_services + Worker UI HTML
+# Date: 2026-08-24
+# Total services: 343
+
+============================================================
+HOW TASKREWARD SETS RATES
+============================================================
+
+MODEL: Vendor-Set Pricing with Platform Commission
+
+1. VENDOR creates a 'service package' in marketplace
+   - Sets: title, description, price per unit
+   - Sets: tasks_per_unit (e.g. 40 likes per package)
+   - System auto-calculates: reward_per_task = (price × commission_rate) / tasks_per_unit
+   - Or vendor manually sets reward_per_task
+
+2. TASKREWARD takes commission from vendor payment
+   - Worker earning = reward_per_task × tasks_per_unit
+   - Platform keeps = vendor_price - worker_earning
+
+3. WORKER sees rate per task on task board
+   - Picks up task → completes → uploads proof
+   - Vendor reviews manually → approves → worker gets reward
+
+============================================================
+RATE DISTRIBUTION (per task)
+============================================================
+  RM0.02/task:  15 services (4.4%)
+  RM0.03/task: 199 services (58.0%)
+  RM0.04/task:  22 services (6.4%)
+  RM0.05/task:  30 services (8.7%)
+  RM0.06/task:  31 services (9.0%)
+  RM0.07/task:   1 services (0.3%)
+  RM0.08/task:   1 services (0.3%)
+  RM0.10/task:  33 services (9.6%)
+  RM0.12/task:   1 services (0.3%)
+  RM0.15/task:   2 services (0.6%)
+  RM0.20/task:   7 services (2.0%)
+  RM0.30/task:   1 services (0.3%)
+
+Most common rate: RM0.03/task (58% of all services)
+
+============================================================
+HOURLY EARNINGS ESTIMATE (1 task per minute)
+============================================================
+  RM0.02/task → RM1.20/hour
+  RM0.03/task → RM1.80/hour
+  RM0.04/task → RM2.40/hour
+  RM0.05/task → RM3.00/hour
+  RM0.06/task → RM3.60/hour
+  RM0.07/task → RM4.20/hour
+  RM0.08/task → RM4.80/hour
+  RM0.10/task → RM6.00/hour
+  RM0.12/task → RM7.20/hour
+  RM0.15/task → RM9.00/hour
+  RM0.20/task → RM12.00/hour
+  RM0.30/task → RM18.00/hour
+
+============================================================
+VENDOR PAYMENT vs WORKER EARNING (Sample)
+============================================================
+
+Title                                                Vendor  Tasks    Rate   Worker  Platform  Margin
+----------------------------------------------------------------------------------------------------
+  9000 - 10,000 LIKE + KOMEN + REPOST COMBO 🔥      RM 1800 10000x RM0.06 RM600.00 RM1200.00  66.7%
+  9000 - 10,000 LIKE + KOMEN + REPOST COMBO 🔥      RM 1800 10000x RM0.06 RM600.00 RM1200.00  66.7%
+  9000 - 10,000 LIKE + KOMEN + REPOST COMBO 🔥      RM 1800 10000x RM0.06 RM600.00 RM1200.00  66.7%
+  9000 - 10,000 LIKE + KOMEN + REPOST COMBO 🔥      RM 1800 10000x RM0.06 RM600.00 RM1200.00  66.7%
+  10,000 FOLLOWERS THREAD                          RM  999 10000x RM0.03 RM300.00 RM 699.00  70.0%
+  10,000 FOLLOWERS TIKTOK                          RM  999 10000x RM0.03 RM300.00 RM 699.00  70.0%
+  3000 PAGE REVIEW 5 STAR FACEBOOK                 RM  900  3000x RM0.05 RM150.00 RM 750.00  83.3%
+  4500 - 5000 LIKE + KOMEN + REPOST COMBO 🔥        RM  900  5000x RM0.06 RM300.00 RM 600.00  66.7%
+  4500 - 5000 LIKE + KOMEN + REPOST COMBO 🔥        RM  900  5000x RM0.06 RM300.00 RM 600.00  66.7%
+  4500 - 5000 LIKE + KOMEN + REPOST COMBO 🔥        RM  900  5000x RM0.06 RM300.00 RM 600.00  66.7%
+  4500 - 5000 LIKE + KOMEN + SHARE COMBO 🔥         RM  900  5000x RM0.06 RM300.00 RM 600.00  66.7%
+  2000 PAGE REVIEW 5 STAR FACEBOOK                 RM  600  2000x RM0.05 RM100.00 RM 500.00  83.3%
+  5000 FOLLOWERS INSTAGRAM                         RM  499  5000x RM0.03 RM150.00 RM 349.00  69.9%
+  5000 FOLLOWERS THREAD                            RM  499  5300x RM0.03 RM159.00 RM 340.00  68.1%
+  5000 FOLLOWERS TIKTOK                            RM  499  5000x RM0.03 RM150.00 RM 349.00  69.9%
+  5000 LIKE PAGE / FOLLOW PERSONAL FACEBOOK        RM  499  5000x RM0.03 RM150.00 RM 349.00  69.9%
+  4000 FOLLOWERS INSTAGRAM                         RM  399  4000x RM0.03 RM120.00 RM 279.00  69.9%
+  4000 FOLLOWERS TIKTOK                            RM  399  4000x RM0.03 RM120.00 RM 279.00  69.9%
+  4000 FOLLOWERS THREAD                            RM  399  4200x RM0.03 RM126.00 RM 273.00  68.4%
+  4000 LIKE PAGE / FOLLOW PERSONAL FACEBOOK        RM  399  4000x RM0.03 RM120.00 RM 279.00  69.9%
+
+Average platform margin: 68.1%
+TaskReward keeps ~68% of vendor payment on average
+
+============================================================
+KEY PLATFORM FEATURES
+============================================================
+  Vendor manual review: 343/343 (100.0%)
+  Drip feed enabled: 210/343 (61.2%)
+  Proof types: {'image': 274, 'link_image': 69}
+  All services: standard type, 'other' category
+
+============================================================
+IMPLICATIONS FOR BONUSHUB
+============================================================
+
+1. RATE MODEL: Vendor-sets-price, platform takes commission
+   → BonusHub should follow similar model
+   → Commission: 30-40% (lower than TaskReward's 68% to attract vendors)
+
+2. FLAT RATES: RM0.03 dominates (58% of services)
+   → Simple flat rate model works
+   → BonusHub can set default rate tiers: RM0.03, RM0.05, RM0.10, RM0.20
+
+3. HOURLY: RM1.80-3.00/hour average
+   → Below Malaysian minimum wage (RM1,500/month ≈ RM8.65/hour)
+   → Workers supplement income, not primary income
+
+4. COMMISSION GAP: TaskReward takes 68% — very high!
+   → BonusHub can differentiate: 30-40% commission
+   → Vendors get better value, workers get higher rewards
+
+5. DRIP FEED: 61% of services use it
+   → Critical feature for vendor control
+   → Prevents task flooding, paces engagement naturally
+
+6. VENDOR REVIEW: 100% manual review required
+   → Trust bottleneck — vendor must approve every submission
+   → BonusHub can add optional auto-approve for low-risk tasks

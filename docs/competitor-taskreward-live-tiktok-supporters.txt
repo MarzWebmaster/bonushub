@@ -1,0 +1,76 @@
+TASKREWARD BLOG: Panduan Mulakan Kempen Live TikTok Supporters (2026)
+Source: https://taskreward.cc/blog/panduan-mulakan-kempen-live-tiktok-supporters-taskreward
+Published: 2026
+
+## RINGKASAN EKSEKUTIF
+
+### Live TikTok = Senjata Sales Paling Power 2026
+
+4 Rules Emas untuk Kempen Live Supporters:
+
+### Rule 1: Order SEMASA Live, Bukan Sebelum
+- Supporters TaskReward ni macam pirana — serbu masuk live berpusu-pusu
+- Kalau order SEBELUM live: supporters masuk live kosong → keluar → slot habis → rugi
+- Cara betul: Go Live → tunggu stabil 30saat-1minit → baru order di TaskReward
+- Masa supporters masuk: anda dah on screen, dah cakap produk, siap close sales
+
+### Rule 2: Topup Baki Dulu Sebelum Live
+- Jangan login bank, FPX timeout, isi OTP masa tengah live — momentum hilang
+- Topup baki TaskReward siap-siap sebelum live
+- Masa order: paste link → pilih pakej → "Bayar dengan Baki" → done (1-2 minit)
+
+### Checklist Sebelum Go Live:
+- ✅ Baki topup cukup untuk 2-3 pakej
+- ✅ Phone untuk live + phone/laptop kedua untuk TaskReward
+- ✅ Link live ready (copy dari TikTok studio/profile)
+- ✅ Tahu pakej mana nak order (100/200/500 supporters)
+- ✅ Internet stabil — WiFi + 4G backup
+
+### Rule 3: Pause & Resume Bila Emergency
+- Anak menangis, call urgent, power cut → pause order
+- Buka TaskReward → Pesanan Saya → Pause Live
+- Sistem berhenti hantar supporters serta-merta
+- Sambung balik: go live balik → Resume Live → supporters sambung masuk
+
+### Rule 4: Drip Feed — Boleh Ubah Ikut Kehendak
+- Default: 20 orang masuk setiap 10 minit (pakej 100)
+- Total habis dalam ~50 minit (sesuai live 1 jam)
+- Viewer naik perlahan-lahan, kekal stabil, tak nampak pelik di algorithm
+
+### Drip Feed Settings (Boleh Customize):
+
+| Situasi | Cadangan Setting |
+|---------|-----------------|
+| Live pendek (30 minit) | Batch besar, interval pendek (60/10 minit) |
+| Live panjang (2 jam+) | Batch kecil, interval panjang (10/15 minit) |
+| Nak boost ranking cepat | Default 20/10 minit (paling balanced) |
+| Live santai chit-chat | Drip lambat, viewer kekal lama |
+
+### 3 Silap Biasa Newbie:
+1. Order sebelum live — viewer masuk live kosong, semua keluar
+2. Tak topup dulu — kena keluar bank app, miss momentum sales
+3. Lupa pause masa emergency — supporters masuk live offline, slot terbuang
+
+### Key Insight untuk BonusHub:
+1. Live engagement = feature WAJIB untuk viral module
+2. Drip feed pacing = essential (algorithm-friendly)
+3. Pause/Resume = merchant control feature
+4. Topup/balance system = prerequisite untuk live campaigns
+5. Real-time order placement = UX critical (paste link → pay → done)
+6. Default settings based on campaign duration
+
+### Technical Implementation Notes:
+- Queue system untuk drip feed (configurable batch + interval)
+- Pause/Resume API endpoint
+- Balance wallet integration
+- Real-time order processing
+- Link validation (TikTok live URL)
+- Status tracking (pending/paused/active/completed)
+
+### Compliance Notes:
+- Drip feed = legitimate engagement pacing
+- Real users, real engagement, just paced
+- NOT artificial inflation
+- Acceptable under platform ToS when using real engagement
+- Must comply with PDPA 2010
+- Must comply with Consumer Protection Act 1999

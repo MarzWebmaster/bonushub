@@ -1,0 +1,910 @@
+TASKREWARD MARKETPLACE: Senarai Harga Lengkap (343 Services)
+Source: https://taskreward.cc/user/marketplace (Supabase API)
+Total services: 343
+Categories: facebook, game, google, instagram, linkedin, other, shopee, survey, telegram, temu, thread, tiktok, twitter, whatsapp, youtube
+
+============================================================
+PRICE SUMMARY BY CATEGORY
+============================================================
+
+📂 FACEBOOK (61 services)
+   Price range: RM0.60 - RM1800.00
+   Average: RM125.80
+
+   📦 Combo (8 services)
+      RM   6.00 | 40 - 50 LIKE + COMMENT FACEBOOK (COMBO)🔥
+               Reward/task: RM0.04
+      RM  12.00 | 80 - 100 LIKE + COMMENT FACEBOOK (COMBO)🔥
+               Reward/task: RM0.04
+      RM  18.00 | 80 - 100 LIKE + KOMEN + SHARE COMBO 🔥
+               Reward/task: RM0.06
+      RM  54.00 | 200 - 300 LIKE + KOMEN + SHARE COMBO 🔥
+               Reward/task: RM0.06
+      RM  90.00 | 400 - 500 LIKE + KOMEN + SHARE COMBO 🔥
+               Reward/task: RM0.06
+      RM 180.00 | 800 - 1000 LIKE + KOMEN + SHARE COMBO 🔥
+               Reward/task: RM0.06
+      RM 900.00 | 4500 - 5000 LIKE + KOMEN + SHARE COMBO 🔥
+               Reward/task: RM0.06
+      RM1800.00 | 9000 - 10,000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+
+   📦 Comments (17 services)
+      RM   0.60 | 5 COMMENTS FACEBOOK
+               Reward/task: RM0.03
+      RM   1.00 | 10 COMMENTS FACEBOOK
+               Reward/task: RM0.03
+      RM   2.00 | 3 CUSTOM COMMENTS FACEBOOK
+               Reward/task: RM0.05
+      RM   3.00 | 30 COMMENTS FACEBOOK 
+               Reward/task: RM0.03
+      RM   5.00 | 50 COMMENTS FACEBOOK
+               Reward/task: RM0.03
+      RM   5.00 | 10 CUSTOM COMMENTS FACEBOOK
+               Reward/task: RM0.05
+      RM   6.00 | 50 LIVE COMMENT + TAP2 SCREEN 
+               Reward/task: RM0.04
+      RM   9.00 | 100 COMMENTS FACEBOOK 
+               Reward/task: RM0.03
+      RM  11.00 | 100 LIVE COMMENT + TAP2 SCREEN 
+               Reward/task: RM0.04
+      RM  15.00 | 30 CUSTOM COMMENTS FACEBOOK
+               Reward/task: RM0.05
+      RM  18.00 | 200 COMMENTS FACEBOOK 
+               Reward/task: RM0.03
+      RM  27.00 | 300 COMMENTS FACEBOOK 
+               Reward/task: RM0.03
+      RM  32.00 | 300 LIVE COMMENT + TAP2 SCREEN 
+               Reward/task: RM0.04
+      RM  54.00 | 500 LIVE COMMENT + TAP2 SCREEN 
+               Reward/task: RM0.04
+      RM  80.00 | 1000 COMMENTS FACEBOOK
+               Reward/task: RM0.03
+      RM 101.00 | 1000 LIVE COMMENT + TAP2 SCREEN 
+               Reward/task: RM0.04
+      RM 160.00 | 2000 COMMENTS FACEBOOK 
+               Reward/task: RM0.03
+
+   📦 Followers (1 services)
+      RM  10.00 | 50 - 60 LIKE + COMMENT FACEBOOK + FREE FOLLOWERS (COMBO)🔥
+               Reward/task: RM0.06
+
+   📦 Likes (20 services)
+      RM   1.00 | 10 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM   1.00 | 10 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM   3.00 | 30 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM   5.00 | 50 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM   5.00 | 50 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM   9.00 | 100 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM   9.00 | 100 LIKES STORY FACEBOOK
+               Reward/task: RM0.03
+      RM  10.00 | 100 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM  18.00 | 200 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM  27.00 | 300 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM  30.00 | 300 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM  45.00 | 500 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM  50.00 | 500 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM  80.00 | 1000 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM  99.00 | 1000 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM 160.00 | 2000 LIKES POST FACEBOOK
+               Reward/task: RM0.03
+      RM 199.00 | 2000 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM 299.00 | 3000 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM 399.00 | 4000 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+      RM 499.00 | 5000 LIKE PAGE / FOLLOW PERSONAL FACEBOOK
+               Reward/task: RM0.03
+
+   📦 Other (9 services)
+      RM   3.00 | 30 Like dekat comments Facebook
+               Reward/task: RM0.03
+      RM   3.00 |  10 PAGE REVIEW 5 STAR FACEBOOK
+               Reward/task: RM0.05
+      RM   6.00 | 10 PAGE REVIEW 5 STAR FACEBOOK (CUSTOM)
+               Reward/task: RM0.1
+      RM  12.00 | 20 PAGE REVIEW 5 STAR FACEBOOK (CUSTOM)
+               Reward/task: RM0.1
+      RM  30.00 | 100 PAGE REVIEW 5 STAR FACEBOOK
+               Reward/task: RM0.05
+      RM 150.00 | 500 PAGE REVIEW 5 STAR FACEBOOK
+               Reward/task: RM0.05
+      RM 300.00 | 1000 PAGE REVIEW 5 STAR FACEBOOK
+               Reward/task: RM0.05
+      RM 600.00 | 2000 PAGE REVIEW 5 STAR FACEBOOK
+               Reward/task: RM0.05
+      RM 900.00 | 3000 PAGE REVIEW 5 STAR FACEBOOK
+               Reward/task: RM0.05
+
+   📦 Shares (6 services)
+      RM   1.00 | 10 SHARE FACEBOOK
+               Reward/task: RM0.03
+      RM   3.00 | 30 SHARE FACEBOOK
+               Reward/task: RM0.03
+      RM   5.00 | 50 SHARE FACEBOOK 
+               Reward/task: RM0.03
+      RM   9.00 | 100 SHARE FACEBOOK
+               Reward/task: RM0.03
+      RM  24.00 | 300 SHARE FACEBOOK
+               Reward/task: RM0.03
+      RM  80.00 | 1000 SHARE FACEBOOK
+               Reward/task: RM0.03
+
+
+📂 GAME (21 services)
+   Price range: RM4.00 - RM20.00
+   Average: RM5.62
+
+   📦 Other (21 services)
+      RM   4.00 | 10 User Download dan Register Gemgala Apps
+               Reward/task: RM0.1
+      RM   4.00 | 10 User Daftar ShopeePay Guna Kod Referral
+               Reward/task: RM0.1
+      RM   4.00 | 10 User Daftar Akaun MOVA (Referral Link)
+               Reward/task: RM0.1
+      RM   4.00 | 10 User Daftar Vase Surveys & Masukkan Kod Referral
+               Reward/task: RM0.1
+      RM   4.00 | 10 User Install & Register Game Wordraw
+               Reward/task: RM0.1
+      RM   4.00 | 10 User Install & Register Game ColorSort
+               Reward/task: RM0.1
+      RM   4.00 | 10 User Install & Register Game Fruit Boom
+               Reward/task: RM0.1
+      RM   4.00 | 10 user Install & Daftar game Crazy Food guna Link Referral
+               Reward/task: RM0.2
+      RM   4.00 | 10 User Install & Register Game Puzzle Farm
+               Reward/task: RM0.1
+      RM   4.00 | 10 user install & register game puzzle dog
+               Reward/task: RM0.1
+      RM   4.00 | 10 user Install Apps ShopBack (Referral)
+               Reward/task: RM0.1
+      RM   4.00 | 10 user Daftar Akaun JAG Apps Malaysia (Referral Sign Up)
+               Reward/task: RM0.1
+      RM   4.00 | 10 user install LUCKY UNSCREW & main hingga level 5
+               Reward/task: RM0.2
+      RM   4.00 | 10 user Install Aplikasi VikTV Guna Referral link 
+               Reward/task: RM0.1
+      RM   4.00 | 10 User Install & Register Game Coin Jump
+               Reward/task: RM0.1
+      RM   4.00 | 10 User Install & Register Game Cool Lady
+               Reward/task: RM0.1
+      RM   5.00 | 10 user Install & Daftar game BBQ SORT guna Link Referral
+               Reward/task: RM0.2
+      RM   5.00 | 10 user Install & Daftar game CARGO SORT guna Link Referral
+               Reward/task: RM0.2
+      RM  10.00 | 25 User Install & Register Game XWORLD
+               Reward/task: RM0.1
+      RM  14.00 | 35 user Download App Bello SAHAJA 
+               Reward/task: RM0.15
+      RM  20.00 | 50 User Install & Register Game XWORLD
+               Reward/task: RM0.1
+
+
+📂 GOOGLE (4 services)
+   Price range: RM5.00 - RM50.00
+   Average: RM22.75
+
+   📦 Other (4 services)
+      RM   5.00 | 10 Review Google (Malaysia)
+               Reward/task: RM0.1
+      RM   6.00 | 10 Custom Review Google (Malaysia)
+               Reward/task: RM0.1
+      RM  30.00 | 20x 📲 Android App Install & Play Store Review
+               Reward/task: RM0.3
+      RM  50.00 | 100 Review Google (Malaysia)
+               Reward/task: RM0.1
+
+
+📂 INSTAGRAM (46 services)
+   Price range: RM0.60 - RM1800.00
+   Average: RM111.45
+
+   📦 Combo (9 services)
+      RM   6.00 | 40 - 50 LIKE + COMMENT INSTAGRAM (Combo) 🔥
+               Reward/task: RM0.04
+      RM  12.00 | 80 - 100 LIKE + COMMENT INSTAGRAM (Combo) 🔥
+               Reward/task: RM0.04
+      RM  18.00 | 80 - 100 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM  25.00 | 80 - 100 LIKE + KOMEN + REPOST + SAVE + SHARE COMBO 🔥
+               Reward/task: RM0.1
+      RM  54.00 | 200 - 300 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM  90.00 | 400 - 500 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM 180.00 | 800 - 1000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM 900.00 | 4500 - 5000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM1800.00 | 9000 - 10,000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+
+   📦 Comments (10 services)
+      RM   0.60 | 5 COMMENTS INSTAGRAM
+               Reward/task: RM0.03
+      RM   1.00 | 10 COMMENTS INSTAGRAM
+               Reward/task: RM0.03
+      RM   2.00 | 3 CUSTOM COMMENTS INSTAGRAM 
+               Reward/task: RM0.05
+      RM   3.00 | 30 COMMENTS INSTAGRAM
+               Reward/task: RM0.03
+      RM   5.00 | 10 CUSTOM COMMENTS INSTAGRAM 
+               Reward/task: RM0.05
+      RM   5.00 | 50 COMMENTS INSTAGRAM
+               Reward/task: RM0.03
+      RM   9.00 | 100 COMMENTS INSTAGRAM
+               Reward/task: RM0.03
+      RM  15.00 | 30 CUSTOM COMMENTS INSTAGRAM
+               Reward/task: RM0.05
+      RM  27.00 | 300 COMMENTS INSTAGRAM
+               Reward/task: RM0.03
+      RM  80.00 | 1000 COMMENTS INSTAGRAM
+               Reward/task: RM0.03
+
+   📦 Followers (13 services)
+      RM   1.00 | 10 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM   3.00 | 30 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM   5.00 | 50 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM  10.00 | 50 - 60 LIKE + COMMENT INSTAGRAM + FREE FOLLOWER (COMBO) 🔥
+               Reward/task: RM0.06
+      RM  10.00 | 100 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM  30.00 | 300 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM  50.00 | 500 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM  99.00 | 1000 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM 149.00 | 1500 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM 199.00 | 2000 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM 299.00 | 3000 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM 399.00 | 4000 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+      RM 499.00 | 5000 FOLLOWERS INSTAGRAM
+               Reward/task: RM0.03
+
+   📦 Likes (6 services)
+      RM   1.00 | 10 LIKES INSTAGRAM
+               Reward/task: RM0.03
+      RM   3.00 | 30 LIKES INSTAGRAM
+               Reward/task: RM0.03
+      RM   5.00 | 50 LIKES INSTAGRAM
+               Reward/task: RM0.03
+      RM   9.00 | 100 LIKES INSTAGRAM
+               Reward/task: RM0.03
+      RM  18.00 | 200 LIKES INSTAGRAM
+               Reward/task: RM0.03
+      RM  27.00 | 300 LIKES INSTAGRAM
+               Reward/task: RM0.03
+
+   📦 Reposts (4 services)
+      RM   1.00 | 10 REPOST INSTAGRAM
+               Reward/task: RM0.03
+      RM   7.00 | 100 REPOST INSTAGRAM
+               Reward/task: RM0.03
+      RM  18.00 | 250 REPOST INSTAGRAM
+               Reward/task: RM0.03
+      RM  35.00 | 500 REPOST INSTAGRAM
+               Reward/task: RM0.03
+
+   📦 Shares (4 services)
+      RM   1.00 | 10 SHARE TO STORY INSTAGRAM
+               Reward/task: RM0.03
+      RM   1.00 | 10 SHARE
+               Reward/task: RM0.03
+      RM   5.00 | 50 SHARE TO STORY INSTAGRAM
+               Reward/task: RM0.03
+      RM  10.00 | 100 SHARE TO STORY INSTAGRAM
+               Reward/task: RM0.03
+
+
+📂 LINKEDIN (4 services)
+   Price range: RM2.50 - RM50.00
+   Average: RM22.50
+
+   📦 Likes (4 services)
+      RM   2.50 | 8+ LIKE + KOMEN + REPOST LINKEDIN
+               Reward/task: RM0.1
+      RM  12.50 | 40+ LIKE + KOMEN + REPOST LINKEDIN
+               Reward/task: RM0.1
+      RM  25.00 | 80+ LIKE + KOMEN + REPOST LINKEDIN
+               Reward/task: RM0.1
+      RM  50.00 | 180+ LIKE + KOMEN + REPOST LINKEDIN
+               Reward/task: RM0.1
+
+
+📂 OTHER (7 services)
+   Price range: RM3.00 - RM250.00
+   Average: RM66.00
+
+   📦 Likes (1 services)
+      RM  25.00 | Signup + Play + Like + Vote (Website)
+               Reward/task: RM0.2
+
+   📦 Other (6 services)
+      RM   3.00 | Do not order 
+               Reward/task: RM0.05
+      RM   3.00 | DO NOT ORDER STH
+               Reward/task: RM0.03
+      RM   6.00 | Do not order
+               Reward/task: RM0.03
+      RM  25.00 | 🍦 Register Mixue Referral
+               Reward/task: RM0.2
+      RM 150.00 | Farid RY
+               Reward/task: RM0.06
+      RM 250.00 | Install & Daftar Linkoo
+               Reward/task: RM0.1
+
+
+📂 SHOPEE (17 services)
+   Price range: RM1.00 - RM200.00
+   Average: RM31.03
+
+   📦 Clicks (7 services)
+      RM   1.00 | 20 Klik Link Shopee
+               Reward/task: RM0.02
+      RM   2.50 | 50 Klik Link Shopee
+               Reward/task: RM0.02
+      RM   5.00 | 100 Klik Link Shopee
+               Reward/task: RM0.02
+      RM  25.00 | 500 Klik Link Shopee
+               Reward/task: RM0.02
+      RM  25.00 | 500 Klik Link Shopee
+               Reward/task: RM0.02
+      RM  50.00 | 1000 Klik Link Shopee
+               Reward/task: RM0.02
+      RM 200.00 | 5000 Klik Link Shopee
+               Reward/task: RM0.02
+
+   📦 Followers (3 services)
+      RM   5.00 | 50 FOLLOWERS SHOPEE
+               Reward/task: RM0.03
+      RM  10.00 | 100 FOLLOWERS SHOPEE
+               Reward/task: RM0.03
+      RM  50.00 | 500 FOLLOWERS SHOPEE
+               Reward/task: RM0.03
+
+   📦 Likes (1 services)
+      RM  10.00 | 100 LIKES SHOPEE
+               Reward/task: RM0.03
+
+   📦 Live (3 services)
+      RM   8.00 | 100 LIVE KOMEN + TAP2 SCREEN SHOPEE
+               Reward/task: RM0.03
+      RM  40.00 | 500 LIVE KOMEN + TAP2 SCREEN SHOPEE
+               Reward/task: RM0.03
+      RM  80.00 | 1000 LIVE KOMEN + TAP2 SCREEN SHOPEE
+               Reward/task: RM0.03
+
+   📦 Other (3 services)
+      RM   1.00 | 10 KOMEN SHOPEE
+               Reward/task: RM0.03
+      RM   5.00 | 50 KOMEN SHOPEE
+               Reward/task: RM0.03
+      RM  10.00 | 100 KOMEN SHOPEE
+               Reward/task: RM0.03
+
+
+📂 SURVEY (1 services)
+   Price range: RM50.00 - RM50.00
+   Average: RM50.00
+
+   📦 Other (1 services)
+      RM  50.00 | 100 Survey Produk & Perkhidmatan
+               Reward/task: RM0.2
+
+
+📂 TELEGRAM (7 services)
+   Price range: RM1.00 - RM100.00
+   Average: RM28.00
+
+   📦 Clicks (1 services)
+      RM  20.00 | 50 Klik link telegram Bot
+               Reward/task: RM0.1
+
+   📦 Other (5 services)
+      RM   1.00 | 10 TELEGRAM GROUP/CHANNEL MEMBERS
+               Reward/task: RM0.03
+      RM   5.00 | 50 TELEGRAM GROUP/CHANNEL MEMBERS
+               Reward/task: RM0.03
+      RM  10.00 | 100 TELEGRAM GROUP/CHANNEL MEMBERS
+               Reward/task: RM0.03
+      RM  50.00 | 500 TELEGRAM GROUP/CHANNEL MEMBERS
+               Reward/task: RM0.03
+      RM 100.00 | 1000 TELEGRAM GROUP/CHANNEL MEMBERS
+               Reward/task: RM0.03
+
+   📦 Shares (1 services)
+      RM  10.00 | 100 Telegram Public Story Share 🇲🇾
+               Reward/task: RM0.03
+
+
+📂 TEMU (3 services)
+   Price range: RM1.60 - RM5.30
+   Average: RM3.13
+
+   📦 Clicks (3 services)
+      RM   1.60 | 5 Klik Link Temu EXISTING USER ( NOT NEW USER )
+               Reward/task: RM0.15
+      RM   2.50 | 10 Klik Link Temu EXISTING USER ( NOT NEW USER )
+               Reward/task: RM0.12
+      RM   5.30 | 30 Klik Link Temu EXISTING USER ( NOT NEW USER )
+               Reward/task: RM0.08
+
+
+📂 THREAD (54 services)
+   Price range: RM0.60 - RM1800.00
+   Average: RM126.18
+
+   📦 Combo (8 services)
+      RM   6.00 | 40 - 50 LIKE + COMMENT THREAD (COMBO) 🔥
+               Reward/task: RM0.04
+      RM  12.00 | 80 - 100 LIKE + COMMENT THREAD (COMBO)🔥
+               Reward/task: RM0.04
+      RM  18.00 | 80 - 100 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM  54.00 | 200 - 300 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM  90.00 | 400 - 500 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM 180.00 | 800 - 1000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM 900.00 | 4500 - 5000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM1800.00 | 9000 - 10,000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+
+   📦 Comments (10 services)
+      RM   0.60 | 5 COMMENTS THREAD
+               Reward/task: RM0.03
+      RM   1.00 | 10 COMMENTS THREAD
+               Reward/task: RM0.03
+      RM   2.00 | 3 CUSTOM COMMENTS THREAD
+               Reward/task: RM0.05
+      RM   5.00 | 10 CUSTOM COMMENTS THREAD
+               Reward/task: RM0.05
+      RM   5.00 | 50 COMMENTS THREAD 
+               Reward/task: RM0.03
+      RM   9.00 | 100 COMMENTS THREAD
+               Reward/task: RM0.03
+      RM  15.00 | 30 CUSTOM COMMENTS THREAD
+               Reward/task: RM0.05
+      RM  27.00 | 300 COMMENTS THREAD
+               Reward/task: RM0.03
+      RM  45.00 | 500 COMMENTS THREAD
+               Reward/task: RM0.03
+      RM  50.00 | 100 CUSTOM COMMENTS THREAD
+               Reward/task: RM0.05
+
+   📦 Followers (13 services)
+      RM   1.00 | 10 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM   3.00 | 30 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM   5.00 | 50 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM  10.00 | 100 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM  10.00 | 50 - 60 LIKE + COMMENT THREAD (FREE FOLLOWERS) COMBO🔥
+               Reward/task: RM0.06
+      RM  30.00 | 300 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM  50.00 | 500 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM  99.00 | 1000 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM 199.00 | 2000 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM 299.00 | 3000 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM 399.00 | 4000 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM 499.00 | 5000 FOLLOWERS THREAD
+               Reward/task: RM0.03
+      RM 999.00 | 10,000 FOLLOWERS THREAD
+               Reward/task: RM0.03
+
+   📦 Likes (9 services)
+      RM   1.00 | 10 LIKES THREAD
+               Reward/task: RM0.03
+      RM   5.00 | 50 LIKES THREAD
+               Reward/task: RM0.03
+      RM   9.00 | 100 LIKES THREAD
+               Reward/task: RM0.03
+      RM  18.00 |  200 LIKES THREAD
+               Reward/task: RM0.03
+      RM  27.00 | 300 LIKES THREAD
+               Reward/task: RM0.03
+      RM  45.00 | 500 LIKES THREAD
+               Reward/task: RM0.03
+      RM  80.00 | 1000 LIKES THREAD
+               Reward/task: RM0.03
+      RM 160.00 | 2000 LIKES THREAD
+               Reward/task: RM0.03
+      RM 240.00 | 3000 LIKES THREAD
+               Reward/task: RM0.03
+
+   📦 Product Posts (4 services)
+      RM   5.00 | 10 Akaun Real Malaysia Post Produk Anda di Thread  (Tanpa Gambar)
+               Reward/task: RM0.1
+      RM  25.00 | 50 Akaun Real Malaysia Post Produk Anda di Thread 
+               Reward/task: RM0.1
+      RM  50.00 | 100 Akaun Real Malaysia Post Produk Anda di Thread 
+               Reward/task: RM0.1
+      RM 100.00 | 200 Akaun Real Malaysia Post Produk Anda di Thread
+               Reward/task: RM0.1
+
+   📦 Quotes (4 services)
+      RM   1.00 | 10 QUOTE THREAD POST
+               Reward/task: RM0.03
+      RM   5.00 | 50 QUOTE THREAD POST
+               Reward/task: RM0.03
+      RM  10.00 | 100 QUOTE THREAD POST
+               Reward/task: RM0.03
+      RM  50.00 | 500 QUOTE THREAD POST
+               Reward/task: RM0.03
+
+   📦 Reposts (6 services)
+      RM   1.00 | 10 REPOST THREAD
+               Reward/task: RM0.03
+      RM   3.00 | 30 REPOST THREAD
+               Reward/task: RM0.03
+      RM   9.00 | 100 REPOST THREAD
+               Reward/task: RM0.03
+      RM  22.00 | 250 REPOST THREAD
+               Reward/task: RM0.03
+      RM  45.00 | 500 REPOST THREAD
+               Reward/task: RM0.03
+      RM  80.00 | 1000 REPOST THREAD
+               Reward/task: RM0.03
+
+
+📂 TIKTOK (84 services)
+   Price range: RM0.60 - RM1800.00
+   Average: RM97.53
+
+   📦 Clicks (4 services)
+      RM   1.00 | 20 Klik Link Tiktok Affiliate
+               Reward/task: RM0.02
+      RM   2.50 | 50 Klik Link Tiktok Affiliate
+               Reward/task: RM0.02
+      RM   5.00 | 100 Klik Link Tiktok Affiliate
+               Reward/task: RM0.02
+      RM  25.00 | 500 Klik Link Tiktok Affiliate
+               Reward/task: RM0.02
+
+   📦 Combo (9 services)
+      RM   6.00 | 40 - 50 LIKE + COMMENT TIKTOK (COMBO)🔥
+               Reward/task: RM0.04
+      RM  12.00 | 80 - 100 LIKE + COMMENT TIKTOK (COMBO) 🔥
+               Reward/task: RM0.04
+      RM  18.00 | 80 - 100 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM  25.00 | 80 - 100 LIKE + KOMEN + REPOST + SAVE + SHARE COMBO 🔥
+               Reward/task: RM0.1
+      RM  54.00 | 200 - 300 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM  90.00 | 400 - 500 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM 180.00 | 800 - 1000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM 900.00 | 4500 - 5000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+      RM1800.00 | 9000 - 10,000 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+
+   📦 Comments (19 services)
+      RM   0.60 | 5 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM   0.70 | 1 CUSTOM COMMENTS TIKTOK
+               Reward/task: RM0.05
+      RM   1.00 | 10 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM   2.00 | 3 CUSTOM COMMENTS TIKTOK
+               Reward/task: RM0.05
+      RM   3.00 | 30 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM   3.00 | 5 CUSTOM COMMENTS TIKTOK
+               Reward/task: RM0.05
+      RM   5.00 | 50 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM   5.00 | 50 LIVE COMMENT + TAP2 SCREEN + TEKAN BEGKUNING TIKTOK
+               Reward/task: RM0.04
+      RM   5.00 | 10 CUSTOM COMMENTS TIKTOK 
+               Reward/task: RM0.05
+      RM   9.00 | 100 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM  10.00 | 100 LIVE COMMENT + TAP2 SCREEN + TEKAN BEGKUNING TIKTOK
+               Reward/task: RM0.04
+      RM  15.00 | 30 CUSTOM COMMENTS TIKTOK 
+               Reward/task: RM0.05
+      RM  18.00 | 200 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM  27.00 | 300 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM  29.00 | 300 LIVE COMMENT + TAP2 SCREEN + TEKAN BEGKUNING TIKTOK
+               Reward/task: RM0.04
+      RM  45.00 | 500 LIVE COMMENT + TAP2 SCREEN + TEKAN BEGKUNING TIKTOK
+               Reward/task: RM0.04
+      RM  80.00 | 1000 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM 160.00 | 2000 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+      RM 240.00 | 3000 COMMENTS TIKTOK 
+               Reward/task: RM0.03
+
+   📦 Followers (17 services)
+      RM   1.00 | 10 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM   1.50 | 10 Tiktok Followers + Like + COMMENTS (COMBO)
+               Reward/task: RM0.05
+      RM   3.00 | 30 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM   5.00 | 50 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM  10.00 | 50 - 60 LIKE + COMMENT TIKTOK + FREE FOLLOWER (COMBO) 🔥
+               Reward/task: RM0.06
+      RM  10.00 | 100 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM  20.00 | 200 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM  30.00 | 300 FOLLOWERS TIKTOK
+               Reward/task: RM0.03
+      RM  50.00 | 500 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM  75.00 | 750 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM  99.00 | 1000 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM 149.00 | 1500 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM 199.00 | 2000 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM 299.00 | 3000 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM 399.00 | 4000 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM 499.00 | 5000 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+      RM 999.00 | 10,000 FOLLOWERS TIKTOK 
+               Reward/task: RM0.03
+
+   📦 Likes (10 services)
+      RM   1.00 | 10 LIKES TIKTOK 
+               Reward/task: RM0.03
+      RM   3.00 | 30 LIKES TIKTOK 
+               Reward/task: RM0.03
+      RM   5.00 | 50 LIKES TIKTOK 
+               Reward/task: RM0.03
+      RM   9.00 | 100 LIKES TIKTOK
+               Reward/task: RM0.03
+      RM  18.00 | 200 LIKES TIKTOK 
+               Reward/task: RM0.03
+      RM  27.00 | 300 LIKES TIKTOK 
+               Reward/task: RM0.03
+      RM  45.00 | 500 LIKES TIKTOK 
+               Reward/task: RM0.03
+      RM  80.00 | 1000 LIKES TIKTOK
+               Reward/task: RM0.03
+      RM 160.00 | 2000 LIKES TIKTOK
+               Reward/task: RM0.03
+      RM 240.00 | 3000 LIKES TIKTOK
+               Reward/task: RM0.03
+
+   📦 Live (4 services)
+      RM   9.00 | 10K Tap Tap Screen Live Tiktok
+               Reward/task: RM0.03
+      RM  10.00 | 80-100 Tekan Beg Kuning dan Add To Cart Live Tiktok
+               Reward/task: RM0.03
+      RM  50.00 | 450-500 Tekan Beg Kuning dan Add To Cart Live Tiktok
+               Reward/task: RM0.03
+      RM  80.00 | 100K Tap Tap Screen Live Tiktok
+               Reward/task: RM0.03
+
+   📦 Other (2 services)
+      RM   3.00 | 50 LIKES COMMENTS TIKTOK (PROMO)
+               Reward/task: RM0.02
+      RM   9.00 | 100 Likes Dekat COMMENTS Tiktok
+               Reward/task: RM0.03
+
+   📦 Reposts (8 services)
+      RM   1.00 | 10 REPOST TIKTOK
+               Reward/task: RM0.03
+      RM   5.00 | 50 REPOST TIKTOK
+               Reward/task: RM0.03
+      RM   9.00 | 100 REPOST TIKTOK
+               Reward/task: RM0.03
+      RM  27.00 | 300 REPOST TIKTOK
+               Reward/task: RM0.03
+      RM  45.00 | 500 REPOST TIKTOK
+               Reward/task: RM0.03
+      RM  80.00 | 1000 REPOST TIKTOK
+               Reward/task: RM0.03
+      RM 160.00 | 2000 REPOST TIKTOK
+               Reward/task: RM0.03
+      RM 240.00 | 3000 REPOST TIKTOK
+               Reward/task: RM0.03
+
+   📦 Saves (4 services)
+      RM   1.00 | 10 SAVE TIKTOK (PROMO)
+               Reward/task: RM0.03
+      RM   4.00 | 50 SAVE TIKTOK
+               Reward/task: RM0.02
+      RM   7.00 | 100 SAVE TIKTOK
+               Reward/task: RM0.02
+      RM  35.00 | 500 SAVE TIKTOK
+               Reward/task: RM0.02
+
+   📦 Shares (7 services)
+      RM   1.00 | 10 SHARE TIKTOK
+               Reward/task: RM0.03
+      RM   5.00 | 50 SHARE TIKTOK
+               Reward/task: RM0.03
+      RM   9.00 | 100 SHARE TIKTOK
+               Reward/task: RM0.03
+      RM   9.00 | 100 SHARE KE STORY TIKTOK
+               Reward/task: RM0.03
+      RM  15.00 | 100 Live Share + Repost TikTok
+               Reward/task: RM0.05
+      RM  80.00 | 1000 SHARE TIKTOK
+               Reward/task: RM0.03
+      RM  85.00 | 1000 SHARE KE STORY TIKTOK
+               Reward/task: RM0.03
+
+
+📂 TWITTER (21 services)
+   Price range: RM1.00 - RM100.00
+   Average: RM19.76
+
+   📦 Combo (1 services)
+      RM  18.00 | 80 - 100 LIKE + KOMEN + REPOST COMBO 🔥
+               Reward/task: RM0.06
+
+   📦 Comments (4 services)
+      RM   2.00 | 3 CUSTOM COMMENTS TWITTER
+               Reward/task: RM0.05
+      RM   5.00 | 10 CUSTOM COMMENTS TWITTER
+               Reward/task: RM0.05
+      RM  15.00 | 30 CUSTOM COMMENTS TWITTER
+               Reward/task: RM0.05
+      RM  50.00 | 100 CUSTOM COMMENTS TWITTER
+               Reward/task: RM0.05
+
+   📦 Followers (6 services)
+      RM   1.00 | 10 FOLLOWERS TWITTER 
+               Reward/task: RM0.03
+      RM   5.00 | 50 FOLLOWERS TWITTER 
+               Reward/task: RM0.03
+      RM  10.00 | 50 - 60 LIKE + KOMEN TWITTER (FREE FOLLOWERS 🔥)
+               Reward/task: RM0.06
+      RM  10.00 | 100 FOLLOWERS TWITTER
+               Reward/task: RM0.03
+      RM  50.00 |  500 FOLLOWERS TWITTER
+               Reward/task: RM0.03
+      RM 100.00 | 1000 FOLLOWERS TWITTER
+               Reward/task: RM0.03
+
+   📦 Likes (5 services)
+      RM   1.00 | 10 LIKES TWITTER
+               Reward/task: RM0.03
+      RM   5.00 | 50 LIKES TWITTER
+               Reward/task: RM0.03
+      RM   9.00 | 100 LIKES TWITTER
+               Reward/task: RM0.03
+      RM  18.00 | 200 LIKES TWITTER
+               Reward/task: RM0.03
+      RM  90.00 | 1000 LIKES TWITTER
+               Reward/task: RM0.03
+
+   📦 Other (5 services)
+      RM   1.00 | 10 KOMEN TWITTER
+               Reward/task: RM0.03
+      RM   1.00 | 10 RETWEET TWITTER
+               Reward/task: RM0.03
+      RM   5.00 | 50 KOMEN TWITTER
+               Reward/task: RM0.03
+      RM   9.00 | 100 KOMEN TWITTER
+               Reward/task: RM0.03
+      RM  10.00 | 100 RETWEET TWITTER
+               Reward/task: RM0.03
+
+
+📂 WHATSAPP (1 services)
+   Price range: RM10.00 - RM10.00
+   Average: RM10.00
+
+   📦 Other (1 services)
+      RM  10.00 | 100 WhatsApp Channel Members (Real User 🇲🇾)
+               Reward/task: RM0.03
+
+
+📂 YOUTUBE (12 services)
+   Price range: RM1.00 - RM80.00
+   Average: RM18.04
+
+   📦 Combo (1 services)
+      RM  22.00 | Youtube Engagement Combo (Free Subscribers) 🔥
+               Reward/task: RM0.07
+
+   📦 Followers (4 services)
+      RM   1.00 | 10 YOUTUBE COMMENTS (FREE FOLLOWERS)
+               Reward/task: RM0.03
+      RM   5.00 | 50 YOUTUBE COMMENTS (FREE FOLLOWERS)
+               Reward/task: RM0.03
+      RM  10.00 | 100 YOUTUBE COMMENTS (FREE FOLLOWERS)
+               Reward/task: RM0.03
+      RM  50.00 | 500 YOUTUBE COMMENTS (FREE FOLLOWERS)
+               Reward/task: RM0.03
+
+   📦 Likes (2 services)
+      RM   7.00 | 40 - 50 LIKE + KOMEN YOUTUBE (Free Subscribers) 🔥
+               Reward/task: RM0.05
+      RM  14.00 | 80 - 100 PROMO LIKE + KOMEN YOUTUBE (Free Subscribers) 🔥
+               Reward/task: RM0.05
+
+   📦 Other (5 services)
+      RM   1.50 | 10 YOUTUBE SUBSCRIBERS (PROMO)
+               Reward/task: RM0.04
+      RM   6.00 | 50 YOUTUBE SUBSCRIBERS
+               Reward/task: RM0.04
+      RM   8.00 | 100 Views YouTube
+               Reward/task: RM0.04
+      RM  12.00 | 100 YOUTUBE SUBSCRIBERS (PROMO)
+               Reward/task: RM0.04
+      RM  80.00 | 1000 Views YouTube
+               Reward/task: RM0.04
+
+============================================================
+KEY PRICING PATTERNS
+============================================================
+
+🔥 COMBO packages: 41
+   RM1.50 | 10 Tiktok Followers + Like + COMMENTS (COMBO)
+   RM6.00 | 40 - 50 LIKE + COMMENT FACEBOOK (COMBO)🔥
+   RM6.00 | 40 - 50 LIKE + COMMENT INSTAGRAM (Combo) 🔥
+   RM6.00 | 40 - 50 LIKE + COMMENT THREAD (COMBO) 🔥
+   RM6.00 | 40 - 50 LIKE + COMMENT TIKTOK (COMBO)🔥
+   RM10.00 | 50 - 60 LIKE + COMMENT FACEBOOK + FREE FOLLOWERS (COMBO)🔥
+   RM10.00 | 50 - 60 LIKE + COMMENT INSTAGRAM + FREE FOLLOWER (COMBO) 🔥
+   RM10.00 | 50 - 60 LIKE + COMMENT THREAD (FREE FOLLOWERS) COMBO🔥
+   RM10.00 | 50 - 60 LIKE + COMMENT TIKTOK + FREE FOLLOWER (COMBO) 🔥
+   RM12.00 | 80 - 100 LIKE + COMMENT FACEBOOK (COMBO)🔥
+
+💧 Drip-feed enabled: 210 services
+   10 COMMENTS FACEBOOK: batch=2, interval=10min
+   30 COMMENTS FACEBOOK : batch=2, interval=10min
+   50 COMMENTS FACEBOOK: batch=5, interval=10min
+   50 LIVE COMMENT + TAP2 SCREEN : batch=10, interval=10min
+   40 - 50 LIKE + COMMENT FACEBOOK (COMBO)🔥: batch=10, interval=10min
+
+💬 Requires comment pool: 22 services
+   3 CUSTOM COMMENTS FACEBOOK: min=3, max=3
+   10 CUSTOM COMMENTS FACEBOOK: min=10, max=10
+   10 PAGE REVIEW 5 STAR FACEBOOK (CUSTOM): min=10, max=10
+   20 PAGE REVIEW 5 STAR FACEBOOK (CUSTOM): min=20, max=20
+   30 CUSTOM COMMENTS FACEBOOK: min=30, max=30
+
+⚠️ Requires purchase confirmation: 277 services
+
+📊 Service types: {'standard': 343}

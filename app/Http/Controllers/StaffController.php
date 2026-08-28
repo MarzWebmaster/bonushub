@@ -34,14 +34,6 @@ class StaffController extends Controller
     }
 
     /**
-     * Show the staff dashboard.
-     */
-    public function dashboard(): \Illuminate\Contracts\View\View
-    {
-        return view('staff.dashboard');
-    }
-
-    /**
      * Look up a customer by phone number.
      */
     public function customerLookup(CustomerLookupRequest $request): JsonResponse

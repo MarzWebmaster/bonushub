@@ -1,0 +1,60 @@
+TASKREWARD: Purchase Flow Analysis — Checkout UI Example
+
+## Pakej Contoh: 40-50 LIKE + COMMENT TIKTOK (COMBO) 🔥
+
+### Checkout Fields:
+1. **Link (pilihan)** — Pautan untuk link tugasan yang dijana
+2. **Nota Pembeli** — Dipaparkan kepada pekerja tugasan
+
+### Pengesahan Sebelum Pembelian:
+⚠️ Amaran: Semua pakej (followers, likes, views, komen) tidak dijamin kekal — boleh berkurang/hilang dari semasa ke semasa. Kerana platform (TikTok, IG, FB, Threads) ada sistem penapisan & pembersihan akaun automatik.
+
+### Harga Breakdown:
+| Item | Harga |
+|------|-------|
+| Harga Pakej | RM6.00 |
+| ToyyibPay Fee | RM1.00 |
+| **Jumlah** | **RM7.00** |
+
+### Payment Options:
+- Baki Ganjaran: RM0.00
+- Baki Topup: RM0.00
+
+---
+
+## KEY INSIGHTS UNTUK BONUSHUB
+
+### 1. UI/UX Pattern:
+- Simple form: Link + Nota → Harga → Bayar
+- Fee jelas terpisah (ToyyibPay fee RM1)
+- 2 payment source: Ganjaran (earned) + Topup (deposited)
+
+### 2. Business Model:
+- Harga rendah (RM6-7) = volume tinggi
+- Fee RM1 per transaction = revenue tambahan
+- Pakej combo (Like+Comment) = value bundling
+
+### 3. Legal/Compliance:
+- ✅ Amaran jelas tentang risiko (tidak dijamin kekal)
+- ✅ Transparent pricing (fee terpisah)
+- ✅ Pengesahan sebelum pembelian
+- ✅ 2 payment methods (flexibility)
+
+### 4. Technical Implementation Notes:
+- Link validation (TikTok URL detection)
+- Nota field (instructions untuk workers)
+- Dual balance system (Ganjaran + Topup)
+- Fee calculation (ToyyibPay integration)
+- Order confirmation flow
+
+### 5. Differentiation for BonusHub:
+- BonusHub: Merchant-centric (merchant creates tasks)
+- TaskReward: User-centric (user buys engagement)
+- BonusHub: Points/rewards based (no cash deposit)
+- TaskReward: Cash-based (FPX topup)
+
+### 6. Compliance Notes:
+- Amaran risiko = good practice (consumer protection)
+- Fee transparency = comply with Consumer Protection Act 1999
+- Payment methods = comply with BNM guidelines
+- Data privacy = comply with PDPA 2010

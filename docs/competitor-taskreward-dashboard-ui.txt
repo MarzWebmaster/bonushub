@@ -1,0 +1,30 @@
+TASKREWARD DASHBOARD UI CODE (HTML) — Full page snapshot dari browser.
+
+STRUKTUR UI DASHBOARD:
+1. Sidebar Navigation (14 items):
+   - Dashboard, Tugasan, Tugasan Saya, Marketplace, Pesanan Saya
+   - Service Worldwide, Wallet, Withdraw, Referral, Promote & Earn
+   - Blog, Notifikasi, Profil, Muat Turun App, Bantuan
+
+2. Announcement Banners (4 warning banners):
+   - "TOLONG BACA: Jangan submit bukti sama berulang kali — dikira menipu"
+   - "Task komen: wajib 3 perkataan atau lebih, tiada emoji"
+   - "Task Live: join minimum 2-3 minit, jangan spam"
+   - "Sosmed tiada profile pic? Submisi ditolak"
+
+3. WhatsApp Group CTA + Profile Completion CTA
+4. Blog Tips (3 articles)
+5. Referral Widget (4 bonuses)
+6. Dashboard Stats (9 cards)
+7. Quick Actions (5 buttons)
+8. Marketplace Promo Slider
+9. Tugasan Terbaru (3 items)
+10. Top Earners Leaderboard (10 users with VIP tiers)
+
+TASK REWARD PRICES:
+- TikTok Followers: RM0.03/task
+- Share Facebook: RM0.03/task
+- FB Page Review 5 Star: RM0.05/task
+- 10 TikTok Followers (Marketplace): RM1.00
+
+VIP TIERS: Bronze(RM50), Gold(RM250), Platinum(RM500), Diamond(RM1000), Crown(RM2500)

@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class SuperadminController extends Controller
@@ -312,5 +313,171 @@ class SuperadminController extends Controller
         $packages = \App\Models\Package::orderBy('price')->get();
 
         return view('superadmin.merchant-detail', compact('merchant', 'recentTransactions', 'rewards', 'packages'));
+    }
+
+    // ========================
+    // MERCHANT APPROVAL
+    // ========================
+
+    public function pendingMerchantsPage(): View
+    {
+        $merchants = Merchant::pending()
+            ->withCount(['users'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('superadmin.merchants-pending', compact('merchants'));
+    }
+
+    public function pendingMerchants(): JsonResponse
+    {
+        $merchants = Merchant::pending()
+            ->withCount(['users'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json(['success' => true, 'merchants' => $merchants]);
+    }
+
+    public function approveMerchant(int $id): JsonResponse
+    {
+        try {
+            $merchant = Merchant::findOrFail($id);
+
+            $merchant->update([
+                'status'      => Merchant::STATUS_ACTIVE,
+                'verified_at' => now(),
+                'verified_by' => auth()->id(),
+                'rejection_reason' => null,
+            ]);
+
+            // ── SEND NOTIFICATION TO MERCHANT ──
+            // Via BonusNotifier (toast + email)
+            $merchantUser = $merchant->users()->first();
+            if ($merchantUser) {
+                // Email notification
+                try {
+                    Mail::raw("Tahniah, {$merchantUser->name}!\n\n"
+                        . "Akaun merchant anda untuk **{$merchant->company_name}** telah diluluskan oleh admin.\n\n"
+                        . "Anda kini boleh log masuk dan menggunakan semua ciri BonusHub.\n\n"
+                        . "👉 " . route('login') . "\n\n"
+                        . "Terima kasih,\n"
+                        . "Pasukan BonusHub",
+                        function ($message) use ($merchantUser, $merchant) {
+                            $message->to($merchantUser->email)
+                                ->subject("✅ Akaun Merchant Diluluskan — {$merchant->company_name}")
+                                ->from('noreply@bonushub.my', 'BonusHub');
+                        }
+                    );
+                } catch (\Exception $e) {
+                    Log::warning("Failed to send approval email to {$merchantUser->email}: " . $e->getMessage());
+                }
+
+                // BonusNotifier (in-app notification)
+                if (class_exists(\App\Models\NotificationSetting::class) && \App\Models\NotificationSetting::count() === 0) {
+                    \App\Models\NotificationSetting::seedDefaults();
+                }
+                if (class_exists(\App\Services\BonusNotifier::class)) {
+                    \App\Services\BonusNotifier::toMerchant($merchant, 'merchant_approved', [
+                        'title'   => '✅ Akaun Merchant Diluluskan!',
+                        'message' => "Tahniah! Akaun merchant anda untuk **{$merchant->company_name}** telah diluluskan.\n\n"
+                            . "Anda kini boleh menggunakan semua ciri BonusHub.",
+                        'type'    => 'success',
+                        'data'    => [
+                            'merchant_id'  => $merchant->id,
+                            'company_name' => $merchant->company_name,
+                            'redirect_url' => route('merchant.dashboard'),
+                        ],
+                    ]);
+                }
+            }
+
+            Log::info("Merchant approved: {$merchant->company_name} by admin #" . auth()->id(), [
+                'merchant_id' => $merchant->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Merchant '{$merchant->company_name}' telah diluluskan. Notifikasi dihantar kepada merchant.",
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Failed to approve merchant #{$id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal meluluskan merchant: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function rejectMerchant(int $id): JsonResponse
+    {
+        try {
+            $merchant = Merchant::findOrFail($id);
+            $reason = request()->input('reason', '');
+
+            $merchant->update([
+                'status'           => Merchant::STATUS_REJECTED,
+                'rejection_reason' => $reason ?: 'Ditolak oleh admin',
+                'verified_at'      => null,
+                'verified_by'      => null,
+            ]);
+
+            // ── SEND NOTIFICATION TO MERCHANT ──
+            $merchantUser = $merchant->users()->first();
+            if ($merchantUser) {
+                // Email notification
+                try {
+                    Mail::raw("Hai {$merchantUser->name},\n\n"
+                        . "Maaf, akaun merchant anda untuk **{$merchant->company_name}** telah ditolak.\n\n"
+                        . "Sebab: " . ($reason ?: 'Tiada sebab diberi') . "\n\n"
+                        . "Sila muat naik semula dokumen yang betul:\n"
+                        . "👉 " . route('merchant.verification') . "\n\n"
+                        . "Terima kasih,\n"
+                        . "Pasukan BonusHub",
+                        function ($message) use ($merchantUser, $merchant) {
+                            $message->to($merchantUser->email)
+                                ->subject("❌ Akaun Merchant Ditolak — {$merchant->company_name}")
+                                ->from('noreply@bonushub.my', 'BonusHub');
+                        }
+                    );
+                } catch (\Exception $e) {
+                    Log::warning("Failed to send rejection email to {$merchantUser->email}: " . $e->getMessage());
+                }
+
+                // BonusNotifier (in-app notification)
+                if (class_exists(\App\Services\BonusNotifier::class)) {
+                    \App\Services\BonusNotifier::toMerchant($merchant, 'merchant_rejected', [
+                        'title'   => '❌ Akaun Merchant Ditolak',
+                        'message' => "Maaf, akaun merchant anda untuk **{$merchant->company_name}** telah ditolak.\n\n"
+                            . "Sebab: " . ($reason ?: 'Tiada sebab diberi') . "\n\n"
+                            . "Sila muat naik semula dokumen yang betul.",
+                        'type'    => 'error',
+                        'data'    => [
+                            'merchant_id'  => $merchant->id,
+                            'company_name' => $merchant->company_name,
+                            'redirect_url' => route('merchant.verification'),
+                        ],
+                    ]);
+                }
+            }
+
+            Log::info("Merchant rejected: {$merchant->company_name} by admin #" . auth()->id(), [
+                'merchant_id' => $merchant->id,
+                'reason'      => $reason,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Merchant '{$merchant->company_name}' telah ditolak. Notifikasi dihantar kepada merchant.",
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Failed to reject merchant #{$id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menolak merchant: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'merchant.approved' => \App\Http\Middleware\CheckMerchantApproved::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
