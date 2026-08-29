@@ -51,11 +51,11 @@
         <div style="background:white;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08)">
             <h3 style="font-size:16px;font-weight:600;margin-bottom:16px">Quick Actions</h3>
             <div style="display:flex;flex-direction:column;gap:10px">
-                <a href="{{ route('scan') }}" style="display:flex;align-items:center;gap:10px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;text-decoration:none;color:#111">
-                    <span style="font-size:20px">📷</span>
+                <a href="{{ route('merchant.dashboard') }}" style="display:flex;align-items:center;gap:10px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;text-decoration:none;color:#111">
+                    <span style="font-size:20px">📊</span>
                     <div>
-                        <div style="font-size:14px;font-weight:600">Scan QR</div>
-                        <div style="font-size:12px;color:#6b7280">Earn points for customer</div>
+                        <div style="font-size:14px;font-weight:600">Dashboard</div>
+                        <div style="font-size:12px;color:#6b7280">View your business overview</div>
                     </div>
                 </a>
                 <a href="{{ route('merchant.rewards.index') }}" style="display:flex;align-items:center;gap:10px;padding:12px;background:#fefce8;border:1px solid #fde68a;border-radius:8px;text-decoration:none;color:#111">
