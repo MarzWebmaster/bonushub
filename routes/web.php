@@ -80,7 +80,16 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
     Route::post('/add-points', [StaffController::class, 'addPoints'])->name('add.points');
     Route::post('/redeem', [StaffController::class, 'redeemPoints'])->name('redeem');
     Route::post('/void', [StaffController::class, 'voidTransaction'])->name('void');
+    // QR Code
+    Route::get('/qr', [\App\Http\Controllers\QrController::class, 'staffQrPage'])->name('qr');
+    Route::get('/api/qr', [\App\Http\Controllers\QrController::class, 'generateQr'])->name('api.qr');
 });
+
+// ========================
+// QR Scan Routes (Customer)
+// ========================
+Route::get('/scan/{merchantId}/{branchId?}', [\App\Http\Controllers\ScanController::class, 'show'])->name('scan');
+Route::post('/api/scan/earn', [\App\Http\Controllers\ScanController::class, 'earn'])->name('scan.earn')->middleware('auth');
 
 // ========================
 // Merchant Admin Routes
@@ -107,6 +116,9 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.appr
 
     // Reports (HTML page)
     Route::get('/reports/liability', [MerchantAdminController::class, 'liabilityReportPage'])->name('reports.liability');
+
+    // Analytics
+    Route::get('/analytics', [MerchantAdminController::class, 'analyticsPage'])->name('analytics');
 
     // Loyalty rate settings (HTML page)
     Route::get('/loyalty-rates', [MerchantAdminController::class, 'loyaltyRatesPage'])->name('loyalty.rates');

@@ -787,9 +787,9 @@ giveaway_entries
 - [x] Superadmin merchant approval workflow (approve/reject)
 - [x] CheckMerchantApproved middleware (access control)
 - [x] HTTPS deployment at bonushub.my
-- [ ] QR code points earning
+- [x] QR code points earning
 - [ ] Customer mobile web app (PWA)
-- [ ] Basic analytics dashboard
+- [x] Basic analytics dashboard
 
 ### Phase 2 — Viral Engine (Bulan 3-4)
 - [ ] Viral task creation (merchant side)

@@ -386,6 +386,79 @@ class MerchantAdminController extends Controller
     }
 
     /**
+     * Analytics page — merchant sees detailed performance.
+     */
+    public function analyticsPage(): View
+    {
+        $merchant = $this->getMerchant();
+        $mid = $merchant->id;
+
+        // Summary stats
+        $totalCustomers = CustomerMerchant::where('merchant_id', $mid)->count();
+        $totalPointsEarned = (int) PointsTransaction::where('merchant_id', $mid)->where('type', 'earn')->sum('points');
+        $totalPointsRedeemed = (int) abs(PointsTransaction::where('merchant_id', $mid)->where('type', 'redeem')->sum('points'));
+        $totalRevenue = (float) PointsTransaction::where('merchant_id', $mid)->where('type', 'earn')->sum('amount_spent');
+        $totalTransactions = PointsTransaction::where('merchant_id', $mid)->count();
+
+        // Today stats
+        $todayEarned = (int) PointsTransaction::where('merchant_id', $mid)->where('type', 'earn')->whereDate('created_at', today())->sum('points');
+        $todayTransactions = PointsTransaction::where('merchant_id', $mid)->whereDate('created_at', today())->count();
+        $todayRevenue = (float) PointsTransaction::where('merchant_id', $mid)->where('type', 'earn')->whereDate('created_at', today())->sum('amount_spent');
+
+        // Top 10 customers by points
+        $topCustomers = CustomerMerchant::with('customer')
+            ->where('merchant_id', $mid)
+            ->orderByDesc('points')
+            ->limit(10)
+            ->get()
+            ->map(function($cm) use ($mid) {
+                $txCount = PointsTransaction::where('merchant_id', $mid)
+                    ->where('customer_id', $cm->customer_id)
+                    ->count();
+                return [
+                    'name' => $cm->customer->name ?? 'Unknown',
+                    'points' => (int) $cm->points,
+                    'tier' => $cm->tier_per_merchant,
+                    'transactions' => $txCount,
+                ];
+            });
+
+        // Recent 20 transactions
+        $recentTransactions = PointsTransaction::with(['customer', 'branch', 'staff'])
+            ->where('merchant_id', $mid)
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get();
+
+        // Branch performance
+        $branchStats = PointsTransaction::where('merchant_id', $mid)
+            ->whereNotNull('branch_id')
+            ->selectRaw('branch_id, COUNT(*) as tx_count, SUM(points) as total_points, SUM(amount_spent) as total_amount')
+            ->groupBy('branch_id')
+            ->get()
+            ->map(function($row) use ($mid) {
+                $branch = Branch::find($row->branch_id);
+                return [
+                    'name' => $branch->name ?? 'Unknown',
+                    'transactions' => (int) $row->tx_count,
+                    'points' => (int) $row->total_points,
+                    'revenue' => (float) $row->total_amount,
+                ];
+            })
+            ->sortByDesc('revenue')
+            ->values();
+
+        $stats = compact(
+            'totalCustomers', 'totalPointsEarned', 'totalPointsRedeemed',
+            'totalRevenue', 'totalTransactions',
+            'todayEarned', 'todayTransactions', 'todayRevenue',
+            'topCustomers', 'recentTransactions', 'branchStats'
+        );
+
+        return view('merchant.analytics', $stats);
+    }
+
+    /**
      * Show single customer detail page for merchant.
      */
     public function customerDetailPage(int $id): View
