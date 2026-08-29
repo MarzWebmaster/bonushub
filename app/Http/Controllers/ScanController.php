@@ -9,12 +9,14 @@ use App\Models\CustomerMerchant;
 use App\Models\PointsTransaction;
 use App\Models\LoyaltyRate;
 use App\Models\Promo;
+use App\Traits\SendsEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ScanController extends Controller
 {
+    use SendsEmails;
     /**
      * Show scan page — customer has scanned a QR code.
      * URL: /scan/{merchant_id}/{branch_id?}
@@ -135,6 +137,15 @@ class ScanController extends Controller
             ]);
 
             $newBalance = $customerMerchant->fresh()->points;
+
+            // Send email notification
+            $this->sendPointsEarnedEmail(
+                $customer->id,
+                $points,
+                $newBalance,
+                $merchant->id,
+                $request->description ?: 'QR Scan'
+            );
 
             return response()->json([
                 'success' => true,

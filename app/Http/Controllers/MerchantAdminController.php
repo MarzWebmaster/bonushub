@@ -770,4 +770,96 @@ class MerchantAdminController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Promo deleted.']);
     }
+
+    // ========================
+    // DASHBOARD API
+    // ========================
+
+    public function dashboardOverview(): JsonResponse
+    {
+        $merchant = $this->getMerchant();
+        $merchantId = $merchant->id;
+
+        // Stats
+        $totalCustomers = DB::table('customer_merchant')->where('merchant_id', $merchantId)->count();
+        $totalPoints = (int) DB::table('customer_merchant')->where('merchant_id', $merchantId)->sum('points');
+        $totalRewards = MerchantReward::where('merchant_id', $merchantId)->count();
+        $totalTasks = DB::table('viral_tasks')->where('merchant_id', $merchantId)->count();
+        $pendingSubmissions = DB::table('task_submissions')
+            ->join('viral_tasks', 'task_submissions.viral_task_id', '=', 'viral_tasks.id')
+            ->where('viral_tasks.merchant_id', $merchantId)
+            ->where('task_submissions.status', 'pending')
+            ->count();
+
+        // Points earned this month
+        $pointsThisMonth = PointsTransaction::where('merchant_id', $merchantId)
+            ->where('type', 'earn')
+            ->whereMonth('created_at', now()->month)
+            ->sum('points');
+
+        // New customers this month
+        $newCustomersMonth = DB::table('customer_merchant')
+            ->where('merchant_id', $merchantId)
+            ->whereMonth('created_at', now()->month)
+            ->count();
+
+        // Trend calculations (vs last month)
+        $pointsLastMonth = PointsTransaction::where('merchant_id', $merchantId)
+            ->where('type', 'earn')
+            ->whereMonth('created_at', now()->month - 1)
+            ->sum('points');
+        $pointsTrend = $pointsLastMonth > 0 ? round((($pointsThisMonth - $pointsLastMonth) / $pointsLastMonth) * 100) : 0;
+
+        $newCustLastMonth = DB::table('customer_merchant')
+            ->where('merchant_id', $merchantId)
+            ->whereMonth('created_at', now()->month - 1)
+            ->count();
+        $custTrend = $newCustLastMonth > 0 ? round((($newCustomersMonth - $newCustLastMonth) / $newCustLastMonth) * 100) : 0;
+
+        $stats = [
+            ['icon' => '👥', 'label' => 'Total Customers', 'value' => number_format($totalCustomers), 'trend' => $custTrend],
+            ['icon' => '⭐', 'label' => 'Points in Circulation', 'value' => number_format($totalPoints), 'trend' => $pointsTrend],
+            ['icon' => '🎁', 'label' => 'Active Rewards', 'value' => $totalRewards, 'trend' => null],
+            ['icon' => '📋', 'label' => 'Viral Tasks', 'value' => $totalTasks, 'trend' => null],
+            ['icon' => '⏳', 'label' => 'Pending Reviews', 'value' => $pendingSubmissions, 'trend' => null],
+        ];
+
+        // Recent activity
+        $recentTransactions = PointsTransaction::where('merchant_id', $merchantId)
+            ->with('customer')
+            ->latest()
+            ->limit(5)
+            ->get()
+            ->map(fn($t) => [
+                'icon' => $t->type === 'earn' ? '⬆️' : '⬇️',
+                'title' => $t->type === 'earn' ? "Points earned: +{$t->points}" : "Points redeemed: -{$t->points}",
+                'subtitle' => $t->customer ? $t->customer->name : 'Customer #' . $t->customer_id,
+                'time' => $t->created_at->diffForHumans(),
+            ]);
+
+        $recentSubmissions = DB::table('task_submissions')
+            ->join('viral_tasks', 'task_submissions.viral_task_id', '=', 'viral_tasks.id')
+            ->join('customers', 'task_submissions.customer_id', '=', 'customers.id')
+            ->where('viral_tasks.merchant_id', $merchantId)
+            ->latest('task_submissions.created_at')
+            ->limit(3)
+            ->get()
+            ->map(fn($s) => [
+                'icon' => match($s->status) { 'pending' => '⏳', 'approved' => '✅', default => '❌' },
+                'title' => "Task submitted: {$s->title}",
+                'subtitle' => "{$s->name} — {$s->status}",
+                'time' => now()->diffForHumans($s->created_at),
+            ]);
+
+        $allActivity = $recentTransactions->merge($recentSubmissions)
+            ->sortByDesc(fn($a) => $a['time'])
+            ->values()
+            ->take(8);
+
+        return response()->json([
+            'merchant_name' => $merchant->name,
+            'stats' => $stats,
+            'recent_activity' => $allActivity,
+        ]);
+    }
 }

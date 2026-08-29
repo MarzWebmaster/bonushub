@@ -6,6 +6,7 @@ use App\Models\ViralTask;
 use App\Models\TaskSubmission;
 use App\Models\Customer;
 use App\Models\PointsTransaction;
+use App\Traits\SendsEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -13,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 
 class ViralTaskController extends Controller
 {
+    use SendsEmails;
     public function __construct()
     {
         $this->middleware(['auth']);
@@ -195,6 +197,14 @@ class ViralTaskController extends Controller
                 'notes' => "Viral task: {$task->title} (submission #{$submission->id})",
                 'staff_id' => Auth::id(),
             ]);
+
+            // Send email notification
+            $this->sendTaskApprovedEmail(
+                $customer->id,
+                $task->title,
+                $task->points_reward,
+                $merchantId
+            );
         }
 
         return response()->json([
@@ -237,6 +247,14 @@ class ViralTaskController extends Controller
 
         if (!$customer) {
             return response()->json(['success' => false, 'message' => 'Customer profile not found.'], 422);
+        }
+
+        // Rate limit: max 5 submissions per customer per day
+        $todaySubmissions = TaskSubmission::where('customer_id', $customer->id)
+            ->whereDate('created_at', today())
+            ->count();
+        if ($todaySubmissions >= 5) {
+            return response()->json(['success' => false, 'message' => 'Daily submission limit reached (5/day). Try again tomorrow!'], 429);
         }
 
         $task = ViralTask::active()->available()->findOrFail($taskId);

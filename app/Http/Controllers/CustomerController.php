@@ -7,6 +7,7 @@ use App\Http\Requests\Customer\RedeemRewardRequest;
 use App\Models\MerchantReward;
 use App\Models\PointsTransaction;
 use App\Models\User;
+use App\Traits\SendsEmails;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
+    use SendsEmails;
     public function profilePage(): View
     {
         return view('customer.profile');
@@ -273,6 +275,14 @@ class CustomerController extends Controller
             DB::commit();
 
             Log::info("Customer {$customer->id} self-redeemed {$rewardProduct->name} x{$quantity}");
+
+            // Send email notification
+            $this->sendRewardRedeemedEmail(
+                $customer->id,
+                $rewardProduct->name,
+                $totalPointsRequired,
+                $rewardProduct->merchant_id
+            );
 
             return response()->json([
                 'success' => true,

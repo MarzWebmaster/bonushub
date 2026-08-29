@@ -18,6 +18,7 @@ use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CampaignRedirectController;
 use App\Http\Controllers\ViralTaskController;
 use App\Http\Controllers\ReferralController;
+use App\Http\Controllers\GiveawayController;
 
 Route::get('/', function () {
     return view('home');
@@ -145,6 +146,7 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.appr
 
     // JSON API endpoints (for AJAX)
     Route::get('/api/dashboard', [MerchantAdminController::class, 'dashboardStats'])->name('api.dashboard');
+    Route::get('/api/dashboard-overview', [MerchantAdminController::class, 'dashboardOverview'])->name('api.dashboard-overview');
     Route::get('/api/points/pending', [MerchantAdminController::class, 'pendingApprovals'])->name('api.points.pending');
     Route::get('/api/rewards', [MerchantAdminController::class, 'rewardProducts'])->name('api.rewards');
     Route::put('/api/rewards/{id}', [MerchantAdminController::class, 'updateRewardProduct'])->name('api.rewards.update');
@@ -181,6 +183,17 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.appr
     Route::get('/api/tasks/analytics', [ViralTaskController::class, 'taskAnalytics'])->name('api.tasks.analytics');
     Route::get('/task-analytics', [ViralTaskController::class, 'taskAnalyticsPage'])->name('task-analytics');
     Route::get('/api/referral-analytics', [ReferralController::class, 'merchantReferralAnalytics'])->name('api.referral-analytics');
+
+    // Giveaway Campaigns (Merchant)
+    Route::prefix('giveaways')->name('giveaways.')->group(function () {
+        Route::get('/', [GiveawayController::class, 'merchantCampaignsPage'])->name('index');
+        Route::get('/create', [GiveawayController::class, 'merchantCreatePage'])->name('create');
+        Route::post('/', [GiveawayController::class, 'storeCampaign'])->name('store');
+        Route::get('/{id}', [GiveawayController::class, 'merchantCampaignDetail'])->name('detail');
+        Route::post('/{id}/activate', [GiveawayController::class, 'activateCampaign'])->name('activate');
+        Route::post('/{id}/end', [GiveawayController::class, 'endCampaign'])->name('end');
+        Route::post('/{id}/select-winners', [GiveawayController::class, 'selectWinners'])->name('select-winners');
+    });
 });
 
 // ========================
@@ -228,6 +241,16 @@ Route::prefix('customer')->name('customer.')->middleware(['auth'])->group(functi
     Route::get('/api/leaderboard', [CustomerController::class, 'leaderboard'])->name('api.leaderboard');
     Route::get('/api/profile', [CustomerController::class, 'profileApi'])->name('api.profile');
     Route::get('/api/referrals', [ReferralController::class, 'referralLinksPage'])->name('api.referrals');
+
+    // Giveaways (Customer)
+    Route::get('/giveaways', [GiveawayController::class, 'customerGiveawaysPage'])->name('giveaways');
+    Route::get('/giveaways/{id}', [GiveawayController::class, 'giveawayDetail'])->name('giveaway-detail');
+    Route::post('/giveaways/{id}/enter', [GiveawayController::class, 'enterGiveaway'])->name('giveaway-enter');
+    Route::get('/api/giveaways', [GiveawayController::class, 'activeCampaigns'])->name('api.giveaways');
+    Route::post('/api/giveaways/{id}/enter', [GiveawayController::class, 'enterGiveaway'])->name('api.giveaway-enter');
+    Route::get('/api/giveaways/{id}/leaderboard', [GiveawayController::class, 'leaderboard'])->name('api.giveaway-leaderboard');
+    Route::get('/api/my-entries', [GiveawayController::class, 'myEntries'])->name('api.my-entries');
+    Route::get('/api/my-prizes', [GiveawayController::class, 'myPrizes'])->name('api.my-prizes');
 });
 
 // ========================
