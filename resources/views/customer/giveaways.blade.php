@@ -51,7 +51,7 @@
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
                 <template x-for="campaign in campaigns" :key="campaign.id">
                     <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px;cursor:pointer"
-                         @click="window.location.href='/giveaways/' + campaign.id">
+                         @click="window.location.href='/customer/giveaways/' + campaign.id">
                         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
                             <h3 style="font-size:18px;font-weight:700;color:var(--text-primary);margin:0" x-text="campaign.title"></h3>
                             <span class="badge badge-success">Active</span>
