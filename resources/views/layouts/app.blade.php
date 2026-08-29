@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'BonusHub — Loyalty System')</title>
+
+    {{-- PWA Meta Tags --}}
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BonusHub">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
     <style>
@@ -353,6 +362,18 @@
             .catch(() => {});
         @endrole
     </script>
+
+    {{-- PWA Service Worker --}}
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('✅ SW registered:', reg.scope))
+                .catch(err => console.log('❌ SW failed:', err));
+        });
+    }
+    </script>
+
     @stack('scripts')
 </body>
 </html>

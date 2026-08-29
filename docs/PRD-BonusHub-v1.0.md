@@ -788,7 +788,7 @@ giveaway_entries
 - [x] CheckMerchantApproved middleware (access control)
 - [x] HTTPS deployment at bonushub.my
 - [x] QR code points earning
-- [ ] Customer mobile web app (PWA)
+- [x] Customer mobile web app (PWA)
 - [x] Basic analytics dashboard
 
 ### Phase 2 — Viral Engine (Bulan 3-4)
