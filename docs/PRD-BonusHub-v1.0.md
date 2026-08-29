@@ -804,13 +804,18 @@ giveaway_entries
 - [x] Merchant referral analytics API (clicks, signups, conversions, source breakdown)
 - [x] Database: viral_tasks, task_submissions, referrals, referral_clicks tables
 
-### Phase 3 — Giveaway Engine (Bulan 5-6)
-- [ ] Campaign creation (merchant side)
-- [ ] Referral link generation
-- [ ] Leaderboard
-- [ ] Winner selection (merit-based)
-- [ ] Campaign analytics
-- [ ] Social sharing integration
+### Phase 3 — Giveaway Engine + Hardening (Bulan 5-6) ✅
+- [x] Giveaway campaign creation (merchant side) — CRUD with title, prize, selection method, entry method
+- [x] Customer giveaway participation — browse active giveaways, enter with one click
+- [x] Winner selection (random, top referrers, manual) — merit-based, not random lottery
+- [x] Leaderboard tracking — top participants by entry count
+- [x] Campaign activation/end flow — merchant controls lifecycle
+- [x] Email notifications — task approved, points earned, reward redeemed (Mailable classes + HTML templates)
+- [x] SendsEmails trait — reusable email dispatch logic
+- [x] Merchant dashboard home — stats API (total customers, points, tasks, pending reviews)
+- [x] Rate limiting — max 5 task submissions per customer per day
+- [x] Database: giveaway_campaigns, giveaway_entries, giveaway_winners tables
+- [x] 16 routes (7 merchant + 9 customer), 9 views, 42/42 E2E tests passed
 
 ### Phase 4 — Growth & Optimization (Bulan 7+)
 - [ ] Advanced analytics (RFM, churn prediction)
