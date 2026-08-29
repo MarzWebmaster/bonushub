@@ -791,13 +791,18 @@ giveaway_entries
 - [x] Customer mobile web app (PWA)
 - [x] Basic analytics dashboard
 
-### Phase 2 — Viral Engine (Bulan 3-4)
-- [ ] Viral task creation (merchant side)
-- [ ] Task execution (customer side)
-- [ ] Auto-tracking (unique links + UTM)
-- [ ] Screenshot proof submission
-- [ ] Task verification workflow
-- [ ] Task analytics
+### Phase 2 — Viral Engine (Bulan 3-4) ✅
+- [x] Viral task creation (merchant side) — CRUD with platform, type, points, schedule
+- [x] Task execution (customer side) — browse all active tasks, submit with proof URL
+- [x] Auto-tracking (unique referral links per customer per merchant with UTM)
+- [x] Screenshot proof submission (file upload support in controller + view)
+- [x] Task verification workflow (merchant approve/reject → points credited)
+- [x] Task analytics (Chart.js stacked bar, top tasks, daily submissions, conversion rate)
+- [x] Referral links (customer generates unique /ref/{code} links, copy to clipboard)
+- [x] Referral click tracking (IP, user-agent, UTM params, referral_clicks table)
+- [x] Referral landing page (public /ref/{code} → register page with referral info)
+- [x] Merchant referral analytics API (clicks, signups, conversions, source breakdown)
+- [x] Database: viral_tasks, task_submissions, referrals, referral_clicks tables
 
 ### Phase 3 — Giveaway Engine (Bulan 5-6)
 - [ ] Campaign creation (merchant side)
