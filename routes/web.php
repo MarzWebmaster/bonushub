@@ -16,6 +16,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CampaignRedirectController;
+use App\Http\Controllers\ViralTaskController;
+use App\Http\Controllers\ReferralController;
 
 Route::get('/', function () {
     return view('home');
@@ -167,7 +169,24 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.appr
     Route::post('/api/promos', [MerchantAdminController::class, 'storePromo'])->name('api.promos.store');
     Route::put('/api/promos/{id}', [MerchantAdminController::class, 'updatePromo'])->name('api.promos.update');
     Route::delete('/api/promos/{id}', [MerchantAdminController::class, 'deletePromo'])->name('api.promos.destroy');
+
+    // Viral Tasks (Merchant)
+    Route::get('/tasks', [ViralTaskController::class, 'merchantTasksPage'])->name('tasks');
+    Route::get('/tasks/create', [ViralTaskController::class, 'merchantTaskCreatePage'])->name('tasks.create');
+    Route::get('/tasks/{id}', [ViralTaskController::class, 'merchantTaskDetailPage'])->name('tasks.detail');
+    Route::post('/api/tasks', [ViralTaskController::class, 'storeTask'])->name('api.tasks.store');
+    Route::put('/api/tasks/{id}', [ViralTaskController::class, 'updateTask'])->name('api.tasks.update');
+    Route::delete('/api/tasks/{id}', [ViralTaskController::class, 'deleteTask'])->name('api.tasks.destroy');
+    Route::post('/api/submissions/{id}/review', [ViralTaskController::class, 'reviewSubmission'])->name('api.submissions.review');
+    Route::get('/api/tasks/analytics', [ViralTaskController::class, 'taskAnalytics'])->name('api.tasks.analytics');
+    Route::get('/task-analytics', [ViralTaskController::class, 'taskAnalyticsPage'])->name('task-analytics');
+    Route::get('/api/referral-analytics', [ReferralController::class, 'merchantReferralAnalytics'])->name('api.referral-analytics');
 });
+
+// ========================
+// Public Routes
+// ========================
+Route::get('/ref/{code}', [ReferralController::class, 'referralLanding'])->name('referral.landing');
 
 // ========================
 // Customer Routes
@@ -195,11 +214,20 @@ Route::prefix('customer')->name('customer.')->middleware(['auth'])->group(functi
     // Leaderboard
     Route::get('/leaderboard', [CustomerController::class, 'leaderboardPage'])->name('leaderboard');
 
+    // Viral Tasks (Customer)
+    Route::get('/tasks', [ViralTaskController::class, 'customerTasksPage'])->name('tasks');
+    Route::post('/tasks/{taskId}/submit', [ViralTaskController::class, 'submitTask'])->name('tasks.submit');
+
+    // Referral Links (Customer)
+    Route::get('/referrals', [ReferralController::class, 'referralLinksPage'])->name('referrals');
+    Route::post('/api/referrals/create', [ReferralController::class, 'createReferralLink'])->name('api.referrals.create');
+
     // JSON API endpoints
     Route::get('/api/points', [CustomerController::class, 'pointsBalance'])->name('api.points');
     Route::get('/api/rewards', [CustomerController::class, 'availableRewards'])->name('api.rewards');
     Route::get('/api/leaderboard', [CustomerController::class, 'leaderboard'])->name('api.leaderboard');
     Route::get('/api/profile', [CustomerController::class, 'profileApi'])->name('api.profile');
+    Route::get('/api/referrals', [ReferralController::class, 'referralLinksPage'])->name('api.referrals');
 });
 
 // ========================
