@@ -266,28 +266,49 @@ class SuperadminController extends Controller
 
     public function globalLeaderboard(Request $request): JsonResponse
     {
-        $limit = min((int) $request->query('limit', 50), 200);
+        $perPage = min((int) $request->query('per_page', 20), 100);
+        $page = max((int) $request->query('page', 1), 1);
 
-        $leaderboard = DB::table('customer_merchant')
+        $query = DB::table('customer_merchant')
             ->join('customers', 'customer_merchant.customer_id', '=', 'customers.id')
+            ->leftJoin('merchants', 'customer_merchant.merchant_id', '=', 'merchants.id')
             ->select(
                 'customers.id',
                 'customers.name',
                 'customers.phone',
                 'customers.tier_global',
                 DB::raw('SUM(customer_merchant.points) as total_points'),
-                DB::raw('COUNT(DISTINCT customer_merchant.merchant_id) as merchant_count')
+                DB::raw('COUNT(DISTINCT customer_merchant.merchant_id) as merchant_count'),
+                DB::raw("GROUP_CONCAT(DISTINCT merchants.company_name ORDER BY merchants.company_name SEPARATOR ', ') as merchant_names")
             )
             ->groupBy('customers.id', 'customers.name', 'customers.phone', 'customers.tier_global')
-            ->orderBy('total_points', 'desc')
-            ->limit($limit)
+            ->orderBy('total_points', 'desc');
+
+        $total = DB::table('customer_merchant')
+            ->join('customers', 'customer_merchant.customer_id', '=', 'customers.id')
+            ->select('customers.id')
+            ->groupBy('customers.id')
+            ->get()->count();
+
+        $leaderboard = $query
+            ->skip(($page - 1) * $perPage)
+            ->take($perPage)
             ->get()
-            ->map(function ($entry, $index) {
-                $entry->rank = $index + 1;
+            ->map(function ($entry, $index) use ($page, $perPage) {
+                $entry->rank = (($page - 1) * $perPage) + $index + 1;
                 return $entry;
             });
 
-        return response()->json(['success' => true, 'leaderboard' => $leaderboard]);
+        return response()->json([
+            'success' => true,
+            'leaderboard' => $leaderboard,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => ceil($total / $perPage),
+            ],
+        ]);
     }
 
     public function leaderboardPage(): View
