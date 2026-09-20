@@ -9,71 +9,56 @@
         </div>
     </div>
 
-    <!-- Stat Cards -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px">
-        <div style="background:white;border-radius:12px;padding:16px;border:1px solid #e5e7eb">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:4px">📋 Total Tasks</div>
-            <div style="font-size:28px;font-weight:700;color:#1e293b" x-text="data.total_tasks || 0"></div>
-        </div>
-        <div style="background:white;border-radius:12px;padding:16px;border:1px solid #e5e7eb">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:4px">✅ Active Tasks</div>
-            <div style="font-size:28px;font-weight:700;color:#16a34a" x-text="data.active_tasks || 0"></div>
-        </div>
-        <div style="background:white;border-radius:12px;padding:16px;border:1px solid #e5e7eb">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:4px">📝 Total Submissions</div>
-            <div style="font-size:28px;font-weight:700;color:#2563eb" x-text="data.total_submissions || 0"></div>
-        </div>
-        <div style="background:white;border-radius:12px;padding:16px;border:1px solid #e5e7eb">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:4px">⭐ Approved</div>
-            <div style="font-size:28px;font-weight:700;color:#16a34a" x-text="data.approved_submissions || 0"></div>
-        </div>
-        <div style="background:white;border-radius:12px;padding:16px;border:1px solid #e5e7eb">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:4px">📈 Conversion Rate</div>
-            <div style="font-size:28px;font-weight:700;color:#6366f1" x-text="(data.conversion_rate || 0) + '%'"></div>
-        </div>
-        <div style="background:white;border-radius:12px;padding:16px;border:1px solid #e5e7eb">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:4px">💎 Points Spent</div>
-            <div style="font-size:28px;font-weight:700;color:#ea580c" x-text="(data.total_points_spent || 0).toLocaleString()"></div>
-        </div>
+    {{-- Stat Cards --}}
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        <template x-for="(s, i) in stats" :key="i">
+            <div class="bg-white rounded-xl p-4 border border-surface-200 hover:shadow-md transition-shadow">
+                <div class="text-xs text-surface-500 mb-1" x-text="s.icon + ' ' + s.label"></div>
+                <div class="text-2xl sm:text-3xl font-bold" :style="'color:' + s.color" x-text="s.value"></div>
+            </div>
+        </template>
     </div>
 
-    <!-- Charts Row -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
-        <!-- Top Tasks -->
-        <div style="background:white;border-radius:12px;padding:16px;border:1px solid #e5e7eb">
-            <h3 style="font-weight:600;margin-bottom:12px">🏆 Top Performing Tasks</h3>
+    {{-- Charts Row --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        {{-- Top Tasks --}}
+        <div class="bg-white rounded-xl p-4 border border-surface-200">
+            <h3 class="font-semibold text-sm mb-3">🏆 Top Performing Tasks</h3>
             <template x-if="data.top_tasks && data.top_tasks.length > 0">
-                <div>
+                <div class="space-y-0">
                     <template x-for="(task, i) in data.top_tasks" :key="task.id">
-                        <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #f3f4f6">
-                            <div style="width:28px;height:28px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#6b7280"
+                        <div class="flex items-center gap-3 py-2 border-b border-surface-100 last:border-0">
+                            <div class="w-7 h-7 rounded-full bg-surface-100 flex items-center justify-center font-bold text-xs text-surface-500 flex-shrink-0"
                                 x-text="'#' + (i+1)"></div>
-                            <div style="flex:1">
-                                <div style="font-weight:500;font-size:14px" x-text="task.title"></div>
-                                <div style="font-size:12px;color:#6b7280" x-text="task.completions + ' completions'"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm truncate" x-text="task.title"></div>
+                                <div class="text-xs text-surface-500" x-text="task.completions + ' completions'"></div>
                             </div>
-                            <div style="text-align:right">
-                                <div style="font-weight:600;color:#ea580c" x-text="task.points_spent.toLocaleString() + ' pts'"></div>
+                            <div class="text-right flex-shrink-0">
+                                <div class="font-semibold text-sm text-orange-600" x-text="task.points_spent.toLocaleString() + ' pts'"></div>
                             </div>
                         </div>
                     </template>
                 </div>
             </template>
             <template x-if="!data.top_tasks || data.top_tasks.length === 0">
-                <p style="color:#9ca3af;font-size:14px;padding:20px 0;text-align:center">No task data yet</p>
+                <div class="text-center py-8 text-surface-400 text-sm">No task data yet</div>
             </template>
         </div>
 
-        <!-- Daily Submissions Chart -->
-        <div style="background:white;border-radius:12px;padding:16px;border:1px solid #e5e7eb">
-            <h3 style="font-weight:600;margin-bottom:12px">📅 Submissions (30 days)</h3>
+        {{-- Daily Submissions Chart --}}
+        <div class="bg-white rounded-xl p-4 border border-surface-200">
+            <h3 class="font-semibold text-sm mb-3">📅 Submissions (30 days)</h3>
             <canvas id="dailyChart" height="200"></canvas>
         </div>
     </div>
 
-    <!-- Loading -->
+    {{-- Loading --}}
     <template x-if="loading">
-        <div style="text-align:center;padding:40px;color:#6b7280">Loading analytics...</div>
+        <div class="text-center py-10 text-surface-500">
+            <svg class="w-8 h-8 animate-spin mx-auto mb-2 text-bonus-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+            Loading analytics...
+        </div>
     </template>
 </div>
 @endsection
@@ -86,6 +71,7 @@ function taskAnalytics() {
         data: {},
         loading: true,
         chart: null,
+        stats: [],
 
         async init() {
             try {
@@ -95,6 +81,7 @@ function taskAnalytics() {
                 const json = await resp.json();
                 if (json.success) {
                     this.data = json.analytics;
+                    this.buildStats();
                     this.$nextTick(() => this.renderChart());
                 }
             } catch (e) {
@@ -102,6 +89,18 @@ function taskAnalytics() {
             } finally {
                 this.loading = false;
             }
+        },
+
+        buildStats() {
+            const d = this.data;
+            this.stats = [
+                { icon: '📋', label: 'Total Tasks', value: d.total_tasks || 0, color: '#1e293b' },
+                { icon: '✅', label: 'Active', value: d.active_tasks || 0, color: '#16a34a' },
+                { icon: '📝', label: 'Submissions', value: d.total_submissions || 0, color: '#2563eb' },
+                { icon: '⭐', label: 'Approved', value: d.approved_submissions || 0, color: '#16a34a' },
+                { icon: '📈', label: 'Conversion', value: (d.conversion_rate || 0) + '%', color: '#6366f1' },
+                { icon: '💎', label: 'Points Spent', value: (d.total_points_spent || 0).toLocaleString(), color: '#ea580c' },
+            ];
         },
 
         renderChart() {
@@ -125,8 +124,12 @@ function taskAnalytics() {
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { position: 'bottom' } },
-                    scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 11 } } } },
+                    scales: {
+                        x: { stacked: true, ticks: { font: { size: 10 }, maxRotation: 45 } },
+                        y: { stacked: true, beginAtZero: true, ticks: { font: { size: 10 } } }
+                    }
                 }
             });
         }

@@ -9,7 +9,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Process Redemption</h2>
 
-        <form method="POST" action="{{ route('staff.redeem.submit') }}" class="space-y-4">
+        <form method="POST" action="{{ route('staff.redeem') }}" class="space-y-4">
             @csrf
 
             {{-- Customer --}}

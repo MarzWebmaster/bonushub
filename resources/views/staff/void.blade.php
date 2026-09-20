@@ -72,7 +72,7 @@
                                 @if($txn->is_voided ?? false)
                                     <p class="text-xs text-red-600 mt-1">Already voided</p>
                                 @else
-                                    <form method="POST" action="{{ route('staff.void.submit', $txn->id) }}" class="mt-2" onsubmit="return confirm('Are you sure you want to void this transaction? This cannot be undone.')">
+                                    <form method="POST" action="{{ route('staff.void', $txn->id) }}" class="mt-2" onsubmit="return confirm('Are you sure you want to void this transaction? This cannot be undone.')">
                                         @csrf
                                         <button type="submit" class="px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition">Void</button>
                                     </form>

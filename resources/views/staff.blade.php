@@ -24,11 +24,11 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
             <div class="grid grid-cols-2 gap-3">
-                <a href="{{ route('staff.customer-lookup') }}" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition text-center">
+                <a href="{{ route('staff.customer.lookup') }}" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition text-center">
                     <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <span class="text-xs font-medium text-gray-700">Customer Lookup</span>
                 </a>
-                <a href="{{ route('staff.add-points') }}" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-center">
+                <a href="{{ route('staff.add.points') }}" class="flex flex-col items-center gap-2 p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-center">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                     <span class="text-xs font-medium text-gray-700">Add Points</span>
                 </a>

@@ -8,7 +8,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Award Points</h2>
 
-        <form method="POST" action="{{ route('staff.add-points.submit') }}" class="space-y-4">
+        <form method="POST" action="{{ route('staff.add.points') }}" class="space-y-4">
             @csrf
 
             {{-- Customer Selection --}}

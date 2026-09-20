@@ -32,9 +32,9 @@
                     <td class="font-medium"><a href="/superadmin/merchants/{{ $m->id }}" class="text-bonus-600 hover:text-bonus-700 hover:underline font-medium">{{ $m->company_name }}</a></td>
                     <td class="text-surface-500">{{ $m->phone ?? '—' }}</td>
                     <td>
-                        @if($m->status)
+                        @if($m->status === 'active')
                             <span class="badge-success">Active</span>
-                        @else
+                        @elseif($m->status === 'pending_approval')<span class="badge-warning">Pending</span>@elseif($m->status === 'pending_verification')<span class="badge-info">Verify</span>@elseif($m->status === 'rejected')<span class="badge-danger">Rejected</span>@else
                             <span class="badge-danger">Inactive</span>
                         @endif
                     </td>

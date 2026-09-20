@@ -35,7 +35,7 @@
             </div>
 
             @if(($pointsBalance ?? 0) >= ($reward->points_required ?? 0))
-                <form method="POST" action="{{ route('customer.redeem.confirm') }}" class="mt-6 space-y-4">
+                <form method="POST" action="{{ route('customer.redeem') }}" class="mt-6 space-y-4">
                     @csrf
                     <input type="hidden" name="reward_id" value="{{ $reward->id }}">
                     <div>
