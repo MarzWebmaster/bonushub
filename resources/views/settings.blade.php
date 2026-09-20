@@ -93,5 +93,54 @@
             </div>
         </form>
     </div>
+
+    {{-- Stripe Payment Settings (Superadmin only) --}}
+    @role('superadmin')
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900">Stripe Payment Gateway</h2>
+                <p class="text-xs text-gray-500">Configure Stripe to accept merchant subscription payments</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ route('settings.stripe') }}" class="space-y-4">
+            @csrf
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Publishable Key</label>
+                    <input type="text" name="stripe_key" value="{{ config('services.stripe.key') }}" placeholder="pk_live_..." class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Secret Key</label>
+                    <input type="password" name="stripe_secret" value="{{ config('services.stripe.secret') }}" placeholder="sk_live_..." class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Webhook Signing Secret</label>
+                    <input type="password" name="stripe_webhook_secret" value="{{ config('services.stripe.webhook_secret') }}" placeholder="whsec_..." class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <p class="text-xs text-gray-400 mt-1">Set webhook URL in Stripe dashboard: <code class="bg-gray-100 px-1 rounded">{{ url('/stripe/webhook') }}</code></p>
+                </div>
+            </div>
+
+            {{-- Status indicator --}}
+            <div class="flex items-center gap-2 p-3 rounded-lg {{ config('services.stripe.secret') ? 'bg-green-50 border border-green-200' : 'bg-amber-50 border border-amber-200' }}">
+                @if(config('services.stripe.secret'))
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    <span class="text-sm text-green-700 font-medium">Stripe is configured</span>
+                @else
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    <span class="text-sm text-amber-700 font-medium">Stripe not configured — add your API keys</span>
+                @endif
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="px-6 py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition">Save Stripe Settings</button>
+            </div>
+        </form>
+    </div>
+    @endrole
 </div>
 @endsection

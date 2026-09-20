@@ -72,6 +72,15 @@ Route::middleware('auth')->group(function () {
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::post('/settings/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
     Route::post('/settings/password', [SettingsController::class, 'password'])->name('settings.password');
+    Route::post('/settings/stripe', [SettingsController::class, 'stripe'])->name('settings.stripe');
+
+    // Payment Routes
+    Route::get('/checkout/{package}', [\App\Http\Controllers\StripePaymentController::class, 'checkout'])->name('payment.checkout');
+    Route::post('/payment/session/{package}', [\App\Http\Controllers\StripePaymentController::class, 'createSession'])->name('payment.create-session');
+    Route::get('/payment/success', [\App\Http\Controllers\StripePaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/cancel', [\App\Http\Controllers\StripePaymentController::class, 'cancel'])->name('payment.cancel');
+    Route::get('/payment/history', [\App\Http\Controllers\StripePaymentController::class, 'history'])->name('payment.history');
+
 });
 
 // ========================
@@ -293,3 +302,6 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth'])->group(fu
     Route::get('/api/audit-logs', [SuperadminController::class, 'auditLogs'])->name('api.audit');
     Route::get('/api/leaderboard', [SuperadminController::class, 'globalLeaderboard'])->name('api.leaderboard');
 });
+
+// Stripe Webhook (no CSRF, no auth)
+Route::post('/stripe/webhook', [\App\Http\Controllers\StripePaymentController::class, 'webhook'])->name('payment.webhook');
