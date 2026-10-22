@@ -220,7 +220,7 @@ class ReferralAttribution
         $earned = PointsTransaction::where('customer_id', $customer->id)
             ->where('merchant_id', $merchantId)
             ->where('type', 'earn')->where('status', 'approved')
-            ->where('notes', 'not like', 'Referral bonus%')
+            ->where(fn ($q) => $q->whereNull('notes')->orWhere('notes', 'not like', 'Referral bonus%'))   // NULL notes must count: NULL NOT LIKE is NULL
             ->exists();
         if ($earned) {
             return true;

@@ -207,6 +207,17 @@ class ReferralAttributionTest extends TestCase
         $this->assertDatabaseHas('referral_signups', ['id' => $id, 'status' => 'pending']);
     }
 
+    public function test_earn_row_with_null_notes_counts_as_engagement(): void
+    {
+        [$cust, $id] = $this->pendingSignup();
+        $this->makeTx($cust, $this->m, 'earn', 30, null, 'approved', ['notes' => null]);
+
+        $stats = app(ReferralAttribution::class)->validatePending();
+
+        $this->assertSame(1, $stats['validated']);
+        $this->assertDatabaseHas('referral_signups', ['id' => $id, 'status' => 'valid']);
+    }
+
     public function test_pending_earn_does_not_count_but_an_approved_task_submission_does(): void
     {
         [$cust, $id] = $this->pendingSignup();
