@@ -39,6 +39,12 @@ return new class extends Migration
             }
         });
 
+        if (DB::getDriverName() !== 'mysql') {
+            Schema::table('giveaway_campaigns', function (Blueprint $t) {
+                $t->enum('selection_method', ['manual', 'random', 'top_referrers', 'threshold', 'milestone'])->default('manual')->change();
+            });
+            return;
+        }
         DB::statement("ALTER TABLE giveaway_campaigns MODIFY selection_method ENUM('manual','random','top_referrers','threshold','milestone') NOT NULL DEFAULT 'manual'");
     }
 
