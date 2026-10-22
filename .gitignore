@@ -21,3 +21,8 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/.vs
+/.playwright-mcp
+/vendor.l11
+/vendor.new
+/docs/competitor-*
