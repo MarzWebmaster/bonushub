@@ -217,10 +217,16 @@ class MerchantAdminController extends Controller
     public function approvePoints($id)
     {
         $merchant = $this->getMerchant();
-        $tx = PointsTransaction::where('merchant_id', $merchant->id)->where('id', $id)->where('status', 'pending_approval')->firstOrFail();
-        $tx->update(['status' => 'approved']);
-        CustomerMerchant::where('customer_id', $tx->customer_id)->where('merchant_id', $merchant->id)
-            ->increment('points', $tx->points);
+        $tx = DB::transaction(function () use ($merchant, $id) {
+            // lock + re-check inside the transaction: status flip and balance credit succeed or fail together,
+            // and two simultaneous approvals cannot both credit
+            $tx = PointsTransaction::where('merchant_id', $merchant->id)->where('id', $id)->where('status', 'pending_approval')->lockForUpdate()->firstOrFail();
+            $tx->update(['status' => 'approved']);
+            CustomerMerchant::where('customer_id', $tx->customer_id)->where('merchant_id', $merchant->id)
+                ->increment('points', $tx->points);
+
+            return $tx;
+        });
         Log::info("Points approved: tx {$tx->id} by admin " . Auth::id());
         return redirect()->back()->with('success', 'Points approved!');
     }

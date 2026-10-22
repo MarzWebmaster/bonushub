@@ -2,47 +2,31 @@
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
+/**
+ * These routes sit behind the auth middleware. The previous version of this file requested them as a guest and
+ * expected 200 plus view names (finance.index, shop.index ...) that no longer exist, so it could only fail.
+ */
 class FeatureControllerTest extends TestCase
 {
-    /**
-     * Test the finance index route.
-     */
-    public function test_finance_index_route()
+    #[DataProvider('protectedPages')]
+    public function test_guests_are_sent_to_the_login_page(string $uri): void
     {
-        $response = $this->get('/finance');
-        $response->assertStatus(200);
-        $response->assertViewIs('finance.index');
+        $this->get($uri)->assertRedirect(route('login'));
     }
 
-    /**
-     * Test the shop index route.
-     */
-    public function test_shop_index_route()
+    public static function protectedPages(): array
     {
-        $response = $this->get('/manage/shop');
-        $response->assertStatus(200);
-        $response->assertViewIs('shop.index');
-    }
-
-    /**
-     * Test the package index route.
-     */
-    public function test_package_index_route()
-    {
-        $response = $this->get('/manage/shop/package');
-        $response->assertStatus(200);
-        $response->assertViewIs('package.index');
-    }
-
-    /**
-     * Test the settings index route.
-     */
-    public function test_settings_index_route()
-    {
-        $response = $this->get('/settings');
-        $response->assertStatus(200);
-        $response->assertViewIs('settings.index');
+        return [
+            'finance'         => ['/finance'],
+            'manage shop'     => ['/manage/shop'],
+            'settings'        => ['/settings'],
+            'staff dashboard' => ['/staff/dashboard'],
+            'merchant'        => ['/merchant/dashboard'],
+            'redemptions'     => ['/merchant/redemptions'],
+            'superadmin'      => ['/superadmin/dashboard'],
+        ];
     }
 }

@@ -17,6 +17,13 @@ return new class extends Migration
         if (!Schema::hasTable('points_transactions')) {
             return;
         }
+        if (DB::getDriverName() !== 'mysql') {
+            // portable path (SQLite in the test suite): the enum is a CHECK constraint that Schema rebuilds
+            Schema::table('points_transactions', function ($t) {
+                $t->enum('status', ['pending', 'pending_approval', 'approved', 'rejected'])->default('approved')->change();
+            });
+            return;
+        }
         DB::statement("ALTER TABLE points_transactions MODIFY status ENUM('pending','pending_approval','approved','rejected') NOT NULL DEFAULT 'approved'");
     }
 
