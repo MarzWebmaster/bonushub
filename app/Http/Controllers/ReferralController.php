@@ -147,7 +147,7 @@ class ReferralController extends Controller
 
         // Clicks by source
         $clicksBySource = ReferralClick::whereIn('referral_id', $referrals->pluck('id'))
-            ->selectRaw('COALESCE(utm_source, source, \'direct\') as src, COUNT(*) as count')
+            ->selectRaw('COALESCE(utm_source, \'direct\') as src, COUNT(*) as count')
             ->groupBy('src')
             ->pluck('count', 'src');
 

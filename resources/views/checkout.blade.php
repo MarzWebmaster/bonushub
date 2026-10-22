@@ -39,14 +39,12 @@
                 </div>
 
                 {{-- Features --}}
-                @if($package->features)
+                @if($package->featureList())
                 <div class="border-t border-surface-100 pt-4">
                     <h3 class="font-semibold text-sm mb-2">Features:</h3>
                     <div class="flex flex-wrap gap-2">
-                        @foreach($package->features as $feature => $enabled)
-                            @if($enabled)
-                            <span class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">{{ ucfirst(str_replace('_', ' ', $feature)) }}</span>
-                            @endif
+                        @foreach($package->featureList() as $feature)
+                            <span class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">{{ $feature }}</span>
                         @endforeach
                     </div>
                 </div>

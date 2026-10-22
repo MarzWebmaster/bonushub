@@ -90,22 +90,31 @@ class CustomerController extends Controller
      */
     public function updateProfile(ProfileUpdateRequest $request): JsonResponse
     {
-        $customer = $request->user();
-
+        $user = $request->user();
         $data = $request->validated();
+        $oldEmail = $user->email;
 
         if ($request->hasFile('avatar')) {
-            $data['avatar_url'] = $request->file('avatar')->store('avatars', 'public');
+            $data['profile_picture'] = $request->file('avatar')->store('avatars', 'public');
         }
+        unset($data['avatar']);
 
-        $customer->update($data);
+        // The user <-> customer link is the e-mail address, and staff look customers up by customers.phone, so both
+        // tables must change together (before: only `users` changed, which could orphan the customer record).
+        DB::transaction(function () use ($user, $data, $oldEmail) {
+            $user->update($data);
+            $customer = \App\Models\Customer::where('email', $oldEmail)->first();
+            if ($customer) {
+                $customer->update(array_intersect_key($data, array_flip(['name', 'email', 'phone'])));
+            }
+        });
 
-        Log::info("Customer {$customer->id} updated their profile");
+        Log::info("Customer user {$user->id} updated their profile");
 
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully.',
-            'customer' => $customer->fresh(),
+            'customer' => $user->fresh(),
         ]);
     }
 
@@ -122,7 +131,7 @@ class CustomerController extends Controller
         $customerMerchantPoints = $customerId ? DB::table('customer_merchant')
             ->join('merchants', 'merchants.id', '=', 'customer_merchant.merchant_id')
             ->where('customer_merchant.customer_id', $customerId)
-            ->select('merchants.company_name as merchant', 'customer_merchant.points', 'customer_merchant.tier_per_merchant')
+            ->select('customer_merchant.merchant_id', 'merchants.company_name as merchant', 'customer_merchant.points', 'customer_merchant.tier_per_merchant', 'customer_merchant.tied_at', 'customer_merchant.created_at')
             ->get() : collect();
 
         $totalPoints = $customerMerchantPoints->sum('points');
@@ -139,6 +148,8 @@ class CustomerController extends Controller
                 return [
                     'merchant' => $tx->merchant->company_name ?? '-',
                     'points' => abs($tx->points),
+                    'delta' => (float) $tx->points,   // signed: refunds ('void') are positive, redemptions and expiries negative
+                    'status' => $tx->status,
                     'type' => $tx->type,
                     'created_at' => $tx->created_at->format('d M Y'),
                 ];
@@ -150,7 +161,13 @@ class CustomerController extends Controller
             'merchant_count' => $merchantCount,
             'tier' => $tier,
             'history' => $history,
-            'points' => $customerMerchantPoints,
+            'points' => $customerMerchantPoints->map(function ($r) use ($customerId) {
+                // shown only once the platform really expires points (config/points.php); null when it never expires
+                $lapse = (config('points.expiry_enabled') && (float) $r->points > 0)
+                    ? app(\App\Services\PointsExpiry::class)->lapseAt((int) $customerId, (int) $r->merchant_id, $r->tied_at ?? $r->created_at) : null;
+                return ['merchant' => $r->merchant, 'points' => $r->points, 'tier_per_merchant' => $r->tier_per_merchant,
+                        'expires_on' => $lapse ? $lapse->format('d M Y') : null];
+            })->values(),
         ]);
     }
 
@@ -227,38 +244,63 @@ class CustomerController extends Controller
             ], 422);
         }
 
-        // Check stock
-        if (!is_null($rewardProduct->stock_left) && $rewardProduct->stock_left < $quantity) {
-            return response()->json([
-                'success' => false,
-                'message' => "Insufficient stock. Available: {$rewardProduct->stock_left}.",
-            ], 422);
-        }
-
-        // Check customer_merchant.points
-        $customerMerchantPoints = DB::table('customer_merchant')
-            ->where('merchant_id', $rewardProduct->merchant_id)
-            ->where('customer_id', $customer->id)
-            ->value('customer_merchant.points') ?? 0;
-
-        if ($customerMerchantPoints < $totalPointsRequired) {
-            return response()->json([
-                'success' => false,
-                'message' => "Insufficient points. Required: {$totalPointsRequired}, Available: {$customerMerchantPoints}.",
-            ], 422);
-        }
-
         try {
             DB::beginTransaction();
+
+            // Re-read stock and balance INSIDE the transaction with row locks, so two
+            // parallel requests cannot both pass the checks and double-spend the points
+            // or oversell the stock.
+            $lockedReward = MerchantReward::where('id', $rewardProduct->id)->lockForUpdate()->first();
+
+            if (!is_null($lockedReward->stock_left) && $lockedReward->stock_left < $quantity) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "Insufficient stock. Available: {$lockedReward->stock_left}.",
+                ], 422);
+            }
+
+            $customerMerchantPoints = DB::table('customer_merchant')
+                ->where('merchant_id', $rewardProduct->merchant_id)
+                ->where('customer_id', $customer->id)
+                ->lockForUpdate()
+                ->value('points') ?? 0;
+
+            if ($customerMerchantPoints < $totalPointsRequired) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "Insufficient points. Required: {$totalPointsRequired}, Available: {$customerMerchantPoints}.",
+                ], 422);
+            }
 
             $transaction = PointsTransaction::create([
                 'merchant_id' => $rewardProduct->merchant_id,
                 'customer_id' => $customer->id,
                 'staff_id' => null,
-                'type' => 'debit',
+                // was 'debit', which is not a valid points_transactions.type (earn/redeem/void/expired), so every
+                // self-redemption failed under MySQL strict mode
+                'type' => 'redeem',
                 'points' => -$totalPointsRequired,
                 'status' => 'approved',
                 'notes' => "Self-redeemed: {$rewardProduct->name} x{$quantity}",
+            ]);
+
+            // Redemption record + claim code, so the merchant can fulfil it (previously none was written)
+            do {
+                $claimCode = strtoupper(\Illuminate\Support\Str::random(8));
+            } while (\App\Models\Redemption::where('claim_code', $claimCode)->exists());
+            \App\Models\Redemption::create([
+                'customer_id'  => $customer->id,
+                'merchant_id'  => $rewardProduct->merchant_id,
+                'reward_id'    => $rewardProduct->id,
+                'points_used'  => $totalPointsRequired,
+                'cash_topup'   => 0,
+                'claim_method' => $rewardProduct->claim_type,
+                'status'       => 'pending',
+                'claim_code'   => $claimCode,
+                'quantity'     => (int) $quantity,
+                'points_transaction_id' => $transaction->id,
             ]);
 
             // Deduct points
@@ -280,13 +322,14 @@ class CustomerController extends Controller
             $this->sendRewardRedeemedEmail(
                 $customer->id,
                 $rewardProduct->name,
-                $totalPointsRequired,
+                (int) $totalPointsRequired,
                 $rewardProduct->merchant_id
             );
 
             return response()->json([
                 'success' => true,
                 'message' => "{$rewardProduct->name} x{$quantity} redeemed successfully!",
+                'claim_code' => $claimCode,
                 'transaction' => $transaction,
             ]);
         } catch (\Exception $e) {

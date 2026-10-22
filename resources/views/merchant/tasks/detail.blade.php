@@ -81,6 +81,9 @@
                             @if($sub->screenshot_path)
                                 <a href="{{ Storage::url($sub->screenshot_path) }}" target="_blank" class="text-xs text-surface-500 hover:text-indigo-600">📸 View screenshot</a>
                             @endif
+                            @if($sub->duplicate_of_id)
+                                <span class="dup-flag mt-1 inline-block text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full" title="The same screenshot or link was already sent in submission #{{ $sub->duplicate_of_id }}">⚠ Duplicate of {{ $sub->duplicateOf->customer->name ?? ('#' . $sub->duplicate_of_id) }}</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3">
                             @if($sub->status === 'pending')

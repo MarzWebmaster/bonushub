@@ -13,6 +13,9 @@ class LoyaltyRate extends Model
         'redeem_rate',
         'min_redeem',
         'max_redeem',
+        'referral_bonus_referrer',
+        'referral_bonus_referred',
+        'points_expiry_months',
         'festive_multiplier',
         'product_specific_rules',
     ];

@@ -142,6 +142,62 @@
         </template>
     </div>
 
+    @if($giveaway)
+    <!-- Giveaway (only when the package includes it) -->
+    <div class="dash-card" style="margin-bottom:16px" id="dash-giveaway">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+            <h3 style="margin:0">🎉 Giveaway</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <a href="{{ route('merchant.giveaways.create') }}" class="btn btn-primary" style="padding:4px 12px;font-size:13px">+ New Giveaway</a>
+                <a href="{{ route('merchant.giveaways.index') }}" class="btn btn-secondary" style="padding:4px 12px;font-size:13px">View all</a>
+            </div>
+        </div>
+        <div class="dash-stats-grid" style="margin-bottom:12px">
+            <div class="stat-card"><div class="stat-icon">🟢</div><div class="stat-value" data-k="giveaway-active">{{ $giveaway['active'] }}@if($giveaway['limit'] > 0)<span style="font-size:13px;color:#9ca3af"> / {{ $giveaway['limit'] }}</span>@endif</div><div class="stat-label">Active giveaways</div></div>
+            <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" data-k="giveaway-participants">{{ number_format($giveaway['participants']) }}</div><div class="stat-label">Participants (active)</div></div>
+            <div class="stat-card"><div class="stat-icon">🔗</div><div class="stat-value" data-k="giveaway-referrals">{{ number_format($giveaway['referrals']) }}</div><div class="stat-label">Valid referrals (active)</div></div>
+            <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-value" data-k="giveaway-to-draw">{{ $giveaway['to_draw'] }}</div><div class="stat-label">Waiting for a draw</div></div>
+            <div class="stat-card"><div class="stat-icon">🎁</div><div class="stat-value" data-k="giveaway-prizes">{{ $giveaway['prizes_waiting'] }}@if($giveaway['prizes_overdue'] > 0)<span style="font-size:12px;color:#ef4444"> ({{ $giveaway['prizes_overdue'] }} overdue)</span>@endif</div><div class="stat-label">Prizes to hand over</div></div>
+        </div>
+        @if($giveaway['recent']->isEmpty())
+            <p style="font-size:13px;color:#9ca3af;margin:0">No giveaway yet. Create one to start growing through referrals.</p>
+        @else
+            <div style="display:flex;flex-direction:column;gap:8px">
+                @foreach($giveaway['recent'] as $g)
+                    <a href="{{ route('merchant.giveaways.detail', $g->id) }}" class="activity-item" style="text-decoration:none;color:inherit">
+                        <span style="font-size:18px">{{ $g->status === 'active' ? '🟢' : ($g->status === 'ended' ? '🏁' : '📝') }}</span>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $g->title }}</div>
+                            <div style="font-size:11px;color:#6b7280">{{ ucfirst($g->status) }} · {{ $g->entries_count }} participant(s)@if($g->ends_at) · ends {{ $g->ends_at->format('d M Y') }}@endif</div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        @endif
+    </div>
+    @endif
+
+    @if($viral)
+    <!-- Viral Tools (only when the package includes it) -->
+    <div class="dash-card" style="margin-bottom:16px" id="dash-viral">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+            <h3 style="margin:0">🚀 Viral Tools</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <a href="{{ route('merchant.tasks') }}" class="btn btn-secondary" style="padding:4px 12px;font-size:13px">Viral Tasks</a>
+                <a href="{{ route('merchant.campaigns') }}" class="btn btn-secondary" style="padding:4px 12px;font-size:13px">Referral Campaign</a>
+            </div>
+        </div>
+        <div class="dash-stats-grid" style="margin-bottom:0">
+            <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" data-k="viral-tasks">{{ $viral['tasks_active'] }}@if($viral['task_limit'] > 0)<span style="font-size:13px;color:#9ca3af"> / {{ $viral['task_limit'] }}</span>@endif</div><div class="stat-label">Active viral tasks</div></div>
+            <a href="{{ route('merchant.tasks') }}" class="stat-card" style="text-decoration:none"><div class="stat-icon">⏳</div><div class="stat-value" data-k="viral-reviews">{{ $viral['reviews_pending'] }}@if($viral['reviews_duplicate'] > 0)<span style="font-size:12px;color:#d97706"> ({{ $viral['reviews_duplicate'] }} duplicate)</span>@endif</div><div class="stat-label">Task proofs to review</div></a>
+            <div class="stat-card"><div class="stat-icon">🖱️</div><div class="stat-value" data-k="viral-clicks">{{ number_format($viral['clicks']) }}</div><div class="stat-label">Referral Campaign clicks</div></div>
+            <div class="stat-card"><div class="stat-icon">🙋</div><div class="stat-value" data-k="viral-unique">{{ number_format($viral['unique']) }}</div><div class="stat-label">Unique visitors</div></div>
+            <div class="stat-card"><div class="stat-icon">🆕</div><div class="stat-value" data-k="viral-registrations">{{ number_format($viral['registrations']) }}</div><div class="stat-label">Registered via campaigns</div></div>
+            <a href="{{ route('merchant.referral.review') }}" class="stat-card" style="text-decoration:none"><div class="stat-icon">⚠️</div><div class="stat-value" data-k="viral-flagged">{{ $viral['flagged'] }}</div><div class="stat-label">Referrals to review</div></a>
+        </div>
+    </div>
+    @endif
+
     <!-- Two columns: Recent Activity + Quick Actions -->
     <div class="dash-content-grid">
         <!-- Recent Activity -->
@@ -185,6 +241,7 @@
                         <div class="quick-action-desc">Create new reward for customers</div>
                     </div>
                 </a>
+                @if($viral)
                 <a href="{{ route('merchant.tasks') }}" class="quick-action" style="background:#eff6ff;border:1px solid #bfdbfe">
                     <span class="quick-action-icon">📋</span>
                     <div>
@@ -192,6 +249,8 @@
                         <div class="quick-action-desc">Viral task for customers</div>
                     </div>
                 </a>
+                @endif
+                @if($giveaway)
                 <a href="{{ route('merchant.giveaways.index') }}" class="quick-action" style="background:#fdf4ff;border:1px solid #e9d5ff">
                     <span class="quick-action-icon">🎉</span>
                     <div>
@@ -199,6 +258,7 @@
                         <div class="quick-action-desc">Run a referral campaign</div>
                     </div>
                 </a>
+                @endif
                 <a href="{{ route('merchant.analytics') }}" class="quick-action" style="background:#fff7ed;border:1px solid #fed7aa">
                     <span class="quick-action-icon">📈</span>
                     <div>

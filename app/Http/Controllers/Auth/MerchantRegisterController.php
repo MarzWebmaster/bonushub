@@ -49,7 +49,7 @@ class MerchantRegisterController extends Controller
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
             'name'         => 'required|string|max:255',
-            'email'        => 'required|email|unique:users,email',
+            'email'        => ['required', 'email', 'max:254', 'not_regex:/[\r\n]/', 'unique:users,email'],
             'phone'        => 'required|string|max:20',
             'password'     => 'required|string|min:8|confirmed',
             'otp'          => 'required|string|size:6',

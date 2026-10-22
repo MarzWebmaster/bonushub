@@ -8,24 +8,17 @@ class AddPointsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('staff');
+        return $this->user()->hasAnyRole(['staff', 'merchant']);
     }
 
     public function rules(): array
     {
         return [
-            'customer_id' => 'required|integer|exists:users,id',
-            'points' => 'required|integer|min:1|max:100000',
-            'reason' => 'nullable|string|max:500',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'customer_id.exists' => 'The selected customer does not exist.',
-            'points.min' => 'Points must be at least 1.',
-            'points.max' => 'Points cannot exceed 100,000 in a single transaction.',
+            // customers.id (NOT users.id); membership of the staff member's merchant is checked in the controller
+            'customer_id' => 'required|integer|exists:customers,id',
+            'points'      => 'required|integer|min:1|max:100000',
+            'reference'   => 'nullable|string|max:100',
+            'notes'       => 'nullable|string|max:500',
         ];
     }
 }

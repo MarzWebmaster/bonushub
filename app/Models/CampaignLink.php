@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CampaignLink extends Model
@@ -15,6 +16,7 @@ class CampaignLink extends Model
         'slug',
         'medium',
         'visits',
+        'unique_visits',
         'registrations',
         'status',
         'expires_at',
@@ -22,6 +24,7 @@ class CampaignLink extends Model
 
     protected $casts = [
         'visits' => 'integer',
+        'unique_visits' => 'integer',
         'registrations' => 'integer',
         'expires_at' => 'datetime',
     ];
@@ -63,6 +66,13 @@ class CampaignLink extends Model
         return round(($this->registrations / $this->visits) * 100, 1);
     }
 
+    /** Registrations as a share of UNIQUE visitors (a person who clicks ten times is still one visitor). */
+    public function getUniqueConversionRateAttribute(): float
+    {
+        if ($this->unique_visits === 0) return 0;
+        return min(100, round(($this->registrations / $this->unique_visits) * 100, 1));
+    }
+
     public function isExpired(): bool
     {
         return $this->expires_at && $this->expires_at->isPast();
@@ -94,11 +104,25 @@ class CampaignLink extends Model
     }
 
     /**
-     * Record a visit (increment visits counter).
+     * Record a click (visits +1). With a visitor hash it also keeps one row per distinct visitor and bumps
+     * unique_visits the first time that visitor is seen on this link.
      */
-    public function recordVisit(): void
+    public function recordVisit(?string $visitorHash = null): void
     {
         $this->increment('visits');
+        if ($visitorHash === null) {
+            return;
+        }
+        $now = now();
+        $inserted = DB::table('campaign_link_visitors')->insertOrIgnore([
+            'campaign_link_id' => $this->id, 'visitor_hash' => $visitorHash, 'hits' => 1, 'first_seen_at' => $now, 'last_seen_at' => $now,
+        ]);
+        if ($inserted) {
+            $this->increment('unique_visits');
+        } else {
+            DB::table('campaign_link_visitors')->where('campaign_link_id', $this->id)->where('visitor_hash', $visitorHash)
+                ->update(['hits' => DB::raw('hits + 1'), 'last_seen_at' => $now]);
+        }
     }
 
     /**

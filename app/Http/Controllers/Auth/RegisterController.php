@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\CustomerMerchant;
 use App\Models\User;
 use App\Models\VerificationOtp;
+use App\Services\ReferralAttribution;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +33,7 @@ class RegisterController extends Controller
     {
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'email'    => ['required', 'email', 'max:254', 'not_regex:/[\r\n]/', 'unique:users,email'],
             'phone'    => 'required|string|max:20',
             'password' => 'required|string|min:8|confirmed',
             'ref'      => 'nullable|string',
@@ -98,6 +99,15 @@ class RegisterController extends Controller
                         $campaign->recordRegistration();
                     }
                 }
+            }
+
+            // 4. Customer referral link (/ref/{code}): the code is carried in the session by
+            //    ReferralController::referralLanding(). Previously it was never read, so referral
+            //    signups were never recorded. Errors here must not break registration.
+            try {
+                app(ReferralAttribution::class)->attribute($customer, $request);
+            } catch (\Throwable $e) {
+                Log::warning('Referral attribution error: ' . $e->getMessage());
             }
 
             DB::commit();

@@ -49,10 +49,15 @@ class SettingsController extends Controller
 
     public function stripe(Request $request): RedirectResponse
     {
+        // SECURITY: this rewrites .env, so only the superadmin may call it.
+        abort_unless(auth()->user()?->hasRole('superadmin'), 403);
+
+        // Single-token values only: no whitespace/newlines/quotes/'#', so a value can
+        // never smuggle extra KEY=VALUE lines (APP_KEY, DB_*, APP_DEBUG...) into .env.
         $request->validate([
-            'stripe_key' => 'nullable|string',
-            'stripe_secret' => 'nullable|string',
-            'stripe_webhook_secret' => 'nullable|string',
+            'stripe_key' => ['nullable', 'string', 'max:255', 'regex:/^pk_(live|test)_[A-Za-z0-9]+$/'],
+            'stripe_secret' => ['nullable', 'string', 'max:255', 'regex:/^(sk|rk)_(live|test)_[A-Za-z0-9]+$/'],
+            'stripe_webhook_secret' => ['nullable', 'string', 'max:255', 'regex:/^whsec_[A-Za-z0-9]+$/'],
         ]);
 
         $envPath = base_path('.env');
@@ -65,10 +70,12 @@ class SettingsController extends Controller
         ];
 
         foreach ($updates as $key => $value) {
+            $line = $key . '=' . $value;
             if (preg_match('/^' . $key . '=.*/m', $content)) {
-                $content = preg_replace('/^' . $key . '=.*/m', $key . '=' . $value, $content);
+                // callback form: $value is never interpreted as a $1 / \0 backreference
+                $content = preg_replace_callback('/^' . $key . '=.*/m', fn () => $line, $content);
             } else {
-                $content .= "\n" . $key . '=' . $value;
+                $content .= "\n" . $line;
             }
         }
 

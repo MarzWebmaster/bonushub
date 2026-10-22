@@ -122,6 +122,8 @@ class CampaignController extends Controller
 
         $totalVisits = $campaigns->sum('visits');
         $totalRegistrations = $campaigns->sum('registrations');
+        $totalUnique = $campaigns->sum('unique_visits');
+        $uniqueConversion = $totalUnique > 0 ? min(100, round(($totalRegistrations / $totalUnique) * 100, 1)) : 0;
         $avgConversion = $totalVisits > 0
             ? round(($totalRegistrations / $totalVisits) * 100, 1)
             : 0;
@@ -133,6 +135,8 @@ class CampaignController extends Controller
             'success' => true,
             'analytics' => [
                 'total_visits'       => $totalVisits,
+                'total_unique_visits' => $totalUnique,
+                'unique_conversion'  => $uniqueConversion,
                 'total_registrations' => $totalRegistrations,
                 'avg_conversion'     => $avgConversion,
                 'active_campaigns'   => $campaigns->where('status', 'active')->count(),

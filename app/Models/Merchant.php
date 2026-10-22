@@ -15,6 +15,7 @@ class Merchant extends Model
         'address',
         'status',
         'ic_image',
+        'ic_image_back',
         'ssm_image',
         'consent_pdpa',
         'verified_at',
@@ -75,6 +76,29 @@ class Merchant extends Model
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+
+    /**
+     * A limit of the merchant's package: branch_limit | staff_limit | giveaway_limit | task_limit.
+     * -1 = unlimited, 0 = not included. Merchants without a package follow the Free package.
+     */
+    public function limit(string $key): int
+    {
+        $package = $this->package ?: Package::where('name', 'Free')->first();
+        return $package ? (int) $package->{$key} : -1;
+    }
+
+    /**
+     * Paid package whose expiry passed more than 7 days ago -> the account is read-only (PRD v1.2 15.3).
+     * Free / package-less merchants, and paid merchants without an expiry date, are never lapsed.
+     */
+    public function isSubscriptionLapsed(): bool
+    {
+        $package = $this->package;
+        if (!$package || (float) $package->price <= 0 || !$this->subscription_expiry) {
+            return false;
+        }
+        return $this->subscription_expiry->copy()->addDays(7)->isPast();
     }
 
     /**

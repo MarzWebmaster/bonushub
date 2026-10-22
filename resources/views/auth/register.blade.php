@@ -148,6 +148,7 @@
                     </div>
 
                     <button type="submit" class="btn-primary w-full py-3 text-base">Create Account</button>
+                    <p class="text-xs text-surface-500 text-center mt-3">By creating an account you agree to the <a href="{{ url('/terms/points') }}" target="_blank" class="text-bonus-600 underline">Points Terms</a> (including how points expire).</p>
                 </div>
 
                 @if($errors->any())

@@ -29,7 +29,7 @@
             <div class="text-6xl mb-4">🎉</div>
             <h2 class="font-bold text-xl text-primary mb-2" x-text="message"></h2>
             <div class="text-surface-600 space-y-2">
-                <p>Points earned: <strong x-text="pointsEarned"></strong></p>
+                <p>Points requested (pending merchant approval): <strong x-text="pointsEarned"></strong></p>
                 @if($branch)
                 <p class="text-sm">Branch: {{ $branch->name }}</p>
                 @endif
@@ -159,7 +159,7 @@ function earnApp() {
                 if (data.success) {
                     this.success = true;
                     this.message = data.message;
-                    this.pointsEarned = data.points_earned;
+                    this.pointsEarned = data.points_requested ?? data.points_earned;
                     this.newBalance = data.new_balance;
                     this.merchantName = data.merchant;
                 } else {

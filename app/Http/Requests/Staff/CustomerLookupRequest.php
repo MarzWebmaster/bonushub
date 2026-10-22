@@ -8,7 +8,7 @@ class CustomerLookupRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('staff');
+        return $this->user()->hasAnyRole(['staff', 'merchant']);
     }
 
     public function rules(): array

@@ -72,13 +72,21 @@
                             @if($merchant->ic_image)
                             <div>
                                 <p class="text-xs text-surface-400 mb-1">Depan</p>
-                                <img src="{{ asset('storage/' . $merchant->ic_image) }}" alt="IC Depan" class="doc-img" onclick="openLightbox(this.src)">
+                                @if(\Illuminate\Support\Str::endsWith(strtolower($merchant->ic_image), '.pdf'))
+                                <a href="{{ route('superadmin.merchants.document', [$merchant->id, 'ic']) }}" target="_blank" rel="noopener" class="text-blue-600 underline text-sm">Buka PDF</a>
+                                @else
+                                <img src="{{ route('superadmin.merchants.document', [$merchant->id, 'ic']) }}" alt="IC Depan" class="doc-img" onclick="openLightbox(this.src)">
+                                @endif
                             </div>
                             @endif
                             @if($merchant->ic_image_back)
                             <div>
                                 <p class="text-xs text-surface-400 mb-1">Belakang</p>
-                                <img src="{{ asset('storage/' . $merchant->ic_image_back) }}" alt="IC Belakang" class="doc-img" onclick="openLightbox(this.src)">
+                                @if(\Illuminate\Support\Str::endsWith(strtolower($merchant->ic_image_back), '.pdf'))
+                                <a href="{{ route('superadmin.merchants.document', [$merchant->id, 'ic_back']) }}" target="_blank" rel="noopener" class="text-blue-600 underline text-sm">Buka PDF</a>
+                                @else
+                                <img src="{{ route('superadmin.merchants.document', [$merchant->id, 'ic_back']) }}" alt="IC Belakang" class="doc-img" onclick="openLightbox(this.src)">
+                                @endif
                             </div>
                             @endif
                         </div>
@@ -89,7 +97,11 @@
                     @if($merchant->ssm_image)
                     <div>
                         <p class="text-xs font-medium text-surface-500 mb-2 uppercase tracking-wider">SSM / Borang 9</p>
-                        <img src="{{ asset('storage/' . $merchant->ssm_image) }}" alt="SSM" class="doc-img" onclick="openLightbox(this.src)">
+                        @if(\Illuminate\Support\Str::endsWith(strtolower($merchant->ssm_image), '.pdf'))
+                        <a href="{{ route('superadmin.merchants.document', [$merchant->id, 'ssm']) }}" target="_blank" rel="noopener" class="text-blue-600 underline text-sm">Buka PDF (SSM)</a>
+                        @else
+                        <img src="{{ route('superadmin.merchants.document', [$merchant->id, 'ssm']) }}" alt="SSM" class="doc-img" onclick="openLightbox(this.src)">
+                        @endif
                     </div>
                     @endif
 

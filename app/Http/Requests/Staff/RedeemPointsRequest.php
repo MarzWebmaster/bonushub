@@ -8,23 +8,15 @@ class RedeemPointsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('staff');
+        return $this->user()->hasAnyRole(['staff', 'merchant']);
     }
 
     public function rules(): array
     {
         return [
-            'customer_id' => 'required|integer|exists:users,id',
-            'reward_product_id' => 'required|integer|exists:reward_products,id',
-            'quantity' => 'nullable|integer|min:1|max:100',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'customer_id.exists' => 'The selected customer does not exist.',
-            'reward_product_id.exists' => 'The selected reward product does not exist.',
+            'customer_id' => 'required|integer|exists:customers,id',
+            'reward_id'   => 'required|integer|exists:merchant_rewards,id',   // was exists:reward_products (table does not exist)
+            'quantity'    => 'nullable|integer|min:1|max:100',
         ];
     }
 }

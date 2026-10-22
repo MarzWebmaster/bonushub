@@ -18,7 +18,7 @@
             <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center"><svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
         </div>
         <div class="stat-card border-l-amber-500">
-            <div><p class="text-sm font-medium text-surface-500">My Tier</p><p class="text-3xl font-bold text-surface-800 mt-1">{{ $tier ?? 'Basic' }}</p></div>
+            <div><p class="text-sm font-medium text-surface-500">My Tier</p><p class="mt-2"><span class="tier-badge px-3 py-1 rounded-full text-lg font-bold {{ ['Platinum' => 'bg-indigo-100 text-indigo-700', 'Gold' => 'bg-amber-100 text-amber-700', 'Silver' => 'bg-slate-100 text-slate-600', 'Bronze' => 'bg-orange-100 text-orange-700'][$tier ?? 'Basic'] ?? 'bg-surface-100 text-surface-700' }}">{{ $tier ?? 'Basic' }}</span></p></div>
             <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center"><svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
         </div>
         <div class="stat-card border-l-purple-500">

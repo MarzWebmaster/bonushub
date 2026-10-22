@@ -8,6 +8,7 @@ class PackageController extends Controller
 {
     public function index()
     {
-        return view('package.index'); // Return the package index view
+        // 'package.index' does not exist (was a 500); the page lives in manage_shop_package.blade.php
+        return view('manage_shop_package');
     }
 }

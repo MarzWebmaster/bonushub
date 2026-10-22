@@ -23,10 +23,10 @@ trait SendsEmails
                 $customer->name,
                 $taskTitle,
                 $points,
-                $merchant->name
+                $merchant->company_name
             ));
             Log::info("Task approved email queued for customer #{$customerId}");
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error("Failed to queue task approved email: " . $e->getMessage());
         }
     }
@@ -42,11 +42,11 @@ trait SendsEmails
                 $customer->name,
                 $points,
                 $newBalance,
-                $merchant->name,
+                $merchant->company_name,
                 $source
             ));
             Log::info("Points earned email queued for customer #{$customerId}");
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error("Failed to queue points earned email: " . $e->getMessage());
         }
     }
@@ -62,10 +62,10 @@ trait SendsEmails
                 $customer->name,
                 $rewardName,
                 $pointsSpent,
-                $merchant->name
+                $merchant->company_name
             ));
             Log::info("Reward redeemed email queued for customer #{$customerId}");
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error("Failed to queue reward redeemed email: " . $e->getMessage());
         }
     }

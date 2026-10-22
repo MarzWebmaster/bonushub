@@ -15,12 +15,13 @@ class PackageUpdateRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string|max:2000',
             'price' => 'sometimes|required|numeric|min:0',
+            'branch_limit' => 'nullable|integer|min:-1',
+            'staff_limit' => 'nullable|integer|min:-1',
+            'giveaway_limit' => 'nullable|integer|min:-1',
+            'task_limit' => 'nullable|integer|min:-1',
             'features' => 'nullable|array',
             'features.*' => 'string|max:255',
-            'duration_days' => 'sometimes|required|integer|min:1',
-            'is_active' => 'nullable|boolean',
         ];
     }
 }

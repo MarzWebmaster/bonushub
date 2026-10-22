@@ -11,16 +11,22 @@ class PackageStoreRequest extends FormRequest
         return $this->user()->hasRole('superadmin');
     }
 
+    /**
+     * The package form sends name/price/limits/features. The old rules required `duration_days` (no such column and
+     * the form never sends it, so every create from the UI failed with 422) and had NO limit fields, so validated()
+     * dropped branch/staff/giveaway/task limits. -1 = unlimited.
+     */
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:2000',
             'price' => 'required|numeric|min:0',
+            'branch_limit' => 'nullable|integer|min:-1',
+            'staff_limit' => 'nullable|integer|min:-1',
+            'giveaway_limit' => 'nullable|integer|min:-1',
+            'task_limit' => 'nullable|integer|min:-1',
             'features' => 'nullable|array',
             'features.*' => 'string|max:255',
-            'duration_days' => 'required|integer|min:1',
-            'is_active' => 'nullable|boolean',
         ];
     }
 
@@ -30,8 +36,6 @@ class PackageStoreRequest extends FormRequest
             'name.required' => 'Package name is required.',
             'price.required' => 'Package price is required.',
             'price.min' => 'Price cannot be negative.',
-            'duration_days.required' => 'Duration is required.',
-            'duration_days.min' => 'Duration must be at least 1 day.',
         ];
     }
 }

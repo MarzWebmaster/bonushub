@@ -41,7 +41,7 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post')->middleware('throttle:20,1');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Customer Register routes
@@ -49,8 +49,8 @@ Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
 // OTP routes (for both customer and merchant registration)
-Route::post('/otp/send', [OtpController::class, 'send'])->name('otp.send');
-Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify');
+Route::post('/otp/send', [OtpController::class, 'send'])->name('otp.send')->middleware('throttle:5,1');
+Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify')->middleware('throttle:10,1');
 
 // Merchant Register routes
 Route::get('/merchant/register', [MerchantRegisterController::class, 'showRegisterForm'])->name('merchant.register');
@@ -63,16 +63,19 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/merchant/verification/skip', [MerchantVerificationController::class, 'skipVerification'])->name('merchant.verification.skip');
 });
 
-// Existing management routes
-Route::get('/manage/shop', [ShopController::class, 'index'])->name('manage.shop');
-Route::get('/manage/shop/package', [PackageController::class, 'index'])->name('manage.shop.package');
-Route::get('/finance', [FinanceController::class, 'index'])->name('finance');
+// Existing management routes (admin placeholders; were reachable without login -> superadmin only)
+Route::middleware(['auth', 'role:superadmin'])->group(function () {
+    Route::get('/manage/shop', [ShopController::class, 'index'])->name('manage.shop');
+    Route::get('/manage/shop/package', [PackageController::class, 'index'])->name('manage.shop.package');
+    Route::get('/finance', [FinanceController::class, 'index'])->name('finance');
+});
 Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::post('/settings/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
     Route::post('/settings/password', [SettingsController::class, 'password'])->name('settings.password');
-    Route::post('/settings/stripe', [SettingsController::class, 'stripe'])->name('settings.stripe');
+    // Rewrites .env -> superadmin only (also enforced inside SettingsController::stripe)
+    Route::post('/settings/stripe', [SettingsController::class, 'stripe'])->name('settings.stripe')->middleware('role:superadmin');
 
     // Payment Routes
     Route::get('/checkout/{package}', [\App\Http\Controllers\StripePaymentController::class, 'checkout'])->name('payment.checkout');
@@ -84,6 +87,15 @@ Route::middleware('auth')->group(function () {
 });
 
 // ========================
+// Notifications (any logged-in user: the in-app messages written by BonusNotifier)
+// ========================
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'readAll'])->name('notifications.readall');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
+});
+
+// ========================
 // Staff Routes
 // ========================
 Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () {
@@ -92,6 +104,7 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
     Route::post('/add-points', [StaffController::class, 'addPoints'])->name('add.points');
     Route::post('/redeem', [StaffController::class, 'redeemPoints'])->name('redeem');
     Route::post('/void', [StaffController::class, 'voidTransaction'])->name('void');
+    Route::post('/claim', [StaffController::class, 'claim'])->name('claim');
     // QR Code
     Route::get('/qr', [\App\Http\Controllers\QrController::class, 'staffQrPage'])->name('qr');
     Route::get('/api/qr', [\App\Http\Controllers\QrController::class, 'generateQr'])->name('api.qr');
@@ -101,12 +114,12 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
 // QR Scan Routes (Customer)
 // ========================
 Route::get('/scan/{merchantId}/{branchId?}', [\App\Http\Controllers\ScanController::class, 'show'])->name('scan');
-Route::post('/api/scan/earn', [\App\Http\Controllers\ScanController::class, 'earn'])->name('scan.earn')->middleware('auth');
+Route::post('/api/scan/earn', [\App\Http\Controllers\ScanController::class, 'earn'])->name('scan.earn')->middleware(['auth', 'throttle:10,1']);
 
 // ========================
 // Merchant Admin Routes
 // ========================
-Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.approved'])->group(function () {
+Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.approved', 'merchant.writable'])->group(function () {
     // Pages (HTML views)
     Route::get('/dashboard', [MerchantAdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/points/pending', [MerchantAdminController::class, 'pendingApprovalsPage'])->name('points.pending');
@@ -144,6 +157,20 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.appr
     Route::get('/branches/{id}/edit', [MerchantAdminController::class, 'editBranch'])->name('branches.edit');
     Route::put('/branches/{id}', [MerchantAdminController::class, 'updateBranch'])->name('branches.update');
     Route::delete('/branches/{id}', [MerchantAdminController::class, 'deleteBranch'])->name('branches.destroy');
+
+    // Staff management (owner adds/deactivates staff, assigns branch; package staff_limit enforced)
+    Route::get('/staff', [\App\Http\Controllers\MerchantStaffController::class, 'index'])->name('staff');
+    Route::post('/staff', [\App\Http\Controllers\MerchantStaffController::class, 'store'])->name('staff.store');
+    Route::put('/staff/{id}', [\App\Http\Controllers\MerchantStaffController::class, 'update'])->name('staff.update');
+    Route::post('/staff/{id}/toggle', [\App\Http\Controllers\MerchantStaffController::class, 'toggle'])->name('staff.toggle');
+
+    // Redemptions to hand over (claim codes): complete, or cancel with a refund
+    Route::get('/redemptions', [\App\Http\Controllers\RedemptionController::class, 'index'])->name('redemptions');
+    Route::post('/redemptions/{id}/complete', [\App\Http\Controllers\RedemptionController::class, 'complete'])->name('redemptions.complete');
+    Route::post('/redemptions/{id}/cancel', [\App\Http\Controllers\RedemptionController::class, 'cancel'])->name('redemptions.cancel');
+    Route::get('/referral-review', [\App\Http\Controllers\ReferralReviewController::class, 'index'])->name('referral.review');
+    Route::post('/referral-review/{id}/approve', [\App\Http\Controllers\ReferralReviewController::class, 'approve'])->name('referral.review.approve');
+    Route::post('/referral-review/{id}/reject', [\App\Http\Controllers\ReferralReviewController::class, 'reject'])->name('referral.review.reject');
         Route::get('/tiers', [MerchantAdminController::class, 'tiersPage'])->name('tiers');
         Route::get('/api/tiers', [MerchantAdminController::class, 'getTiers'])->name('api.tiers');
         Route::put('/api/tiers', [MerchantAdminController::class, 'updateTiers'])->name('api.tiers.update');
@@ -202,6 +229,8 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.appr
         Route::post('/{id}/activate', [GiveawayController::class, 'activateCampaign'])->name('activate');
         Route::post('/{id}/end', [GiveawayController::class, 'endCampaign'])->name('end');
         Route::post('/{id}/select-winners', [GiveawayController::class, 'selectWinners'])->name('select-winners');
+        Route::post('/{id}/winners/{winnerId}/claim', [GiveawayController::class, 'claimWinner'])->name('winners.claim');
+        Route::post('/{id}/winners/{winnerId}/replace', [GiveawayController::class, 'replaceWinner'])->name('winners.replace');
     });
 });
 
@@ -209,6 +238,7 @@ Route::prefix('merchant')->name('merchant.')->middleware(['auth', 'merchant.appr
 // Public Routes
 // ========================
 Route::get('/ref/{code}', [ReferralController::class, 'referralLanding'])->name('referral.landing');
+Route::view('/terms/points', 'terms.points')->name('terms.points');
 
 // ========================
 // Customer Routes
@@ -270,6 +300,10 @@ Route::prefix('superadmin')->name('superadmin.')->middleware(['auth'])->group(fu
     Route::get('/dashboard', [SuperadminController::class, 'dashboard'])->name('dashboard');
     Route::get('/merchants', [SuperadminController::class, 'merchantsPage'])->name('merchants');
     Route::get("/merchants/{id}", [SuperadminController::class, "showMerchantPage"])->name("merchants.show");
+    // Verification documents (IC/SSM) are private; this is the only way to view them
+    Route::get('/merchants/{id}/document/{type}', [SuperadminController::class, 'merchantDocument'])
+        ->whereNumber('id')->whereIn('type', ['ic', 'ic_back', 'ssm'])
+        ->middleware('role:superadmin')->name('merchants.document');
     Route::get('/packages', [SuperadminController::class, 'packagesPage'])->name('packages');
     Route::get('/audit', [SuperadminController::class, 'auditLogsPage'])->name('audit');
     Route::get('/leaderboard', [SuperadminController::class, 'leaderboardPage'])->name('leaderboard');

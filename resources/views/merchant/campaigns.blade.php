@@ -1,34 +1,38 @@
 @extends('layouts.app')
-@section('title', 'Campaign Links - Merchant')
+@section('title', 'Referral Campaign - Merchant')
 @section('content')
 <div class="page-container">
     {{-- Page Header --}}
     <div class="page-header">
         <div>
-            <h1 class="page-title">📢 Campaign Links</h1>
-            <p class="page-subtitle">Track where your customers come from</p>
+            <h1 class="page-title">📢 Referral Campaign</h1>
+            <p class="page-subtitle">Tracking links for ads, posters and WhatsApp: see where new customers come from. (Not a giveaway or a viral task.)</p>
         </div>
         <button onclick="document.getElementById('create-modal').classList.remove('hidden')" class="btn-primary">
-            + New Campaign
+            + New Referral Campaign
         </button>
     </div>
 
     {{-- Analytics Summary Cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="stats-cards">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6" id="stats-cards">
         <div class="stat-card border-l-bonus-500">
-            <p class="text-xs text-surface-500 uppercase tracking-wider">Total Visits</p>
+            <p class="text-xs text-surface-500 uppercase tracking-wider">Total Clicks</p>
             <p class="text-2xl font-bold text-surface-800 dark:text-white mt-1" id="stat-visits">—</p>
+        </div>
+        <div class="stat-card border-l-sky-500">
+            <p class="text-xs text-surface-500 uppercase tracking-wider">Unique Visitors</p>
+            <p class="text-2xl font-bold text-surface-800 dark:text-white mt-1" id="stat-unique">—</p>
         </div>
         <div class="stat-card border-l-emerald-500">
             <p class="text-xs text-surface-500 uppercase tracking-wider">Registrations</p>
             <p class="text-2xl font-bold text-surface-800 dark:text-white mt-1" id="stat-registrations">—</p>
         </div>
         <div class="stat-card border-l-purple-500">
-            <p class="text-xs text-surface-500 uppercase tracking-wider">Conversion Rate</p>
+            <p class="text-xs text-surface-500 uppercase tracking-wider" title="Registrations divided by unique visitors">Conversion (unique)</p>
             <p class="text-2xl font-bold text-surface-800 dark:text-white mt-1" id="stat-conversion">—</p>
         </div>
         <div class="stat-card border-l-amber-500">
-            <p class="text-xs text-surface-500 uppercase tracking-wider">Active Campaigns</p>
+            <p class="text-xs text-surface-500 uppercase tracking-wider">Active Referral Campaigns</p>
             <p class="text-2xl font-bold text-surface-800 dark:text-white mt-1" id="stat-active">—</p>
         </div>
     </div>
@@ -38,7 +42,7 @@
         <div class="flex items-center justify-between mb-4">
             <h2 class="font-bold text-surface-800 dark:text-white text-lg">📈 Registration Trend</h2>
             <select id="campaign-selector" class="form-select text-sm w-64" onchange="loadRegistrationChart()">
-                <option value="">All Campaigns</option>
+                <option value="">All Referral Campaigns</option>
             </select>
         </div>
         <div style="position:relative;height:280px">
@@ -49,7 +53,7 @@
 
     {{-- Campaign List (single column) --}}
     <div id="campaigns-list">
-        <div class="text-center text-surface-400 py-8">Loading campaigns...</div>
+        <div class="text-center text-surface-400 py-8">Loading referral campaigns...</div>
     </div>
 
     {{-- Pagination --}}
@@ -60,14 +64,14 @@
 <div id="create-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
     <div class="modal-content max-w-lg">
         <div class="modal-header">
-            <h2 class="text-lg font-bold">✨ New Campaign Link</h2>
+            <h2 class="text-lg font-bold">✨ New Referral Campaign</h2>
             <button onclick="this.closest('.modal-overlay').classList.add('hidden')">&times;</button>
         </div>
         <form id="create-form" class="modal-body">
             @csrf
             <div class="space-y-4">
                 <div>
-                    <label class="form-label">Campaign Name *</label>
+                    <label class="form-label">Referral Campaign Name *</label>
                     <input name="name" class="form-input" placeholder="e.g. IG Promo June, Jalan TAR Flyer" required>
                 </div>
                 <div>
@@ -101,7 +105,7 @@
 <div id="detail-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
     <div class="modal-content max-w-md">
         <div class="modal-header">
-            <h2 class="text-lg font-bold" id="detail-name">Campaign</h2>
+            <h2 class="text-lg font-bold" id="detail-name">Referral Campaign</h2>
             <button onclick="this.closest('.modal-overlay').classList.add('hidden')">&times;</button>
         </div>
         <div class="modal-body text-center">
@@ -111,10 +115,14 @@
                 <input id="detail-url" class="form-input text-center font-mono text-sm" readonly>
                 <button onclick="copyLink()" class="btn-primary text-sm px-3 py-2 whitespace-nowrap">📋 Copy</button>
             </div>
-            <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="grid grid-cols-4 gap-3 text-center">
                 <div>
                     <p class="text-xl font-bold text-bonus-600" id="detail-visits">0</p>
-                    <p class="text-xs text-surface-400">Visits</p>
+                    <p class="text-xs text-surface-400">Clicks</p>
+                </div>
+                <div>
+                    <p class="text-xl font-bold text-sky-600" id="detail-unique">0</p>
+                    <p class="text-xs text-surface-400">Unique</p>
                 </div>
                 <div>
                     <p class="text-xl font-bold text-emerald-600" id="detail-regs">0</p>
@@ -142,13 +150,15 @@ fetch('/merchant/api/campaigns/analytics')
         if (d.analytics) {
             document.getElementById('stat-visits').textContent = d.analytics.total_visits.toLocaleString();
             document.getElementById('stat-registrations').textContent = d.analytics.total_registrations.toLocaleString();
-            document.getElementById('stat-conversion').textContent = d.analytics.avg_conversion + '%';
+            document.getElementById('stat-unique').textContent = (d.analytics.total_unique_visits || 0).toLocaleString();
+            document.getElementById('stat-conversion').textContent = (d.analytics.unique_conversion ?? d.analytics.avg_conversion) + '%';
             document.getElementById('stat-active').textContent = d.analytics.active_campaigns;
         }
     });
 
 // ── Load campaigns list + populate dropdown ──
 const campaigns = @json($campaigns->items());
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 renderList(campaigns);
 populateDropdown(campaigns);
 loadRegistrationChart();
@@ -166,7 +176,7 @@ function populateDropdown(list) {
 function renderList(list) {
     const container = document.getElementById('campaigns-list');
     if (!list.length) {
-        container.innerHTML = '<div class="text-center py-12"><p class="text-surface-400 text-lg">No campaigns yet</p><p class="text-surface-300 text-sm mt-1">Create your first campaign link to start tracking!</p></div>';
+        container.innerHTML = '<div class="text-center py-12"><p class="text-surface-400 text-lg">No referral campaigns yet</p><p class="text-surface-300 text-sm mt-1">Create your first referral campaign to start tracking!</p></div>';
         return;
     }
     const mediumIcons = { instagram:'📸', facebook:'📘', whatsapp:'💬', tiktok:'🎵', twitter:'🐦', flyer:'📄', email:'📧', other:'🔗' };
@@ -176,7 +186,7 @@ function renderList(list) {
                 {{-- Left: info --}}
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-3 mb-2">
-                        <h3 class="font-bold text-surface-800 dark:text-white text-lg">${c.name}</h3>
+                        <h3 class="font-bold text-surface-800 dark:text-white text-lg">${esc(c.name)}</h3>
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${c.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-surface-100 text-surface-500'}">
                             ${c.status}
                         </span>
@@ -187,20 +197,24 @@ function renderList(list) {
                 <div class="flex gap-6 text-center shrink-0">
                     <div>
                         <p class="text-xl font-bold text-bonus-600">${c.visits}</p>
-                        <p class="text-[10px] text-surface-400 uppercase">Visits</p>
+                        <p class="text-[10px] text-surface-400 uppercase">Clicks</p>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-sky-600">${c.unique_visits || 0}</p>
+                        <p class="text-[10px] text-surface-400 uppercase">Unique</p>
                     </div>
                     <div>
                         <p class="text-xl font-bold text-emerald-600">${c.registrations}</p>
                         <p class="text-[10px] text-surface-400 uppercase">Registered</p>
                     </div>
                     <div>
-                        <p class="text-xl font-bold text-purple-600">${c.visits > 0 ? ((c.registrations / c.visits) * 100).toFixed(1) : 0}%</p>
+                        <p class="text-xl font-bold text-purple-600">${c.unique_visits > 0 ? Math.min(100, (c.registrations / c.unique_visits) * 100).toFixed(1) : 0}%</p>
                         <p class="text-[10px] text-surface-400 uppercase">Conv</p>
                     </div>
                 </div>
                 {{-- Right: actions --}}
                 <div class="flex gap-2 shrink-0">
-                    <button onclick="showDetail('${c.slug}', '${c.name}', ${c.visits}, ${c.registrations})" class="btn-sm btn-primary">🔗 Link & QR</button>
+                    <button onclick="showDetailById(${c.id})" class="btn-sm btn-primary">🔗 Link & QR</button>
                     <button onclick="toggleStatus(${c.id})" class="btn-sm ${c.status === 'active' ? 'btn-warning' : 'btn-success'}" title="Toggle status">
                         ${c.status === 'active' ? '⏸' : '▶️'}
                     </button>
@@ -347,13 +361,19 @@ document.getElementById('create-form').addEventListener('submit', function(e) {
 });
 
 // ── Show detail modal with QR ──
-function showDetail(slug, name, visits, regs) {
+function showDetailById(id) {
+    const c = campaigns.find(x => x.id === id);
+    if (c) showDetail(c.slug, c.name, c.visits, c.unique_visits || 0, c.registrations);
+}
+
+function showDetail(slug, name, visits, unique, regs) {
     const url = BASE + '/r/' + slug;
     document.getElementById('detail-name').textContent = name;
     document.getElementById('detail-url').value = url;
     document.getElementById('detail-visits').textContent = visits;
+    document.getElementById('detail-unique').textContent = unique;
     document.getElementById('detail-regs').textContent = regs;
-    document.getElementById('detail-conv').textContent = visits > 0 ? ((regs / visits) * 100).toFixed(1) + '%' : '0%';
+    document.getElementById('detail-conv').textContent = unique > 0 ? Math.min(100, (regs / unique) * 100).toFixed(1) + '%' : '0%';
 
     const qrDiv = document.getElementById('detail-qr');
     qrDiv.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}" alt="QR Code" class="mx-auto rounded-lg shadow-md">`;

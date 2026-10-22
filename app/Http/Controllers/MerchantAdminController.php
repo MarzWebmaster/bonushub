@@ -9,6 +9,7 @@ use App\Models\PointsTransaction;
 use App\Models\CustomerMerchant;
 use App\Models\LoyaltyRate;
 use App\Models\MerchantTier;
+use App\Services\TierService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -49,7 +50,64 @@ class MerchantAdminController extends Controller
             'pending_approvals' => PointsTransaction::where('merchant_id', $mid)->where('status', 'pending_approval')->count(),
             'total_products' => MerchantReward::where('merchant_id', $mid)->count(),
         ];
-        return view('merchant.dashboard', compact('stats'));
+        ['giveaway' => $giveaway, 'viral' => $viral] = $this->featureStats($merchant);
+        return view('merchant.dashboard', compact('stats', 'giveaway', 'viral'));
+    }
+
+    /**
+     * Dashboard blocks for the optional features. A feature the merchant's package does not include (limit 0) is not shown
+     * at all: giveaway => null when giveaway_limit = 0; viral => null when task_limit = 0 (Viral Tools = viral tasks plus the
+     * referral campaign / review tools that sit next to them).
+     *
+     * @return array{giveaway: ?array, viral: ?array}
+     */
+    private function featureStats(Merchant $merchant): array
+    {
+        $mid = (int) $merchant->id;
+        $giveaway = null;
+
+        $gLimit = $merchant->limit('giveaway_limit');
+        if ($gLimit !== 0) {
+            $campaigns = DB::table('giveaway_campaigns')->where('merchant_id', $mid);
+            $inActive = DB::table('giveaway_entries as e')->join('giveaway_campaigns as c', 'c.id', '=', 'e.giveaway_campaign_id')
+                ->where('c.merchant_id', $mid)->where('c.status', 'active');
+            $pendingWinners = DB::table('giveaway_winners as w')->join('giveaway_campaigns as c', 'c.id', '=', 'w.giveaway_campaign_id')
+                ->where('c.merchant_id', $mid)->where('w.status', 'pending');
+            $giveaway = [
+                'limit' => $gLimit,
+                'active' => (clone $campaigns)->where('status', 'active')->count(),
+                // finished (ended, or end time passed) and nobody drawn yet
+                'to_draw' => (clone $campaigns)->where(function ($q) {
+                    $q->where('status', 'ended')->orWhere(fn ($w) => $w->where('status', 'active')->whereNotNull('ends_at')->where('ends_at', '<', now()));
+                })->whereNotExists(fn ($q) => $q->from('giveaway_winners')->whereColumn('giveaway_winners.giveaway_campaign_id', 'giveaway_campaigns.id'))->count(),
+                'participants' => (clone $inActive)->count(),
+                'referrals' => (int) (clone $inActive)->sum('e.score'),
+                'prizes_waiting' => (clone $pendingWinners)->count(),
+                'prizes_overdue' => (clone $pendingWinners)->whereNotNull('w.claim_deadline_at')->where('w.claim_deadline_at', '<', now())->count(),
+                'recent' => \App\Models\GiveawayCampaign::where('merchant_id', $mid)->withCount('entries')->latest()->limit(3)->get(['id', 'title', 'status', 'ends_at']),
+            ];
+        }
+
+        $tLimit = $merchant->limit('task_limit');
+        if ($tLimit === 0) {
+            return ['giveaway' => $giveaway, 'viral' => null];
+        }
+        $pending = DB::table('task_submissions as s')->join('viral_tasks as t', 't.id', '=', 's.task_id')->where('t.merchant_id', $mid)->where('s.status', 'pending');
+        $links = DB::table('campaign_links')->where('merchant_id', $mid);
+        $viral = [
+            'task_limit' => $tLimit,
+            'tasks_active' => \App\Models\ViralTask::forMerchant($mid)->active()->count(),
+            'reviews_pending' => (clone $pending)->count(),
+            'reviews_duplicate' => (clone $pending)->whereNotNull('s.duplicate_of_id')->count(),
+            'links_active' => (clone $links)->where('status', 'active')->count(),
+            'clicks' => (int) (clone $links)->sum('visits'),
+            'unique' => (int) (clone $links)->sum('unique_visits'),
+            'registrations' => (int) (clone $links)->sum('registrations'),
+            'flagged' => DB::table('referral_signups as s')->join('referrals as r', 'r.id', '=', 's.referral_id')
+                ->where('r.merchant_id', $mid)->where('s.status', 'pending')->whereNotNull('s.flags')->where('s.flags', '!=', '[]')->count(),
+        ];
+
+        return ['giveaway' => $giveaway, 'viral' => $viral];
     }
 
     public function pendingApprovalsPage(): View
@@ -297,7 +355,23 @@ class MerchantAdminController extends Controller
             'redeem_rate' => 'required|numeric|min:1',
             'min_redeem' => 'nullable|integer|min:0',
             'max_redeem' => 'nullable|integer|min:0',
+            'referral_bonus_referrer' => 'nullable|integer|min:0|max:100000',
+            'referral_bonus_referred' => 'nullable|integer|min:0|max:100000',
+            // empty = platform default; 0 = this merchant never expires points; else within the platform range
+            'points_expiry_months' => ['nullable', 'integer', function ($attribute, $value, $fail) {
+                $min = (int) config('points.min_months', 6);
+                $max = (int) config('points.max_months', 36);
+                if ($value !== null && (int) $value !== 0 && ((int) $value < $min || (int) $value > $max)) {
+                    $fail("Points expiry must be 0 (never) or between {$min} and {$max} months.");
+                }
+            }],
         ]);
+        // empty = 0 = referral bonus disabled (the columns are NOT NULL)
+        foreach (['referral_bonus_referrer', 'referral_bonus_referred'] as $k) {
+            if (array_key_exists($k, $data)) {
+                $data[$k] = (int) ($data[$k] ?? 0);
+            }
+        }
         LoyaltyRate::updateOrCreate(['merchant_id' => $merchant->id], $data);
         if ($request->expectsJson()) {
             return response()->json(['success' => true, 'message' => 'Loyalty rates updated!', 'rate' => LoyaltyRate::where('merchant_id', $merchant->id)->first()]);
@@ -313,7 +387,23 @@ class MerchantAdminController extends Controller
             'redeem_rate' => 'required|numeric|min:1',
             'min_redeem' => 'nullable|integer|min:0',
             'max_redeem' => 'nullable|integer|min:0',
+            'referral_bonus_referrer' => 'nullable|integer|min:0|max:100000',
+            'referral_bonus_referred' => 'nullable|integer|min:0|max:100000',
+            // empty = platform default; 0 = this merchant never expires points; else within the platform range
+            'points_expiry_months' => ['nullable', 'integer', function ($attribute, $value, $fail) {
+                $min = (int) config('points.min_months', 6);
+                $max = (int) config('points.max_months', 36);
+                if ($value !== null && (int) $value !== 0 && ((int) $value < $min || (int) $value > $max)) {
+                    $fail("Points expiry must be 0 (never) or between {$min} and {$max} months.");
+                }
+            }],
         ]);
+        // empty = 0 = referral bonus disabled (the columns are NOT NULL)
+        foreach (['referral_bonus_referrer', 'referral_bonus_referred'] as $k) {
+            if (array_key_exists($k, $data)) {
+                $data[$k] = (int) ($data[$k] ?? 0);
+            }
+        }
         LoyaltyRate::updateOrCreate(['merchant_id' => $merchant->id], $data);
         return response()->json(['success' => true, 'message' => 'Loyalty rates updated!', 'rate' => LoyaltyRate::where('merchant_id', $merchant->id)->first()]);
     }
@@ -546,19 +636,9 @@ class MerchantAdminController extends Controller
             );
         }
 
-        // Recalculate all customer tiers for this merchant
-        $tiers = MerchantTier::where('merchant_id', $merchant->id)->orderBy('min_points', 'desc')->get();
-        $customers = CustomerMerchant::where('merchant_id', $merchant->id)->get();
-        foreach ($customers as $cm) {
-            $resolved = 'Basic';
-            foreach ($tiers as $t) {
-                if ($cm->points >= $t->min_points) {
-                    $resolved = $t->tier_name;
-                    break;
-                }
-            }
-            $cm->update(['tier_per_merchant' => $resolved]);
-        }
+        // Re-resolve every member on the PRD basis (points earned in the last 12 months), both directions: the merchant
+        // just changed the thresholds. (Before: current balance, which redemptions lowered.)
+        app(TierService::class)->refreshMerchant($merchant->id, true);
 
         return response()->json(['success' => true, 'message' => 'Tiers updated & customers recalculated']);
     }
@@ -631,6 +711,13 @@ class MerchantAdminController extends Controller
             'phone'   => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
         ]);
+
+        // package branch_limit (-1 = unlimited)
+        $limit = $merchant->limit('branch_limit');
+        if ($limit >= 0 && $merchant->branches()->count() >= $limit) {
+            $msg = "Had cawangan pakej anda ({$limit}) telah dicapai. Naik taraf pakej untuk menambah cawangan.";
+            return back()->withErrors(['limit' => $msg])->with('error', $msg)->withInput();
+        }
 
         $merchant->branches()->create([
             'name'    => $validated['name'],
@@ -786,7 +873,7 @@ class MerchantAdminController extends Controller
         $totalRewards = MerchantReward::where('merchant_id', $merchantId)->count();
         $totalTasks = DB::table('viral_tasks')->where('merchant_id', $merchantId)->count();
         $pendingSubmissions = DB::table('task_submissions')
-            ->join('viral_tasks', 'task_submissions.viral_task_id', '=', 'viral_tasks.id')
+            ->join('viral_tasks', 'task_submissions.task_id', '=', 'viral_tasks.id')
             ->where('viral_tasks.merchant_id', $merchantId)
             ->where('task_submissions.status', 'pending')
             ->count();
@@ -838,7 +925,7 @@ class MerchantAdminController extends Controller
             ]);
 
         $recentSubmissions = DB::table('task_submissions')
-            ->join('viral_tasks', 'task_submissions.viral_task_id', '=', 'viral_tasks.id')
+            ->join('viral_tasks', 'task_submissions.task_id', '=', 'viral_tasks.id')
             ->join('customers', 'task_submissions.customer_id', '=', 'customers.id')
             ->where('viral_tasks.merchant_id', $merchantId)
             ->latest('task_submissions.created_at')

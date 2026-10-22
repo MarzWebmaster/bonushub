@@ -16,11 +16,16 @@ class GiveawayWinner extends Model
         'status',
         'notes',
         'claimed_at',
+        'claim_deadline_at',
+        'replaces_winner_id',
+        'notified_at',
     ];
 
     protected $casts = [
         'position' => 'integer',
         'claimed_at' => 'datetime',
+        'claim_deadline_at' => 'datetime',
+        'notified_at' => 'datetime',
     ];
 
     public function campaign(): BelongsTo

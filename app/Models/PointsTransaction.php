@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\TierService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class PointsTransaction extends Model
 {
@@ -18,6 +20,20 @@ class PointsTransaction extends Model
         'approved_by',
         'notes',
     ];
+
+    protected static function booted(): void
+    {
+        // PRD v1.2 7.2: an approved earn can lift the customer's tier (upgrade-only; never breaks the save)
+        static::saved(function (PointsTransaction $t) {
+            if ($t->type === 'earn' && $t->status === 'approved' && ($t->wasRecentlyCreated || $t->wasChanged('status'))) {
+                try {
+                    app(TierService::class)->refresh((int) $t->customer_id, (int) $t->merchant_id);
+                } catch (\Throwable $e) {
+                    Log::warning('Tier refresh failed: ' . $e->getMessage());
+                }
+            }
+        });
+    }
 
     protected function casts(): array
     {

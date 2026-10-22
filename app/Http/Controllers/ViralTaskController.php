@@ -57,7 +57,7 @@ class ViralTaskController extends Controller
         $merchantId = $this->getMerchantId();
         $task = ViralTask::forMerchant($merchantId)->findOrFail($id);
         $submissions = TaskSubmission::where('task_id', $id)
-            ->with('customer')
+            ->with(['customer', 'duplicateOf.customer'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -77,6 +77,10 @@ class ViralTaskController extends Controller
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date|after_or_equal:starts_at',
         ]);
+
+        if ($blocked = $this->taskLimitReached($this->getMerchantId())) {
+            return response()->json(['success' => false, 'message' => $blocked], 422);
+        }
 
         $task = ViralTask::create([
             'merchant_id' => $this->getMerchantId(),
@@ -99,6 +103,23 @@ class ViralTaskController extends Controller
         ], 201);
     }
 
+    /** null when another ACTIVE task may be added, else the message to show (package task_limit: -1 unlimited, 0 none). */
+    private function taskLimitReached(int $merchantId): ?string
+    {
+        $merchant = \App\Models\Merchant::find($merchantId);
+        $limit = $merchant ? $merchant->limit('task_limit') : -1;
+        if ($limit < 0) {
+            return null;
+        }
+        if ($limit === 0) {
+            return 'Pakej anda tidak termasuk tugasan viral. Naik taraf pakej untuk menggunakannya.';
+        }
+        if (ViralTask::forMerchant($merchantId)->where('status', 'active')->count() >= $limit) {
+            return "Had tugasan aktif pakej anda ({$limit}) telah dicapai. Jeda/tamatkan tugasan lain atau naik taraf pakej.";
+        }
+        return null;
+    }
+
     public function updateTask(Request $request, int $id): JsonResponse
     {
         $merchantId = $this->getMerchantId();
@@ -116,6 +137,13 @@ class ViralTaskController extends Controller
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date',
         ]);
+
+        // re-activating a paused/completed task counts against the package's active-task limit
+        if (($validated['status'] ?? null) === 'active' && $task->status !== 'active') {
+            if ($blocked = $this->taskLimitReached($merchantId)) {
+                return response()->json(['success' => false, 'message' => $blocked], 422);
+            }
+        }
 
         $task->update($validated);
 
@@ -146,71 +174,86 @@ class ViralTaskController extends Controller
             'review_notes' => 'nullable|string|max:500',
         ]);
 
-        $submission = TaskSubmission::whereHas('task', function ($q) {
-            $q->where('merchant_id', $this->getMerchantId());
+        $merchantId = $this->getMerchantId();
+        $submission = TaskSubmission::whereHas('task', function ($q) use ($merchantId) {
+            $q->where('merchant_id', $merchantId);
         })->findOrFail($submissionId);
+        $approve = $validated['action'] === 'approve';
 
-        if ($submission->status !== 'pending') {
+        try {
+            $outcome = \Illuminate\Support\Facades\DB::transaction(function () use ($submission, $validated, $approve, $merchantId) {
+                // Atomic claim: only ONE concurrent request can move pending -> reviewed, so a double click or two
+                // reviewers can never credit the points twice. The credit below is in the same transaction, so a
+                // submission can never end up "approved" without its points.
+                $claimed = TaskSubmission::where('id', $submission->id)->where('status', 'pending')->update([
+                    'status' => $approve ? 'approved' : 'rejected',
+                    'reviewed_by' => Auth::id(),
+                    'reviewed_at' => now(),
+                    'review_notes' => $validated['review_notes'] ?? null,
+                ]);
+                if (!$claimed) {
+                    return null;
+                }
+
+                if (!$approve) {
+                    return ['task' => null];
+                }
+
+                $task = $submission->task;
+                TaskSubmission::where('id', $submission->id)->update(['points_awarded' => $task->points_reward]);
+
+                // Update task counters
+                $task->increment('current_completions');
+                $task->increment('total_points_spent', $task->points_reward);
+
+                // Credit customer points (joins the merchant's program automatically if not yet a member)
+                $customer = $submission->customer;
+                $existingBalance = \App\Models\CustomerMerchant::where('customer_id', $customer->id)
+                    ->where('merchant_id', $merchantId)
+                    ->first();
+
+                if ($existingBalance) {
+                    $existingBalance->increment('points', $task->points_reward);
+                } else {
+                    \App\Models\CustomerMerchant::create([
+                        'customer_id' => $customer->id,
+                        'merchant_id' => $merchantId,
+                        'points' => $task->points_reward,
+                        'tier_per_merchant' => 'Basic',
+                        'tied_at' => now(),
+                    ]);
+                }
+
+                PointsTransaction::create([
+                    'customer_id' => $customer->id,
+                    'merchant_id' => $merchantId,
+                    'type' => 'earn',
+                    'points' => $task->points_reward,
+                    'status' => 'approved',
+                    'notes' => "Viral task: {$task->title} (submission #{$submission->id})",
+                    'staff_id' => Auth::id(),
+                ]);
+
+                return ['task' => $task, 'customer_id' => $customer->id];
+            });
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Task review failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal memproses semakan. Sila cuba lagi.'], 500);
+        }
+
+        if ($outcome === null) {
             return response()->json(['success' => false, 'message' => 'Already reviewed.'], 422);
         }
 
-        $submission->update([
-            'status' => $validated['action'] === 'approve' ? 'approved' : 'rejected',
-            'reviewed_by' => Auth::id(),
-            'reviewed_at' => now(),
-            'review_notes' => $validated['review_notes'] ?? null,
-        ]);
-
-        // If approved, credit points
-        if ($validated['action'] === 'approve') {
-            $task = $submission->task;
-            $submission->update(['points_awarded' => $task->points_reward]);
-
-            // Update task counters
-            $task->increment('current_completions');
-            $task->increment('total_points_spent', $task->points_reward);
-
-            // Credit customer points
-            $customer = $submission->customer;
-            $merchantId = $this->getMerchantId();
-            $existingBalance = \App\Models\CustomerMerchant::where('customer_id', $customer->id)
-                ->where('merchant_id', $merchantId)
-                ->first();
-
-            if ($existingBalance) {
-                $existingBalance->increment('points', $task->points_reward);
-            } else {
-                \App\Models\CustomerMerchant::create([
-                    'customer_id' => $customer->id,
-                    'merchant_id' => $merchantId,
-                    'points' => $task->points_reward,
-                    'tier_per_merchant' => 'Basic',
-                ]);
-            }
-
-            // Log transaction (uses 'notes' column, no reference_type/ID)
-            PointsTransaction::create([
-                'customer_id' => $customer->id,
-                'merchant_id' => $merchantId,
-                'type' => 'earn',
-                'points' => $task->points_reward,
-                'notes' => "Viral task: {$task->title} (submission #{$submission->id})",
-                'staff_id' => Auth::id(),
-            ]);
-
-            // Send email notification
-            $this->sendTaskApprovedEmail(
-                $customer->id,
-                $task->title,
-                $task->points_reward,
-                $merchantId
-            );
+        // e-mail only after the transaction has committed (never blocks or rolls back the credit)
+        if ($approve && !empty($outcome['task'])) {
+            $this->sendTaskApprovedEmail($outcome['customer_id'], $outcome['task']->title, $outcome['task']->points_reward, $merchantId);
         }
 
         return response()->json([
             'success' => true,
             'submission' => $submission->fresh(['customer']),
-            'message' => $validated['action'] === 'approve' ? 'Approved + points credited!' : 'Submission rejected.',
+            'message' => $approve ? 'Approved + points credited!' : 'Submission rejected.',
         ]);
     }
 
@@ -272,6 +315,26 @@ class ViralTaskController extends Controller
             'screenshot' => 'nullable|image|max:5120', // 5MB max
         ]);
 
+        // Duplicate-proof detection: SHA-256 of the image and of the normalised link, compared with this merchant's
+        // pending/approved submissions (rejected ones do not count).
+        //   same customer re-using a proof on another task of the merchant -> refused
+        //   another customer sent the same proof                           -> accepted but flagged for the merchant
+        $imageHash = $request->hasFile('screenshot') ? hash_file('sha256', $request->file('screenshot')->getRealPath()) : null;
+        $urlHash = !empty($validated['proof_url']) ? hash('sha256', self::normaliseProofUrl($validated['proof_url'])) : null;
+        $duplicate = null;
+        if ($imageHash || $urlHash) {
+            $duplicate = TaskSubmission::whereIn('task_id', ViralTask::where('merchant_id', $task->merchant_id)->pluck('id'))
+                ->whereIn('status', ['pending', 'approved'])
+                ->where(function ($w) use ($imageHash, $urlHash) {
+                    if ($imageHash) { $w->orWhere('screenshot_hash', $imageHash); }
+                    if ($urlHash) { $w->orWhere('proof_url_hash', $urlHash); }
+                })
+                ->orderBy('id')->first();
+        }
+        if ($duplicate && (int) $duplicate->customer_id === (int) $customer->id) {
+            return response()->json(['success' => false, 'message' => 'Anda sudah menghantar bukti yang sama untuk tugasan lain. Hantar bukti baharu.'], 422);
+        }
+
         $screenshotPath = null;
         if ($request->hasFile('screenshot')) {
             $screenshotPath = $request->file('screenshot')->store('task-submissions', 'public');
@@ -283,6 +346,9 @@ class ViralTaskController extends Controller
             'proof_url' => $validated['proof_url'] ?? null,
             'screenshot_path' => $screenshotPath,
             'status' => 'pending',
+            'screenshot_hash' => $imageHash,
+            'proof_url_hash' => $urlHash,
+            'duplicate_of_id' => $duplicate?->id,
         ]);
 
         return response()->json([
@@ -295,6 +361,25 @@ class ViralTaskController extends Controller
     // ========================
     // MERCHANT — Task Analytics
     // ========================
+
+    /** Lower-case host, no fragment, no trailing slash, no utm_/fbclid/gclid tracking parameters, sorted query. */
+    public static function normaliseProofUrl(string $url): string
+    {
+        $p = parse_url(trim($url));
+        if (!$p || empty($p['host'])) {
+            return strtolower(trim($url));
+        }
+        parse_str($p['query'] ?? '', $q);
+        foreach (array_keys($q) as $k) {
+            if (str_starts_with(strtolower((string) $k), 'utm_') || in_array(strtolower((string) $k), ['fbclid', 'gclid'], true)) {
+                unset($q[$k]);
+            }
+        }
+        ksort($q);
+
+        return strtolower($p['scheme'] ?? 'https') . '://' . strtolower($p['host']) . (isset($p['port']) ? ':' . $p['port'] : '')
+            . rtrim($p['path'] ?? '', '/') . ($q ? '?' . http_build_query($q) : '');
+    }
 
     public function taskAnalyticsPage(): View
     {

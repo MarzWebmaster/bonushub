@@ -207,6 +207,7 @@ class StripePaymentController extends Controller
     public function history()
     {
         $merchant = Auth::user()->merchant;
+        abort_unless($merchant, 403, 'Hanya akaun merchant boleh melihat sejarah pembayaran.');
         $payments = Payment::where('merchant_id', $merchant->id)
             ->with('package')
             ->latest()

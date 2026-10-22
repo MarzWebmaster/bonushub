@@ -147,16 +147,13 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
                 <span>Rewards</span>
             </a>
+            <a href="{{ route('merchant.redemptions') }}" class="sidebar-link {{ request()->routeIs('merchant.redemptions*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 20h10a2 2 0 002-2V6a2 2 0 00-2-2h-2.5M7 20a2 2 0 01-2-2V6a2 2 0 012-2h2.5m0 0A1.5 1.5 0 0111 2.5h2A1.5 1.5 0 0114.5 4m-5 0h5"/></svg>
+                <span>Redemptions</span>
+            </a>
             <a href="{{ route('merchant.customers') }}" class="sidebar-link {{ request()->routeIs('merchant.customers*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zM6 5v2m0 0v2m0-2h2m-2 0H4"/></svg>
                 <span>Customers</span>
-            </a>
-            <div class="sidebar-section">
-                <p class="sidebar-section-title">Engagement</p>
-            </div>
-            <a href="{{ route('merchant.leaderboard') }}" class="sidebar-link {{ request()->routeIs('merchant.leaderboard*') ? 'active' : '' }}">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                <span>Leaderboard</span>
             </a>
             <a href="{{ route('merchant.loyalty.rates') }}" class="sidebar-link {{ request()->routeIs('merchant.loyalty*') && !request()->routeIs('merchant.leaderboard*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -166,9 +163,46 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 <span>Tiers</span>
             </a>
+            <a href="{{ route('merchant.promos.index') }}" class="sidebar-link {{ request()->routeIs('merchant.promos*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Promos</span>
+            </a>
+            <a href="{{ route('merchant.leaderboard') }}" class="sidebar-link {{ request()->routeIs('merchant.leaderboard*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                <span>Leaderboard</span>
+            </a>
+            <div class="sidebar-section">
+                <p class="sidebar-section-title">Giveaway</p>
+            </div>
+            <a href="{{ route('merchant.giveaways.index') }}" class="sidebar-link {{ request()->routeIs('merchant.giveaways.*') && !request()->routeIs('merchant.giveaways.create') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
+                <span>Giveaways</span>
+            </a>
+            <a href="{{ route('merchant.giveaways.create') }}" class="sidebar-link {{ request()->routeIs('merchant.giveaways.create') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>New Giveaway</span>
+            </a>
+            <div class="sidebar-section">
+                <p class="sidebar-section-title">Viral Tools</p>
+            </div>
+            <a href="{{ route('merchant.tasks') }}" class="sidebar-link {{ request()->routeIs('merchant.tasks*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                <span>Viral Tasks</span>
+            </a>
+            <a href="{{ route('merchant.task-analytics') }}" class="sidebar-link {{ request()->routeIs('merchant.task-analytics*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Task Analytics</span>
+            </a>
             <a href="{{ route('merchant.campaigns') }}" class="sidebar-link {{ request()->routeIs('merchant.campaigns*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                <span>Campaigns</span>
+                <span>Referral Campaign</span>
+            </a>
+            <a href="{{ route('merchant.referral.review') }}" class="sidebar-link {{ request()->routeIs('merchant.referral.review*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/></svg>
+                <span>Referral Review</span>
+                @if(($rrCount = \Illuminate\Support\Facades\DB::table('referral_signups as s')->join('referrals as r', 'r.id', '=', 's.referral_id')->where('r.merchant_id', auth()->user()->merchant_id)->where('s.status', 'pending')->whereNotNull('s.flags')->where('s.flags', '!=', '[]')->count()) > 0)
+                    <span class="ml-auto text-xs bg-amber-500 text-white rounded-full px-2 py-0.5">{{ $rrCount }}</span>
+                @endif
             </a>
             <div class="sidebar-section">
                 <p class="sidebar-section-title">Reports</p>
@@ -188,21 +222,13 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 <span>Profil Syarikat</span>
             </a>
-            <a href="{{ route('merchant.promos.index') }}" class="sidebar-link {{ request()->routeIs('merchant.promos*') ? 'active' : '' }}">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Promos</span>
+            <a href="{{ route('merchant.staff') }}" class="sidebar-link {{ request()->routeIs('merchant.staff*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>Staff</span>
             </a>
-            <a href="{{ route('merchant.tasks') }}" class="sidebar-link {{ request()->routeIs('merchant.tasks*') ? 'active' : '' }}">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                <span>Viral Tasks</span>
-            </a>
-            <a href="{{ route('merchant.task-analytics') }}" class="sidebar-link {{ request()->routeIs('merchant.task-analytics*') ? 'active' : '' }}">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                <span>Task Analytics</span>
-            </a>
-            <a href="{{ route('merchant.giveaways.index') }}" class="sidebar-link {{ request()->routeIs('merchant.giveaways.*') ? 'active' : '' }}">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
-                <span>Giveaways</span>
+            <a href="{{ route('staff.dashboard') }}" class="sidebar-link {{ request()->routeIs('staff.dashboard*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <span>Counter</span>
             </a>
             @endrole
 
@@ -306,6 +332,13 @@
                 <h1 class="text-lg font-semibold text-surface-800 dark:text-white">@yield('title', 'Dashboard')</h1>
             </div>
             <div class="flex items-center gap-3">
+                @auth
+                @php($unreadN = \App\Models\InAppNotification::where('user_id', Auth::id())->whereNull('read_at')->count())
+                <a href="{{ route('notifications') }}" class="relative p-2 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors" title="Notifications">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    @if($unreadN > 0)<span class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] leading-none rounded-full px-1.5 py-0.5">{{ $unreadN > 99 ? '99+' : $unreadN }}</span>@endif
+                </a>
+                @endauth
                 <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-100 dark:bg-surface-700 text-surface-400 text-sm w-48">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input type="text" placeholder="Search..." class="bg-transparent border-none outline-none text-sm w-full text-surface-700 dark:text-surface-200 placeholder-surface-400">

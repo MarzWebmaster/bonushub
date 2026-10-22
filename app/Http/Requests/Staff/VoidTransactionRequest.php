@@ -8,22 +8,14 @@ class VoidTransactionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('staff');
+        return $this->user()->hasAnyRole(['staff', 'merchant']);
     }
 
     public function rules(): array
     {
         return [
-            'transaction_id' => 'required|integer|exists:transactions,id',
-            'reason' => 'required|string|max:500',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'transaction_id.exists' => 'The selected transaction does not exist.',
-            'reason.required' => 'A reason is required to void a transaction.',
+            'transaction_id' => 'required|integer|exists:points_transactions,id',   // was exists:transactions (does not exist)
+            'reason'         => 'required|string|min:3|max:500',
         ];
     }
 }

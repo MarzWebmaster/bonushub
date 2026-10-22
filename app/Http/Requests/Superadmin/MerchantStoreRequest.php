@@ -21,6 +21,7 @@ class MerchantStoreRequest extends FormRequest
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:1000',
             'is_active' => 'nullable|boolean',
+            'package_id' => 'nullable|integer|exists:packages,id',
         ];
     }
 

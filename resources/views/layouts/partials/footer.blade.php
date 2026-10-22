@@ -56,6 +56,7 @@
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Kumpul Mata</a></li>
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Cabutan Giveaway</a></li>
                     <li><a href="#ciri" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Tebus Ganjaran</a></li>
+                    <li><a href="{{ url('/terms/points') }}" class="text-sm text-surface-400 hover:text-bonus-400 transition-colors">Terma Mata Ganjaran</a></li>
                 </ul>
             </div>
 

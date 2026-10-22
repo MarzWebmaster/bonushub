@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $campaign->name . ' - Campaign Detail')
+@section('title', $campaign->name . ' - Referral Campaign')
 @section('content')
 <div class="page-container">
     {{-- Page Header --}}
@@ -26,24 +26,29 @@
     </div>
 
     {{-- Stats Row --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="stat-card border-l-bonus-500">
-            <p class="text-xs text-surface-500 uppercase tracking-wider">Total Visits</p>
+            <p class="text-xs text-surface-500 uppercase tracking-wider">Total Clicks</p>
             <p class="text-3xl font-bold text-surface-800 dark:text-white mt-1">{{ number_format($campaign->visits) }}</p>
+        </div>
+        <div class="stat-card border-l-sky-500">
+            <p class="text-xs text-surface-500 uppercase tracking-wider">Unique Visitors</p>
+            <p class="text-3xl font-bold text-surface-800 dark:text-white mt-1">{{ number_format($campaign->unique_visits) }}</p>
         </div>
         <div class="stat-card border-l-emerald-500">
             <p class="text-xs text-surface-500 uppercase tracking-wider">Registrations</p>
             <p class="text-3xl font-bold text-surface-800 dark:text-white mt-1">{{ number_format($campaign->registrations) }}</p>
         </div>
         <div class="stat-card border-l-purple-500">
-            <p class="text-xs text-surface-500 uppercase tracking-wider">Conversion Rate</p>
-            <p class="text-3xl font-bold text-surface-800 dark:text-white mt-1">{{ $campaign->conversion_rate }}%</p>
+            <p class="text-xs text-surface-500 uppercase tracking-wider">Conversion (unique)</p>
+            <p class="text-3xl font-bold text-surface-800 dark:text-white mt-1">{{ $campaign->unique_conversion_rate }}%</p>
+            <p class="text-xs text-surface-400 mt-1">{{ $campaign->conversion_rate }}% of all clicks</p>
         </div>
     </div>
 
     {{-- Link Box --}}
     <div class="card p-4 mb-6">
-        <p class="text-sm font-medium text-surface-600 dark:text-surface-300 mb-2">🔗 Campaign Link</p>
+        <p class="text-sm font-medium text-surface-600 dark:text-surface-300 mb-2">🔗 Referral Campaign Link</p>
         <div class="flex items-center gap-2">
             <input value="{{ $campaign->url }}" class="form-input flex-1 font-mono text-sm" readonly id="campaign-url">
             <button onclick="copyUrl()" class="btn-primary text-sm px-4 py-2" id="copy-btn">📋 Copy</button>

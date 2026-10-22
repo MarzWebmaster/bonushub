@@ -16,13 +16,24 @@ class GiveawayEntry extends Model
         'is_winner',
         'prize_won',
         'won_at',
+        'score',
+        'terms_accepted_at',
+        'terms_hash',
     ];
 
     protected $casts = [
         'entry_count' => 'integer',
+        'score' => 'integer',
+        'terms_accepted_at' => 'datetime',
         'is_winner' => 'boolean',
         'won_at' => 'datetime',
     ];
+
+    /** Leaderboard order: highest score first, earliest entrant wins ties (deterministic). */
+    public function scopeRanked($query)
+    {
+        return $query->orderByDesc('score')->orderByDesc('entry_count')->orderBy('created_at')->orderBy('id');
+    }
 
     public function campaign(): BelongsTo
     {

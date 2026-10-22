@@ -120,40 +120,31 @@ class ScanController extends Controller
                 'type' => 'earn',
                 'points' => $points,
                 'amount_spent' => $request->amount,
-                'status' => 'approved',
+                // SECURITY: the amount is self-reported by the customer, so it must never
+                // credit the balance directly. The merchant approves it via the existing
+                // pending-approval flow (MerchantAdminController::approvePoints), which
+                // is what increments customer_merchant.points.
+                'status' => 'pending_approval',
                 'notes' => $request->description ?: 'Points earned via QR scan',
             ]);
 
-            // Update customer_merchant points balance
-            $customerMerchant->increment('points', $points);
-
             DB::commit();
 
-            Log::info("Customer {$customer->id} earned {$points} points from merchant {$merchant->id}", [
+            Log::info("Customer {$customer->id} requested {$points} points from merchant {$merchant->id} (pending approval)", [
                 'amount_spent' => $request->amount,
                 'transaction_id' => $transaction->id,
                 'original_points' => $originalPoints,
                 'multiplier' => $multiplier?->value,
             ]);
 
-            $newBalance = $customerMerchant->fresh()->points;
-
-            // Send email notification
-            $this->sendPointsEarnedEmail(
-                $customer->id,
-                $points,
-                $newBalance,
-                $merchant->id,
-                $request->description ?: 'QR Scan'
-            );
-
             return response()->json([
                 'success' => true,
-                'message' => "🎉 {$points} points earned!",
-                'points_earned' => $points,
+                'pending' => true,
+                'message' => "Permohonan {$points} mata telah dihantar. Mata akan dikreditkan selepas merchant meluluskan.",
+                'points_requested' => $points,
                 'original_points' => $originalPoints,
                 'multiplier' => $multiplier?->value,
-                'new_balance' => $newBalance,
+                'new_balance' => $customerMerchant->points,
                 'merchant' => $merchant->company_name,
             ]);
         } catch (\Exception $e) {

@@ -550,6 +550,7 @@
                     <ul class="space-y-2">
                         <li><span class="text-sm text-surface-500">Marz Technology & Trading</span></li>
                         <li><span class="text-sm text-surface-500">Malaysia</span></li>
+                        <li><a href="{{ url('/terms/points') }}" class="text-sm text-surface-400 hover:text-white transition-colors">Points Terms</a></li>
                     </ul>
                 </div>
             </div>

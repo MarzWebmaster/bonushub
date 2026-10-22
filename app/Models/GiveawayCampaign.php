@@ -24,6 +24,10 @@ class GiveawayCampaign extends Model
         'ends_at',
         'winners_announced_at',
         'metadata',
+        'terms',
+        'threshold_score',
+        'milestones',
+        'claim_days',
     ];
 
     protected $casts = [
@@ -35,6 +39,9 @@ class GiveawayCampaign extends Model
         'ends_at' => 'datetime',
         'winners_announced_at' => 'datetime',
         'metadata' => 'array',
+        'threshold_score' => 'integer',
+        'milestones' => 'array',
+        'claim_days' => 'integer',
     ];
 
     // Relationships
@@ -81,6 +88,51 @@ class GiveawayCampaign extends Model
     {
         return $this->status === 'ended'
             || ($this->ends_at && $this->ends_at->isPast());
+    }
+
+    public const METHOD_LABELS = [
+        'top_referrers' => 'Top referrers',
+        'threshold'     => 'Reach the target score',
+        'milestone'     => 'Milestone ladder',
+        'manual'        => 'Chosen by the merchant',
+        'random'        => 'Random draw (disabled)',
+    ];
+
+    public function selectionLabel(): string
+    {
+        return self::METHOD_LABELS[$this->selection_method] ?? ucfirst((string) $this->selection_method);
+    }
+
+    /** Milestone ladder sorted from the highest score down: [['score' => int, 'prize' => string], ...] */
+    public function milestoneLadder(): array
+    {
+        $rows = collect($this->milestones ?? [])
+            ->filter(fn ($m) => isset($m['score'], $m['prize']))
+            ->map(fn ($m) => ['score' => (int) $m['score'], 'prize' => (string) $m['prize']])
+            ->sortByDesc('score')
+            ->values()
+            ->all();
+
+        return $rows;
+    }
+
+    /** Prize of the highest milestone reached with $score, or null when none is reached. */
+    public function milestonePrizeFor(int $score): ?string
+    {
+        foreach ($this->milestoneLadder() as $m) {
+            if ($score >= $m['score']) {
+                return $m['prize'];
+            }
+        }
+
+        return null;
+    }
+
+    /** True once the campaign may be drawn: it was ended, or its end time has passed. */
+    public function readyForDraw(): bool
+    {
+        return $this->status === 'ended'
+            || ($this->status === 'active' && $this->ends_at && $this->ends_at->isPast());
     }
 
     public function participantCount(): int

@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class SuperadminController extends Controller
@@ -30,7 +31,99 @@ class SuperadminController extends Controller
 
     public function dashboard(): View
     {
-        return view('superadmin.dashboard');
+        return view('superadmin.dashboard', ['d' => $this->platformOverview()]);
+    }
+
+    /** Everything the superadmin dashboard shows, computed server-side (no loading placeholders). */
+    private function platformOverview(): array
+    {
+        $now = now();
+        $monthStart = $now->copy()->startOfMonth();
+        $byStatus = Merchant::selectRaw('status, COUNT(*) c')->groupBy('status')->pluck('c', 'status');
+        $totalMerchants = (int) $byStatus->sum();
+
+        // plans with their merchants (merchants without a package follow Free)
+        $packages = Package::withCount('merchants')->orderBy('price')->get();
+        $noPackage = Merchant::whereNull('package_id')->count();
+        $maxPrice = (float) $packages->max('price');
+        $plans = [];
+        $mrr = 0.0;
+        foreach ($packages as $p) {
+            $count = (int) $p->merchants_count;
+            if ((float) $p->price == 0.0 && $p === $packages->first()) {
+                $count += $noPackage;            // Free carries the package-less merchants
+            }
+            $mrr += (float) $p->price * (int) $p->merchants_count;
+            $plans[] = [
+                'id' => $p->id, 'name' => $p->name, 'price' => (float) $p->price, 'merchants' => $count,
+                'share' => $totalMerchants > 0 ? (int) round($count / $totalMerchants * 100) : 0,
+                'tier' => (float) $p->price == 0.0 ? 'free' : (((float) $p->price === $maxPrice && $packages->count() > 1) ? 'top' : ''),
+            ];
+        }
+
+        // points issued per day, last 14 days
+        $from = $now->copy()->subDays(13)->startOfDay();
+        $daily = PointsTransaction::where('type', 'earn')->where('status', 'approved')->where('created_at', '>=', $from)
+            ->selectRaw('DATE(created_at) d, SUM(points) s')->groupBy('d')->pluck('s', 'd');
+        $series = [];
+        for ($i = 0; $i < 14; $i++) {
+            $day = $from->copy()->addDays($i);
+            $series[] = ['label' => $day->format('d M'), 'day' => $day->format('j'), 'value' => (int) round((float) ($daily[$day->toDateString()] ?? 0))];
+        }
+        $peak = max(1, max(array_column($series, 'value')));
+        foreach ($series as &$s) {
+            $s['pct'] = (int) round($s['value'] / $peak * 100);
+        }
+        unset($s);
+        $earn = fn ($days) => (int) round((float) PointsTransaction::where('type', 'earn')->where('status', 'approved')->where('created_at', '>=', $now->copy()->subDays($days))->sum('points'));
+
+        $paidPackage = fn ($q) => $q->where('price', '>', 0);
+        $thirty = $now->copy()->subDays(30);
+
+        return [
+            'generated_at' => $now->format('H:i'),
+            'attention' => [
+                'pending' => (int) ($byStatus['pending'] ?? 0),
+                'expiring' => Merchant::whereHas('package', $paidPackage)->whereNotNull('subscription_expiry')->whereBetween('subscription_expiry', [$now, $now->copy()->addDays(7)])->count(),
+                'lapsed' => Merchant::whereHas('package', $paidPackage)->whereNotNull('subscription_expiry')->where('subscription_expiry', '<', $now->copy()->subDays(7))->count(),
+            ],
+            'merchants' => [
+                'total' => $totalMerchants, 'active' => (int) ($byStatus['active'] ?? 0), 'pending' => (int) ($byStatus['pending'] ?? 0),
+                'rejected' => (int) ($byStatus['rejected'] ?? 0), 'new_month' => Merchant::where('created_at', '>=', $monthStart)->count(),
+            ],
+            'customers' => [
+                'total' => DB::table('customers')->count(),
+                'with_merchant' => DB::table('customer_merchant')->distinct()->count('customer_id'),
+                'new_month' => DB::table('customers')->where('created_at', '>=', $monthStart)->count(),
+            ],
+            'staff' => User::role('staff')->count(),
+            'mrr' => $mrr,
+            'plans' => $plans,
+            'no_package' => $noPackage,
+            'chart' => $series,
+            'points_14' => $earn(14),
+            'points_30' => $earn(30),
+            'usage' => [
+                'redemptions' => DB::table('redemptions')->where('created_at', '>=', $thirty)->count(),
+                'referrals' => DB::table('referral_signups')->where('status', 'valid')->where('validated_at', '>=', $thirty)->count(),
+                'new_customers' => DB::table('customers')->where('created_at', '>=', $thirty)->count(),
+                'giveaways' => DB::table('giveaway_campaigns')->where('status', 'active')->count(),
+                'tasks' => DB::table('viral_tasks')->where('status', 'active')->count(),
+                'campaign_clicks' => (int) DB::table('campaign_links')->sum('visits'),
+            ],
+            'latest' => Merchant::with('package:id,name')->orderByDesc('created_at')->orderByDesc('id')->limit(5)->get()->map(fn ($m) => [
+                'id' => $m->id, 'name' => (string) $m->company_name, 'status' => (string) $m->status,
+                'package' => $m->package?->name, 'joined' => $m->created_at?->format('d M Y') ?? '-',
+            ])->all(),
+            'system' => [
+                'failed_jobs' => DB::table('failed_jobs')->count(),
+                'waiting_jobs' => DB::table('jobs')->count(),
+                'expiry' => (bool) config('points.expiry_enabled'),
+                'mailer' => (string) config('mail.default'),
+                'laravel' => app()->version(),
+                'php' => PHP_VERSION,
+            ],
+        ];
     }
 
     public function merchantsPage(): View
@@ -44,8 +137,18 @@ class SuperadminController extends Controller
 
     public function packagesPage(): View
     {
-        $packages = Package::orderBy('price')->paginate(5);
-        return view('superadmin.packages', compact('packages'));
+        $packages = Package::withCount('merchants')->orderBy('price')->paginate(12);
+        $maxPrice = (float) Package::max('price');
+        // the plan most merchants are on (only meaningful when somebody is on a plan)
+        $topId = Package::withCount('merchants')->orderByDesc('merchants_count')->orderBy('price')->first();
+        $topId = $topId && $topId->merchants_count > 0 ? $topId->id : null;
+        $summary = [
+            'plans'     => Package::count(),
+            'merchants' => \App\Models\Merchant::whereNotNull('package_id')->count(),
+            'paid'      => \App\Models\Merchant::whereHas('package', fn ($q) => $q->where('price', '>', 0))->count(),
+        ];
+
+        return view('superadmin.packages', compact('packages', 'maxPrice', 'topId', 'summary'));
     }
 
     // ========================
@@ -90,52 +193,42 @@ class SuperadminController extends Controller
     public function storeMerchant(MerchantStoreRequest $request): JsonResponse
     {
         try {
-            DB::beginTransaction();
+            $merchant = DB::transaction(function () use ($request) {
+                $merchant = Merchant::create([
+                    'company_name' => $request->merchant_name,
+                    'owner_name'   => $request->name,
+                    'phone'        => $request->phone,
+                    'address'      => $request->address,
+                    'status'       => $request->boolean('is_active', true) ? Merchant::STATUS_ACTIVE : 'inactive',
+                    'package_id'   => $request->package_id,
+                    'verified_at'  => now(),
+                    'verified_by'  => auth()->id(),
+                ]);
 
-            $admin = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'phone' => $request->phone,
-                'merchant_id' => 0,
-            ]);
-            $admin->assignRole('merchant');
+                $admin = User::create([
+                    'name'        => $request->name,
+                    'email'       => $request->email,
+                    'password'    => $request->password,      // hashed by the model cast
+                    'phone'       => $request->phone,
+                    'merchant_id' => $merchant->id,
+                    'status'      => 'active',
+                    'role'        => 'merchant',
+                ]);
+                $admin->assignRole('merchant');
 
-            $package_id = $request->package_id;
-            $package = Package::find($package_id);
-
-            $merchant = Merchant::create([
-                'name' => $request->merchant_name,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'status' => $request->status ?? 'active',
-                'package_id' => $package_id,
-                'branch_limit' => $package->branch_limit ?? 1,
-                'staff_limit' => $package->staff_limit ?? 2,
-            ]);
-
-            $admin->update(['merchant_id' => $merchant->id]);
-
-            DB::table('merchant_user')->insert([
-                'merchant_id' => $merchant->id,
-                'user_id' => $admin->id,
-                'role' => 'admin',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            DB::commit();
+                return $merchant;
+            });
 
             return response()->json([
                 'success' => true,
                 'message' => 'Merchant created successfully.',
                 'merchant' => $merchant,
             ], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
+        } catch (\Throwable $e) {
+            Log::error('Superadmin create merchant failed: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create merchant: ' . $e->getMessage(),
+                'message' => 'Failed to create merchant. Please check the details and try again.',
             ], 500);
         }
     }
@@ -144,12 +237,45 @@ class SuperadminController extends Controller
     {
         $merchant = Merchant::findOrFail($id);
         $data = $request->validated();
-        // Map merchant_name to company_name (model field)
-        if (isset($data["merchant_name"])) {
-            $data["company_name"] = $data["merchant_name"];
-            unset($data["merchant_name"]);
-        }
-        $merchant->update($data);
+
+        DB::transaction(function () use ($merchant, $data) {
+            $m = [];
+            if (!empty($data['merchant_name'])) {
+                $m['company_name'] = $data['merchant_name'];
+            }
+            foreach (['phone', 'address', 'package_id'] as $k) {
+                if (array_key_exists($k, $data)) {
+                    $m[$k] = $data[$k];
+                }
+            }
+            if (array_key_exists('is_active', $data) && $data['is_active'] !== null) {
+                $m['status'] = $data['is_active'] ? Merchant::STATUS_ACTIVE : 'inactive';
+            }
+
+            // the owner account (first merchant user): name / e-mail / password
+            $owner = User::where('merchant_id', $merchant->id)->role('merchant')->orderBy('id')->first();
+            if ($owner) {
+                $u = [];
+                foreach (['name', 'email'] as $k) {
+                    if (!empty($data[$k])) {
+                        $u[$k] = $data[$k];
+                    }
+                }
+                if (!empty($data['password'])) {
+                    $u['password'] = $data['password'];       // hashed by the model cast
+                }
+                if (!empty($data['name'])) {
+                    $m['owner_name'] = $data['name'];
+                }
+                if ($u) {
+                    $owner->update($u);
+                }
+            }
+
+            if ($m) {
+                $merchant->update($m);
+            }
+        });
 
         return response()->json([
             'success' => true,
@@ -174,7 +300,20 @@ class SuperadminController extends Controller
     public function destroyMerchant(int $id): JsonResponse
     {
         $merchant = Merchant::findOrFail($id);
-        $merchantName = $merchant->name;
+
+        // never hard-delete a merchant that has customers or a points ledger (cascades would destroy balances/history)
+        $hasData = DB::table('customer_merchant')->where('merchant_id', $id)->exists()
+            || DB::table('points_transactions')->where('merchant_id', $id)->exists();
+        if ($hasData) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Merchant ini mempunyai pelanggan/transaksi. Nyahaktifkan (deactivate) sebaliknya.',
+            ], 409);
+        }
+
+        $merchantName = $merchant->company_name;
+        // its logins must not outlive it (users.merchant_id is set to NULL when the merchant row goes)
+        User::where('merchant_id', $id)->update(['status' => 'inactive']);
         $merchant->delete();
 
         return response()->json([
@@ -198,10 +337,19 @@ class SuperadminController extends Controller
     public function storePackage(PackageStoreRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $row = [
+            'name'           => $data['name'],
+            'price'          => $data['price'],
+            // -1 = unlimited. Defaults follow the Free plan when the form does not send a value.
+            'branch_limit'   => $data['branch_limit'] ?? 1,
+            'staff_limit'    => $data['staff_limit'] ?? 2,
+            'giveaway_limit' => $data['giveaway_limit'] ?? 0,
+            'task_limit'     => $data['task_limit'] ?? 0,
+        ];
         if (isset($data['features']) && is_array($data['features'])) {
-            $data['features'] = json_encode($data['features']);
+            $row['features'] = json_encode($data['features']);
         }
-        $package = Package::create($data);
+        $package = Package::create($row);
 
         return response()->json([
             'success' => true,
@@ -214,10 +362,16 @@ class SuperadminController extends Controller
     {
         $package = Package::findOrFail($id);
         $data = $request->validated();
-        if (isset($data['features']) && is_array($data['features'])) {
-            $data['features'] = json_encode($data['features']);
+        $row = [];
+        foreach (['name', 'price', 'branch_limit', 'staff_limit', 'giveaway_limit', 'task_limit'] as $k) {
+            if (array_key_exists($k, $data) && $data[$k] !== null) {
+                $row[$k] = $data[$k];
+            }
         }
-        $package->update($data);
+        if (isset($data['features']) && is_array($data['features'])) {
+            $row['features'] = json_encode($data['features']);
+        }
+        $package->update($row);
 
         return response()->json([
             'success' => true,
@@ -229,6 +383,13 @@ class SuperadminController extends Controller
     public function destroyPackage(int $id): JsonResponse
     {
         $package = Package::findOrFail($id);
+        $inUse = $package->merchants()->count();
+        if ($inUse > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "{$inUse} merchant(s) are on this package. Move them to another package first.",
+            ], 422);
+        }
         $packageName = $package->name;
         $package->delete();
 
@@ -339,6 +500,41 @@ class SuperadminController extends Controller
     // ========================
     // MERCHANT APPROVAL
     // ========================
+
+    /**
+     * Stream a merchant's verification document (IC front/back, SSM) to a superadmin.
+     * Documents live on the private disk, so this is the only way to view them.
+     */
+    public function merchantDocument(int $id, string $type)
+    {
+        $column = ['ic' => 'ic_image', 'ic_back' => 'ic_image_back', 'ssm' => 'ssm_image'][$type] ?? null;
+        abort_if($column === null, 404);
+
+        $path = Merchant::findOrFail($id)->{$column};
+        abort_unless($path, 404);
+
+        // Paths are generated by Laravel's store(), but never trust a DB value blindly (no traversal).
+        abort_unless(preg_match('#^verification/(ic|ssm)/[A-Za-z0-9._-]+$#', $path) === 1, 404);
+
+        // 'local' = private (current). 'public' = legacy location for documents uploaded
+        // before this change, kept as a fallback until they have been moved.
+        foreach (['local', 'public'] as $disk) {
+            if (Storage::disk($disk)->exists($path)) {
+                Log::info('Verification document viewed', [
+                    'merchant_id' => $id,
+                    'type'        => $type,
+                    'by_user_id'  => auth()->id(),
+                ]);
+
+                return Storage::disk($disk)->response($path, null, [
+                    'Cache-Control'          => 'private, no-store',
+                    'X-Content-Type-Options' => 'nosniff',
+                ]);
+            }
+        }
+
+        abort(404);
+    }
 
     public function pendingMerchantsPage(): View
     {

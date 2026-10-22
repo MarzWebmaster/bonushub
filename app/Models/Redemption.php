@@ -17,6 +17,8 @@ class Redemption extends Model
         'status',
         'claim_code',
         'staff_id',
+        'quantity',
+        'points_transaction_id',
     ];
 
     protected function casts(): array
