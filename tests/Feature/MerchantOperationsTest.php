@@ -124,6 +124,17 @@ class MerchantOperationsTest extends TestCase
         $this->assertSame(420.0, $this->balance($this->c, $this->m));
     }
 
+    public function test_approval_is_atomic_if_crediting_the_balance_fails(): void
+    {
+        $tx = $this->makeTx($this->c, $this->m, 'earn', 120, null, 'pending_approval');
+        DB::unprepared("CREATE TRIGGER fail_balance BEFORE UPDATE ON customer_merchant BEGIN SELECT RAISE(ABORT, 'boom'); END");
+
+        $this->actingAs($this->owner)->post("/merchant/points/approve/$tx")->assertStatus(500);
+
+        $this->assertDatabaseHas('points_transactions', ['id' => $tx, 'status' => 'pending_approval']);
+        $this->assertSame(300.0, $this->balance($this->c, $this->m));
+    }
+
     public function test_rejecting_a_pending_claim_leaves_the_balance_alone(): void
     {
         $tx = $this->makeTx($this->c, $this->m, 'earn', 120, null, 'pending_approval');
