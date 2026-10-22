@@ -313,17 +313,4 @@ class ReferralAttributionTest extends TestCase
         $taskId = $this->fillRow('viral_tasks', ['merchant_id' => $this->m, 'status' => 'active']);
         $this->fillRow('task_submissions', ['customer_id' => $customerId, 'task_id' => $taskId, 'status' => 'approved']);
     }
-
-    /** Inserts a row, filling any other NOT NULL column that has no default with a dummy value. */
-    private function fillRow(string $table, array $row): int
-    {
-        $row += ['created_at' => now(), 'updated_at' => now()];
-        foreach (DB::getSchemaBuilder()->getColumns($table) as $c) {
-            if (!$c['nullable'] && $c['default'] === null && !$c['auto_increment'] && !array_key_exists($c['name'], $row)) {
-                $row[$c['name']] = str_contains($c['type'], 'int') ? 1 : (str_contains($c['type'], 'date') ? now() : 'x');
-            }
-        }
-
-        return DB::table($table)->insertGetId($row);
-    }
 }

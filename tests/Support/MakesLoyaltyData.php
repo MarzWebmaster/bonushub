@@ -129,4 +129,17 @@ trait MakesLoyaltyData
             'updated_at'   => now(),
         ]);
     }
+
+    /** Inserts a row, filling any other NOT NULL column that has no default with a dummy value. */
+    protected function fillRow(string $table, array $row): int
+    {
+        $row += ['created_at' => now(), 'updated_at' => now()];
+        foreach (DB::getSchemaBuilder()->getColumns($table) as $c) {
+            if (!$c['nullable'] && $c['default'] === null && !$c['auto_increment'] && !array_key_exists($c['name'], $row)) {
+                $row[$c['name']] = str_contains($c['type'], 'int') ? 1 : (str_contains($c['type'], 'date') ? now() : 'x');
+            }
+        }
+
+        return DB::table($table)->insertGetId($row);
+    }
 }
